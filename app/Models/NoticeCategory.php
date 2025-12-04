@@ -19,6 +19,6 @@ class NoticeCategory extends Model
     // hasmany notices
     public function notices()
     {
-        return $this->hasMany(Notice::class);
+        return $this->hasMany(Notice::class, 'category_id');
     }
 }

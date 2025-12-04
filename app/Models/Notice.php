@@ -16,9 +16,9 @@ class Notice extends Model
      * @var array
      */
     protected $guarded = [];
-    
+
     public function noticeCategory()
     {
-        return $this->belongsTo(NoticeCategory::class);
+        return $this->belongsTo(NoticeCategory::class, 'category_id');
     }
 }
