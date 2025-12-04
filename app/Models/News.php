@@ -11,11 +11,8 @@ class News extends Model
     use HasFactory, HasSlug;
     protected $table = 'news';
     protected $slugSourceColumn = 'name';
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
+
+    
     protected $fillable = [
         'title',
         'slug',
@@ -29,12 +26,11 @@ class News extends Model
         'read_time',
         'category',
         'tags',
-        'status'
+        'status',
     ];
 
     protected $casts = [
         'tags' => 'array',
         'published_at' => 'date',
     ];
-
 }

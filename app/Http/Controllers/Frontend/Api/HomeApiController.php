@@ -141,17 +141,12 @@ class HomeApiController extends Controller
             ->orderBy('published_at', 'DESC')
             ->paginate(10);
 
-        // Decode tags
-        $news->getCollection()->transform(function ($item) {
-            $item->tags = $item->tags ? json_decode($item->tags, true) : [];
-            return $item;
-        });
-
         return response()->json([
             'success' => true,
             'data' => $news
         ]);
     }
+
 
 
 
