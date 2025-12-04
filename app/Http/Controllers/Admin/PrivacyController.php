@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class PrivacyController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view privacy')->only(['index']);
+    $this->middleware('permission:create privacy')->only(['create', 'store']);
+    $this->middleware('permission:edit privacy')->only(['edit', 'update']);
+    $this->middleware('permission:delete privacy')->only(['destroy']);
+}
+
     /**
      * Display a listing of the resource.
      */

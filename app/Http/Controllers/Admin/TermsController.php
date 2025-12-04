@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class TermsController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view terms')->only(['index']);
+    $this->middleware('permission:create terms')->only(['create', 'store']);
+    $this->middleware('permission:edit terms')->only(['edit', 'update']);
+    $this->middleware('permission:delete terms')->only(['destroy']);
+}
+
     /**
      * Display a listing of the resource.
      */

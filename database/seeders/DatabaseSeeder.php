@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class, // 2nd
             NoticeCategorySeeder::class,
             NoticeSeeder::class,
+            NewsSeeder::class,
+
         ]);
         // $this->call(UserSeeder::class);
     }

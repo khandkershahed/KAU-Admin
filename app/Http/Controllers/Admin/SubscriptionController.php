@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view subscription')->only(['index']);
+    $this->middleware('permission:create subscription')->only(['create', 'store']);
+    $this->middleware('permission:edit subscription')->only(['edit', 'update']);
+    $this->middleware('permission:delete subscription')->only(['destroy']);
+}
+
     /**
      * Display a listing of the resource.
      */

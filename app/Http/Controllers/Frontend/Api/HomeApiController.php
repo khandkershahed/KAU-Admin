@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend\Api;
 
 
+use App\Models\News;
 use App\Models\Event;
 use App\Models\Notice;
 use App\Models\Contact;
@@ -95,37 +96,120 @@ class HomeApiController extends Controller
     }
 
 
-    public function allNotices(Request $request)
+    public function allNotices()
     {
-        $query = Notice::select(
-            'id',
-            'title',
-            'slug',
-            'type',
-            'publish_date',
-            'category_id'
-        )
-            ->with('noticeCategory:id,name,slug')
+        $notices = Notice::select('id', 'category_id', 'title', 'slug', 'publish_date', 'attachments', 'attachment_type', 'views', 'is_featured', 'status')
+            ->with(['noticeCategory:id,name']) // Load category name
             ->where('status', 'published')
-            ->orderBy('publish_date', 'desc');
+            ->orderBy('publish_date', 'DESC')
+            ->get();
 
-        // Filter by noticeCategory
-        if ($request->has('noticeCategory')) {
-            $query->whereHas('noticeCategory', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
+        // Extract first attachment + category name
+        $notices->each(function ($notice) {
+            $attachments = json_decode($notice->attachments, true);
+            $notice->first_attachment = $attachments[0] ?? null;
 
-        // Filter by notice type (Academic, Tender, Research, General)
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
+            // Add category_name directly into response
+            $notice->category_name = $notice->category->name ?? null;
+
+            // Remove category relation if not needed
+            unset($notice->category);
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $query->paginate(20)
+            'data' => $notices
         ]);
     }
+
+    // allNews
+    public function allNews()
+    {
+        $news = News::select(
+            'id',
+            'title',
+            'slug',
+            'thumb_image',
+            'banner_image',
+            'summary',
+            'published_at',
+            'read_time',
+            'category',
+            'tags'
+        )
+            ->where('status', 'published')
+            ->orderBy('published_at', 'DESC')
+            ->paginate(10);
+
+        // Decode tags
+        $news->getCollection()->transform(function ($item) {
+            $item->tags = $item->tags ? json_decode($item->tags, true) : [];
+            return $item;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $news
+        ]);
+    }
+
+
+
+
+    public function newsDetails($slug)
+    {
+        // Load full news details
+        $news = News::select(
+            'id',
+            'title',
+            'slug',
+            'thumb_image',
+            'content_image',
+            'banner_image',
+            'summary',
+            'content',
+            'author',
+            'published_at',
+            'read_time',
+            'category',
+            'tags',
+            'status'
+        )
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        // Decode tags
+        $news->tags = json_decode($news->tags, true);
+
+        // Increase view count
+        $news->increment('read_time');
+
+        // Related news (same category, except itself)
+        $relatedNews = News::select(
+            'id',
+            'title',
+            'slug',
+            'thumb_image',
+            'published_at',
+            'category'
+        )
+            ->where('category', $news->category)
+            ->where('status', 'published')
+            ->where('id', '!=', $news->id)
+            ->orderBy('published_at', 'DESC')
+            ->limit(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'news' => $news,
+                'related_news' => $relatedNews
+            ]
+        ]);
+    }
+
 
 
 

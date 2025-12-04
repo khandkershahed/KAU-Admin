@@ -11,6 +11,16 @@ use App\Http\Requests\Admin\RoleRequest;
 
 class RoleController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view role')->only(['index']);
+    $this->middleware('permission:create role')->only(['create', 'store']);
+    $this->middleware('permission:edit role')->only(['edit', 'update']);
+    $this->middleware('permission:delete role')->only(['destroy']);
+    $this->middleware('permission:give permission role')->only(['givePermission']);
+    $this->middleware('permission:store permission role')->only(['storePermission']);
+}
+
     /**
      * Display a listing of the resource.
      */

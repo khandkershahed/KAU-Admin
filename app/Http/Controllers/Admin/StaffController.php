@@ -9,6 +9,15 @@ use Spatie\Permission\Models\Role;
 
 class StaffController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view staff')->only(['index']);
+    $this->middleware('permission:create staff')->only(['create', 'store']);
+    $this->middleware('permission:edit staff')->only(['edit', 'update']);
+    $this->middleware('permission:delete staff')->only(['destroy']);
+    $this->middleware('permission:show staff')->only(['show']);
+}
+
     /**
      * Display a listing of the resource.
      */

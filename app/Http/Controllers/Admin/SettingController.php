@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
+    public function __construct()
+{
+    $this->middleware('permission:view setting')->only(['index']);
+    $this->middleware('permission:update setting')->only(['updateOrCreate']);
+}
+
     /**
      * Display a listing of the resource.
      */

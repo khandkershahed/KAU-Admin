@@ -4,26 +4,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TermsController;
-use App\Http\Controllers\Admin\VenueController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\PrivacyController;
-use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BlogPostController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\EventSeatController;
-use App\Http\Controllers\Admin\EventTypeController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\SeatingPlanController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\Auth\PasswordController;
-use App\Http\Controllers\Admin\EventSeatTypeController;
+use App\Http\Controllers\Admin\NoticeCategoryController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
@@ -72,7 +66,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
     //Resource Controller
-    Route::resources([
+    Route::resources(
+        [
             'banner'         => PageBannerController::class,
             'blog-category'  => BlogCategoryController::class,
             'blog-post'      => BlogPostController::class,
@@ -88,6 +83,22 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
         ],
     );
+
+    Route::controller(NoticeCategoryController::class)->prefix('notice/category')->name('notice-category.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->name('store');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(NoticeController::class)->prefix('notice')->name('notice.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+    });
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'updateOrcreateSetting'])->name('settings.updateOrCreate');

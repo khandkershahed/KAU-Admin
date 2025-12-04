@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('notice_categories')->nullOnDelete();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->string('type')->nullable();
             $table->longText('body')->nullable();
             $table->date('publish_date')->nullable();
             // Attachments (JSON array to store multiple files)

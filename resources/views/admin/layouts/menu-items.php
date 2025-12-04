@@ -14,18 +14,12 @@ return [
     ],
 
     [
-        'title' => 'Frontend Management',
+        'title' => 'Banner',
         'icon' => 'fa-solid fa-layer-group fs-3',
         'routes' => [
             'admin.banner.index',
             'admin.banner.create',
             'admin.banner.edit',
-            'admin.blog-category.index',
-            'admin.blog-category.create',
-            'admin.blog-category.edit',
-            'admin.blog-post.index',
-            'admin.blog-post.create',
-            'admin.blog-post.edit',
         ],
         'subMenu' => [
             [
@@ -34,17 +28,24 @@ return [
                 'routes' => ['admin.banner.index', 'admin.banner.create', 'admin.banner.edit'],
                 'route' => 'admin.banner.index',
             ],
+        ],
+    ],
+    [
+        'title' => 'Notice Management',
+        'routes' => ['admin.notice-category.index','admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
+        'subMenu' => [
+
             [
-                'title' => 'Blog Category',
-                'permission' => 'view blog category',
-                'routes' => ['admin.blog-category.index', 'admin.blog-category.create', 'admin.blog-category.edit'],
-                'route' => 'admin.blog-category.index',
+                'title' => 'Notice Category',
+                'permission' => 'view notice category',
+                'routes' => ['admin.notice-category.index'],
+                'route' => 'admin.notice-category.index',
             ],
             [
-                'title' => 'Blog',
-                'permission' => 'view blog',
-                'routes' => ['admin.blog-post.index', 'admin.blog-post.create', 'admin.blog-post.edit'],
-                'route' => 'admin.blog-post.index',
+                'title' => 'Notice',
+                'permission' => 'view notice',
+                'routes' => ['admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
+                'route' => 'admin.notice.index',
             ],
         ],
     ],

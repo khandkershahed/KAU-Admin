@@ -31,6 +31,8 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/notice-categories', [HomeApiController::class, 'noticeCategories']);
     Route::get('/notices', [HomeApiController::class, 'allNotices']);
     Route::get('/notices/{slug}', [HomeApiController::class, 'noticeDetails']);
+    Route::get('/news', [HomeApiController::class, 'allNews']);
+    Route::get('/news/{slug}', [HomeApiController::class, 'newsDetails']);
 
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);

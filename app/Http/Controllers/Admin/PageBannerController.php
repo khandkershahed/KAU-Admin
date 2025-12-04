@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class PageBannerController extends Controller
 {
 
-    
+
     public function __construct()
     {
         $this->middleware('permission:view banner')->only(['index', 'show']);
@@ -22,6 +22,7 @@ class PageBannerController extends Controller
         $this->middleware('permission:delete banner')->only(['destroy']);
         $this->middleware('permission:toggle banner status')->only(['toggleStatus']);
     }
+
 
 
     public function index()
