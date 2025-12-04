@@ -175,7 +175,6 @@ class HomeApiController extends Controller
             ->firstOrFail();
 
         // Decode tags
-        $news->tags = json_decode($news->tags, true);
 
         // Increase view count
         $news->increment('read_time');
