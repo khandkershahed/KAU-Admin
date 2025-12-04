@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('read_time')->default(1);
             $table->string('category')->nullable();
             $table->json('tags')->nullable();
+            $table->boolean('is_featured')->default(false)->nullable();
             $table->enum('status', ['draft', 'published', 'unpublished'])->default('published');
             $table->timestamps();
         });

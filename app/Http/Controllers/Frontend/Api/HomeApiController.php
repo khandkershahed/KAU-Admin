@@ -122,6 +122,63 @@ class HomeApiController extends Controller
         ]);
     }
 
+    public function noticeDetails($slug)
+    {
+        // Fetch notice
+        $notice = Notice::with('noticeCategory')
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->first();
+
+        if (!$notice) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notice not found'
+            ], 404);
+        }
+
+        // Increase view count
+        $notice->increment('views');
+
+        // Decode attachments safely
+        $attachments = [];
+        if (!empty($notice->attachments)) {
+            $attachments = is_string($notice->attachments)
+                ? json_decode($notice->attachments, true)
+                : (is_array($notice->attachments) ? $notice->attachments : []);
+        }
+
+        // Related notices (same category, excluding itself)
+        $related = Notice::where('status', 'published')
+            ->where('id', '!=', $notice->id)
+            ->where('category_id', $notice->category_id)
+            ->orderBy('publish_date', 'DESC')
+            ->limit(5)
+            ->get(['id', 'title', 'slug', 'publish_date']);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'notice' => [
+                    'id' => $notice->id,
+                    'title' => $notice->title,
+                    'slug' => $notice->slug,
+                    'body' => $notice->body,
+                    'publish_date' => $notice->publish_date,
+                    'attachments' => $attachments,
+                    'attachment_type' => $notice->attachment_type,
+                    'meta_title' => $notice->meta_title,
+                    'meta_tags' => $notice->meta_tags,
+                    'meta_description' => $notice->meta_description,
+                    'views' => $notice->views,
+                    'is_featured' => $notice->is_featured,
+                    'category' => $notice->category ? $notice->category->name : null,
+                ],
+                'related_notices' => $related
+            ]
+        ]);
+    }
+
     // allNews
     public function allNews()
     {
@@ -146,10 +203,6 @@ class HomeApiController extends Controller
             'data' => $news
         ]);
     }
-
-
-
-
 
     public function newsDetails($slug)
     {
@@ -204,6 +257,56 @@ class HomeApiController extends Controller
         ]);
     }
 
+
+    public function marquees()
+    {
+        // Featured news
+        $news = News::where('status', 'published')
+            ->where('is_featured', true)
+            ->orderBy('published_at', 'DESC')
+            ->select('id', 'title', 'slug', 'published_at')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type'  => 'news',
+                    'title' => $item->title,
+                    'url'   => url('/api/v1/news/' . $item->slug), // DIRECT PAGE URL
+                    'date'  => $item->published_at,
+                ];
+            });
+
+        // Featured notices
+        $notices = Notice::where('status', 'published')->where('is_featured', true)
+            ->orderBy('publish_date', 'DESC')
+            ->select('id', 'title', 'slug', 'publish_date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type'  => 'notice',
+                    'title' => $item->title,
+                    'url'   => url('/api/v1/notices/' . $item->slug), // DIRECT PAGE URL
+                    'date'  => $item->publish_date,
+                ];
+            });
+
+        // Alternate items (news, notice, news, notice...)
+        $merged = [];
+        $max = max($news->count(), $notices->count());
+
+        for ($i = 0; $i < $max; $i++) {
+            if (isset($news[$i])) {
+                $merged[] = $news[$i];
+            }
+            if (isset($notices[$i])) {
+                $merged[] = $notices[$i];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => $merged
+        ]);
+    }
 
 
 

@@ -16,7 +16,6 @@ class NoticeSeeder extends Seeder
                 'category_id' => 1, // Notice
                 'title' => 'কৃষি ভর্তি গুচ্ছ পরীক্ষার সিট প্ল্যান - ১২/০৪/২০২৫',
                 'slug' => Str::slug('কৃষি ভর্তি গুচ্ছ পরীক্ষার সিট প্ল্যান 12-04-2025'),
-
                 'body' => null,
                 'publish_date' => '2025-04-10',
                 'attachments' => json_encode(['seat-plan-2025.pdf']),
@@ -25,7 +24,7 @@ class NoticeSeeder extends Seeder
                 'meta_tags' => 'admission, seat plan',
                 'meta_description' => 'Seat plan for agricultural cluster admission test.',
                 'views' => 0,
-                'is_featured' => false,
+                'is_featured' => true,
                 'status' => 'published',
                 'created_by' => 1,
             ],
@@ -34,7 +33,6 @@ class NoticeSeeder extends Seeder
                 'category_id' => 1,
                 'title' => '২০২৫-২০২৬ শিক্ষাবর্ষে ভর্তি কার্যক্রম সংক্রান্ত নোটিশ',
                 'slug' => Str::slug('২০২৫ ২০২৬ শিক্ষাবর্ষ ভর্তি কার্যক্রম নোটিশ'),
-
                 'body' => '২০২৫-২০২৬ শিক্ষাবর্ষে ভর্তিকৃত শিক্ষার্থীদের ওরিয়েন্টেশন
                            এবং শিক্ষা কার্যক্রম আগামী ২০ ফেব্রুয়ারি সকাল ৯:৩০ ঘটিকায়
                            অনুষ্ঠিত হবে।',
@@ -63,7 +61,7 @@ class NoticeSeeder extends Seeder
                 'meta_tags' => 'office order, appointment',
                 'meta_description' => 'Official appointment notice of the new Vice Chancellor.',
                 'views' => 0,
-                'is_featured' => false,
+                'is_featured' => true,
                 'status' => 'published',
                 'created_by' => 1,
             ],

@@ -24,7 +24,6 @@ return new class extends Migration
             $table->json('attachments')->nullable();
             // Small preview attachment type (PDF, DOC, JPG)
             $table->string('attachment_type')->nullable();
-            // SEO
             $table->string('meta_title')->nullable();
             $table->string('meta_tags')->nullable();
             $table->text('meta_description')->nullable();
