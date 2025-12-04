@@ -16,4 +16,9 @@ class NoticeCategory extends Model
      * @var array
      */
     protected $guarded = [];
+    // hasmany notices
+    public function notices()
+    {
+        return $this->hasMany(Notice::class);
+    }
 }

@@ -34,6 +34,8 @@ return new class extends Migration
 
             $table->string('primary_email')->nullable();
             $table->string('support_email')->nullable();
+            $table->string('info_email')->nullable();
+            $table->string('sales_email')->nullable();
             $table->json('additional_emails')->nullable(); // instead of too many individual columns
 
             $table->string('primary_phone', 20)->nullable();
@@ -78,6 +80,7 @@ return new class extends Migration
             $table->json('social_links')->nullable();
 
 
+            $table->text('copyright_title')->nullable();
             $table->string('website_url')->nullable();
 
             $table->boolean('maintenance_mode')->default(false);
