@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('about_sections', function (Blueprint $table) {
+        Schema::create('admin_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255)->nullable();
-            $table->string('slug', 255)->unique()->nullable();
-            
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->integer('position')->default(0);
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('about_sections');
+        Schema::dropIfExists('admin_groups');
     }
 };

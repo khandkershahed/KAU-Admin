@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Validator;
 class BlogCategoryController extends Controller
 {
     public function __construct()
-{
-    $this->middleware('permission:view blog category')->only(['index']);
-    $this->middleware('permission:create blog category')->only(['create', 'store']);
-    $this->middleware('permission:edit blog category')->only(['edit', 'update']);
-    $this->middleware('permission:delete blog category')->only(['destroy']);
-}
+    {
+        $this->middleware('permission:view blog category')->only(['index']);
+        $this->middleware('permission:create blog category')->only(['create', 'store']);
+        $this->middleware('permission:edit blog category')->only(['edit', 'update']);
+        $this->middleware('permission:delete blog category')->only(['destroy']);
+    }
 
     /**
      * Display a listing of the resource.

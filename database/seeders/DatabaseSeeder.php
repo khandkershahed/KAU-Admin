@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             NoticeCategorySeeder::class,
             NoticeSeeder::class,
             NewsSeeder::class,
+            AdminGroupSeeder::class,
+            AdminOfficeSeeder::class,
+            AdminOfficeSectionSeeder::class,
+            AdminOfficeMemberSeeder::class,
 
         ]);
         // $this->call(UserSeeder::class);

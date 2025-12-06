@@ -35,6 +35,12 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/news/{slug}', [HomeApiController::class, 'newsDetails']);
     Route::get('/marquees', [HomeApiController::class, 'marquees']);
 
+    Route::get('/administration', [HomeApiController::class, 'adminIndex']);
+
+    Route::get('/administration/office/{slug}', [HomeApiController::class, 'adminOfficeDetails']);
+
+
+
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);
 
@@ -71,7 +77,4 @@ Route::prefix('api/v1')->group(function () {
     // Wallet & FAQ
     Route::get('/wallet', [HomeApiController::class, 'wallet']);
     Route::get('/faq', [HomeApiController::class, 'frequentlyAsked']);
-
-
-
 });

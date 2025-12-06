@@ -111,6 +111,62 @@ class RolePermissionSeeder extends Seeder
                     'delete subscription',
                 ],
             ],
+            [
+                'group_name' => 'Notice Category',
+                'permissions' => [
+                    'view notice category',
+                    'create notice category',
+                    'edit notice category',
+                    'delete notice category',
+                ],
+            ],
+            [
+                'group_name' => 'Notice',
+                'permissions' => [
+                    'view notice',
+                    'create notice',
+                    'edit notice',
+                    'delete notice',
+                ],
+            ],
+
+            [
+                'group_name' => 'Administration Group',
+                'permissions' => [
+                    'view admin group',
+                    'create admin group',
+                    'edit admin group',
+                    'delete admin group',
+                ],
+            ],
+            [
+                'group_name' => 'Administration Office',
+                'permissions' => [
+                    'view admin office',
+                    'create admin office',
+                    'edit admin office',
+                    'delete admin office',
+                ],
+            ],
+            [
+                'group_name' => 'Administration Section',
+                'permissions' => [
+                    'view admin section',
+                    'create admin section',
+                    'edit admin section',
+                    'delete admin section',
+                ],
+            ],
+            [
+                'group_name' => 'Administration Member',
+                'permissions' => [
+                    'view admin member',
+                    'create admin member',
+                    'edit admin member',
+                    'delete admin member',
+                ],
+            ],
+
 
             [
                 'group_name' => 'User',

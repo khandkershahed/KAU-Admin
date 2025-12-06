@@ -7,7 +7,7 @@
     <link rel="shortcut icon"
         href="{{ !empty($setting->site_favicon) && file_exists(public_path('storage/' . $setting->site_favicon)) ? asset('storage/' . $setting->site_favicon) : asset('images/favicon.jpg') }}"
         type="image/x-icon" />
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/bootstrap_icons.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('admin/assets/css/bootstrap_icons.css') }}"> --}}
     {{-- <link rel="stylesheet" href="{{ asset('admin/assets/css/font_awesome_6.css') }}"> --}}
 
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css" />
@@ -84,6 +84,14 @@
 
     </div>
 
+    <!-- GLOBAL PAGE LOADER -->
+    <div id="globalLoader"
+        style="position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,255,255,0.65); z-index:99999;
+            display:none; align-items:center; justify-content:center;">
+        <div class="spinner-border text-primary" style="width:3rem; height:3rem;"></div>
+    </div>
+
 
 
     <script src="{{ asset('admin/assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -113,21 +121,13 @@
             new Tagify(input);
         });
     </script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
 
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Select the input element with the class 'tags'
-            var input = document.querySelector(".tags");
 
-            // Initialize Tagify
-            new Tagify(input);
-        });
-    </script> --}}
-
-    {{-- @include('toastr') --}}
 
     @stack('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
     <script>
         document.querySelectorAll('.ckeditor').forEach(element => {
             if (!element.classList.contains('ck-editor__editable_inline')) {
@@ -193,6 +193,47 @@
             document.querySelectorAll(".datatable").forEach(table => {
                 new CustomDataTable(table);
             });
+        });
+    </script>
+
+    <script>
+        // GLOBAL LOADER
+        function showLoader() {
+            $("#globalLoader").fadeIn(150);
+        }
+
+        function hideLoader() {
+            $("#globalLoader").fadeOut(150);
+        }
+
+        // SWEET ALERT CONFIRMATION
+        async function confirmDelete() {
+            return await Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then(result => result.isConfirmed);
+        }
+
+        // TOASTR DEFAULTS
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            newestOnTop: true,
+            preventDuplicates: true,
+            positionClass: "toast-top-right",
+            timeOut: 2500
+        };
+
+        // CSRF FOR AJAX
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
         });
     </script>
 

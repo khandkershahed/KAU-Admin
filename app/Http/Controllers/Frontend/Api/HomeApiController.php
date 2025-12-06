@@ -10,6 +10,8 @@ use App\Models\Contact;
 use App\Models\Setting;
 use App\Models\Category;
 use App\Models\EventType;
+use App\Models\AdminGroup;
+use App\Models\AdminOffice;
 use Illuminate\Http\Request;
 use App\Models\NoticeCategory;
 use Illuminate\Http\JsonResponse;
@@ -308,6 +310,119 @@ class HomeApiController extends Controller
         ]);
     }
 
+
+    public function adminIndex()
+    {
+        $groups = AdminGroup::with([
+            'offices' => fn($q) => $q->orderBy('position')
+        ])
+            ->orderBy('position')
+            ->get();
+
+        $data = $groups->map(function ($group) {
+
+            return [
+                'id'       => $group->id,
+                'name'     => $group->name,
+                'slug'     => $group->slug,
+                'position' => $group->position,
+
+                'offices' => $group->offices->map(function ($office) {
+
+                    return [
+                        'id'          => $office->id,
+                        'title'       => $office->title,
+                        'slug'        => $office->slug,
+                        'description' => $office->description,
+
+                        // SEO
+                        'meta_title'        => $office->meta_title,
+                        'meta_tags'         => $office->meta_tags,
+                        'meta_description'  => $office->meta_description,
+
+                        'total_sections' => $office->sections()->count(),
+                        'total_members'  => $office->members()->count(),
+                    ];
+                })
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function adminOfficeDetails($slug)
+    {
+        $office = AdminOffice::where('slug', $slug)
+            ->with([
+                'sections' => fn($q) => $q->orderBy('position'),
+                'members'  => fn($q) => $q->orderBy('position'),
+            ])
+            ->first();
+
+        if (!$office) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Office not found'
+            ], 404);
+        }
+
+
+
+        $sections = $office->sections->map(function ($section) use ($office) {
+
+            $members = $office->members
+                ->where('section_id', $section->id)
+                ->sortBy('position')
+                ->values()
+                ->map(function ($m) {
+
+                    return [
+                        'id'          => $m->id,
+                        'name'        => $m->name,
+                        'designation' => $m->designation,
+                        'email'       => $m->email,
+                        'phone'       => $m->phone,
+                        'image'       => $m->image ? asset('storage/' . $m->image) : null,
+                        'position'    => $m->position,
+                    ];
+                });
+
+            return [
+                'id'          => $section->id,
+                'title'       => $section->title,
+                'section_type' => $section->section_type,
+                'content'     => $section->content,
+                'extra'       => $section->extra,
+                'position'    => $section->position,
+                'members'     => $members,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'office' => [
+                    'id'               => $office->id,
+                    'title'            => $office->title,
+                    'slug'             => $office->slug,
+                    'description'      => $office->description,
+
+                    // SEO
+                    'meta_title'       => $office->meta_title,
+                    'meta_tags'        => $office->meta_tags,
+                    'meta_description' => $office->meta_description,
+
+                    'total_sections'   => $office->sections->count(),
+                    'total_members'    => $office->members->count(),
+                ],
+
+                'sections' => $sections
+            ]
+        ]);
+    }
 
 
     public function contactStore(Request $request)

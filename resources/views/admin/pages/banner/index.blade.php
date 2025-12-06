@@ -1,8 +1,4 @@
 <x-admin-app-layout :title="'Banner'">
-
-    {{-- Font Awesome CDN --}}
-    
-
     <div class="card card-flash">
         <div class="card-header mt-6">
             <div class="card-title"></div>

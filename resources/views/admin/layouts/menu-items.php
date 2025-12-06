@@ -32,7 +32,7 @@ return [
     ],
     [
         'title' => 'Notice Management',
-        'routes' => ['admin.notice-category.index','admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
+        'routes' => ['admin.notice-category.index', 'admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
         'subMenu' => [
 
             [
@@ -49,6 +49,37 @@ return [
             ],
         ],
     ],
+
+    [
+        'title' => 'Administration Panel',
+        'icon'  => 'fa-solid fa-sitemap fs-3',
+        'routes' => [
+            'admin.administration.index',
+            'admin.administration.office.page',
+        ],
+
+        'subMenu' => [
+
+            [
+                'title'      => 'Administration Offices',
+                'permission' => 'view admin office',
+                'routes' => [
+                    'admin.administration.index',
+                ],
+                'route' => 'admin.administration.index',
+            ],
+
+            [
+                'title'      => 'Administration Members',
+                'permission' => 'view admin member',
+                'routes' => [
+                    'admin.administration.office.page',
+                ],
+                'route' => 'admin.administration.index',
+            ],
+        ],
+    ],
+
 
 
 
