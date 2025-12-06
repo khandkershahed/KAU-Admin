@@ -1,14 +1,14 @@
 <x-admin-app-layout :title="'Staff Add'">
     <div class="card card-flash">
-        
+
         <div class="card-header mt-6">
             <div class="card-title"></div>
 
-            
+
             <div class="card-toolbar">
-                
+
                 <a href="{{ route('admin.staff.index') }}" class="btn btn-light-info">
-                    
+
                     <span class="svg-icon svg-icon-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                             fill="none">
