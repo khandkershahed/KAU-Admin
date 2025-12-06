@@ -40,6 +40,9 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/administration/office/{slug}', [HomeApiController::class, 'adminOfficeDetails']);
 
 
+    Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
+    Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);
+
 
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);

@@ -1,6 +1,6 @@
 <x-admin-app-layout :title="'Administration Module'">
 
-    <div class="card card-flush">
+    <div class="card">
 
         <!-- =======================
              CARD HEADER
@@ -74,8 +74,8 @@
                                 @endcan
 
                                 @can('delete admin group')
-                                    <a href="{{ route('admin.administration.group.delete') }}" data-id="{{ $group->id }}"
-                                        class="btn btn-light-danger btn-sm delete">
+                                    <a href="{{ route('admin.administration.group.delete', $group->id) }}"
+                                        data-id="{{ $group->id }}" class="btn btn-light-danger btn-sm delete">
                                         <i class="fa-solid fa-trash fs-6"></i>
                                     </a>
                                 @endcan
@@ -100,70 +100,72 @@
                                 @endcan
 
                                 <!-- OFFICE TABLE -->
-                                <table class="table px-2 border table-row-bordered table-hover officesTable">
-                                    <thead style="background: beige;">
-                                        <tr>
-                                            <th style="width:50px;">Sort</th>
-                                            <th>Office Title</th>
-                                            <th>Slug</th>
-                                            <th class="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-
-                                        @forelse ($group->offices as $office)
-                                            <tr class="office-row office-sort" data-id="{{ $office->id }}">
-
-                                                <td class="office-sort" style="cursor: grab;">
-                                                    <i class="fa-solid fa-up-down text-muted"></i>
-                                                </td>
-
-                                                <td style="cursor: grab;">{{ $office->title }}</td>
-                                                <td style="cursor: grab;">{{ $office->slug }}</td>
-
-                                                <td class="text-end">
-
-                                                    <!-- EDIT -->
-                                                    @can('edit admin office')
-                                                        <button class="btn btn-light-success btn-sm editOfficeBtn me-2"
-                                                            data-id="{{ $office->id }}"
-                                                            data-title="{{ $office->title }}"
-                                                            data-group="{{ $office->group_id }}"
-                                                            data-description="{{ $office->description }}"
-                                                            data-meta_title="{{ $office->meta_title }}"
-                                                            data-meta_tags="{{ $office->meta_tags }}"
-                                                            data-meta_description="{{ $office->meta_description }}">
-                                                            <i class="fa-solid fa-pen fs-6"></i>
-                                                        </button>
-                                                    @endcan
-
-                                                    <!-- DELETE (custom SweetAlert delete pattern) -->
-                                                    @can('delete admin office')
-                                                        <a href="{{ route('admin.administration.office.delete') }}"
-                                                            data-id="{{ $office->id }}"
-                                                            class="btn btn-light-danger btn-sm delete">
-                                                            <i class="fa-solid fa-trash fs-6"></i>
-                                                        </a>
-                                                    @endcan
-
-                                                    <!-- GO TO OFFICE PAGE -->
-                                                    <a href="{{ route('admin.administration.office.page', $office->slug) }}"
-                                                        class="btn btn-sm btn-secondary ms-2">
-                                                        <i class="fas fa-users me-2"></i> Staff
-                                                    </a>
-
-                                                </td>
-
-                                            </tr>
-                                        @empty
+                                <div class="table-responsive w-100">
+                                    <table class="table px-2 border table-row-bordered table-hover officesTable">
+                                        <thead style="background: beige;">
                                             <tr>
-                                                <td colspan="4" class="text-center">No data Found</td>
+                                                <th style="width:50px;">Sort</th>
+                                                <th>Office Title</th>
+                                                <th>Slug</th>
+                                                <th class="text-end">Actions</th>
                                             </tr>
-                                        @endforelse
+                                        </thead>
 
-                                    </tbody>
-                                </table>
+                                        <tbody>
+
+                                            @forelse ($group->offices as $office)
+                                                <tr class="office-row office-sort" data-id="{{ $office->id }}">
+
+                                                    <td class="office-sort" style="cursor: grab;">
+                                                        <i class="fa-solid fa-up-down text-muted"></i>
+                                                    </td>
+
+                                                    <td style="cursor: grab;">{{ $office->title }}</td>
+                                                    <td style="cursor: grab;">{{ $office->slug }}</td>
+
+                                                    <td class="text-end">
+
+                                                        <!-- EDIT -->
+                                                        @can('edit admin office')
+                                                            <button class="btn btn-light-success btn-sm editOfficeBtn me-2"
+                                                                data-id="{{ $office->id }}"
+                                                                data-title="{{ $office->title }}"
+                                                                data-group="{{ $office->group_id }}"
+                                                                data-description="{{ $office->description }}"
+                                                                data-meta_title="{{ $office->meta_title }}"
+                                                                data-meta_tags="{{ $office->meta_tags }}"
+                                                                data-meta_description="{{ $office->meta_description }}">
+                                                                <i class="fa-solid fa-pen fs-6"></i>
+                                                            </button>
+                                                        @endcan
+
+                                                        <!-- DELETE (custom SweetAlert delete pattern) -->
+                                                        @can('delete admin office')
+                                                            <a href="{{ route('admin.administration.office.delete', $office->id) }}"
+                                                                data-id="{{ $office->id }}"
+                                                                class="btn btn-light-danger btn-sm delete">
+                                                                <i class="fa-solid fa-trash fs-6"></i>
+                                                            </a>
+                                                        @endcan
+
+                                                        <!-- GO TO OFFICE PAGE -->
+                                                        <a href="{{ route('admin.administration.office.page', $office->slug) }}"
+                                                            class="btn btn-sm btn-secondary ms-2">
+                                                            <i class="fas fa-users me-2"></i> Staff
+                                                        </a>
+
+                                                    </td>
+
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No data Found</td>
+                                                </tr>
+                                            @endforelse
+
+                                        </tbody>
+                                    </table>
+                                </div>
 
                             </div>
                         </div>

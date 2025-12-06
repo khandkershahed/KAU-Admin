@@ -9,6 +9,7 @@ use App\Models\Notice;
 use App\Models\Contact;
 use App\Models\Setting;
 use App\Models\Category;
+use App\Models\Admission;
 use App\Models\EventType;
 use App\Models\AdminGroup;
 use App\Models\AdminOffice;
@@ -40,9 +41,9 @@ class HomeApiController extends Controller
                 'footer_description' => $settings->footer_description,
 
                 'branding' => [
-                    'logo_white' => $settings->site_logo_white,
-                    'logo_black' => $settings->site_logo_black,
-                    'favicon'    => $settings->site_favicon,
+                    'site_logo_white'           => $settings->site_logo_white ? URL::to('storage/' . $settings->site_logo_white)       : null,
+                    'site_logo_black'           => $settings->site_logo_black ? URL::to('storage/' . $settings->site_logo_black)       : null,
+                    'site_favicon'              => $settings->site_favicon ? URL::to('storage/' . $settings->site_favicon)          : null,
                     'theme_color' => $settings->theme_color,
                     'dark_mode'  => (bool) $settings->dark_mode,
                 ],
@@ -60,7 +61,7 @@ class HomeApiController extends Controller
                     'meta_keyword'    => $settings->meta_keyword,
                     'meta_tags'       => $settings->meta_tags,
                     'meta_description' => $settings->meta_description,
-                    'og_image'        => $settings->og_image,
+                    'og_image'        => $settings->og_image ? URL::to('storage/' . $settings->og_image) : null,
                     'og_title'        => $settings->og_title,
                     'og_description'  => $settings->og_description,
                 ],
@@ -162,19 +163,19 @@ class HomeApiController extends Controller
             'success' => true,
             'data' => [
                 'notice' => [
-                    'id' => $notice->id,
-                    'title' => $notice->title,
-                    'slug' => $notice->slug,
-                    'body' => $notice->body,
-                    'publish_date' => $notice->publish_date,
-                    'attachments' => $attachments,
-                    'attachment_type' => $notice->attachment_type,
-                    'meta_title' => $notice->meta_title,
-                    'meta_tags' => $notice->meta_tags,
+                    'id'               => $notice->id,
+                    'title'            => $notice->title,
+                    'slug'             => $notice->slug,
+                    'body'             => $notice->body,
+                    'publish_date'     => $notice->publish_date,
+                    'attachments'      => $attachments,
+                    'attachment_type'  => $notice->attachment_type,
+                    'meta_title'       => $notice->meta_title,
+                    'meta_tags'        => $notice->meta_tags,
                     'meta_description' => $notice->meta_description,
-                    'views' => $notice->views,
-                    'is_featured' => $notice->is_featured,
-                    'category' => $notice->category ? $notice->category->name : null,
+                    'views'            => $notice->views,
+                    'is_featured'      => $notice->is_featured,
+                    'category'         => $notice->category ? $notice->category->name : null,
                 ],
                 'related_notices' => $related
             ]
@@ -424,6 +425,90 @@ class HomeApiController extends Controller
         ]);
     }
 
+
+
+
+    public function admissionMenu()
+    {
+        $roots = Admission::active()
+            ->whereNull('parent_id')
+            ->with(['children' => function ($q) {
+                $q->active()->orderBy('position');
+            }])
+            ->orderBy('position')
+            ->get();
+
+        $data = $roots->map(fn($root) => $this->formatNode($root));
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
+
+    public function admissionDetails(string $slug)
+    {
+        $item = Admission::active()
+            ->where('slug', $slug)
+            ->with(['children' => function ($q) {
+                $q->active()->orderBy('position');
+            }])
+            ->first();
+
+        if (!$item) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Admission item not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatSingle($item),
+        ]);
+    }
+
+    /**
+     * Format node for menu tree (simplified).
+     */
+    protected function formatNode(Admission $node): array
+    {
+        return [
+            'id'           => $node->id,
+            'title'        => $node->title,
+            'slug'         => $node->slug,
+            'type'         => $node->type, // menu | page | external
+            'external_url' => $node->external_url,
+            'position'     => $node->position,
+            'children'     => $node->children->map(fn($child) => $this->formatNode($child))->values(),
+        ];
+    }
+
+    /**
+     * Format full page for frontend renderer.
+     */
+    protected function formatSingle(Admission $item): array
+    {
+        return [
+            'id'              => $item->id,
+            'title'           => $item->title,
+            'slug'            => $item->slug,
+            'type'            => $item->type,
+            'external_url'    => $item->external_url,
+            'banner_image'    => $item->banner_image ? asset('storage/' . $item->banner_image) : null,
+            'content'         => $item->type === 'page' ? $item->content : null,
+
+            // SEO
+            'meta_title'      => $item->meta_title,
+            'meta_tags'       => $item->meta_tags,
+            'meta_description' => $item->meta_description,
+
+            'children' => $item->children->map(fn($child) => $this->formatNode($child))->values(),
+        ];
+    }
+
+    
 
     public function contactStore(Request $request)
     {

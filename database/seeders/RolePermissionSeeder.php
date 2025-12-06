@@ -167,6 +167,16 @@ class RolePermissionSeeder extends Seeder
                 ],
             ],
 
+            [
+                'group_name' => 'Admission',
+                'permissions' => [
+                    'view admission',
+                    'create admission',
+                    'edit admission',
+                    'delete admission',
+                ],
+            ],
+
 
             [
                 'group_name' => 'User',

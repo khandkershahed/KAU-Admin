@@ -80,6 +80,28 @@ return [
         ],
     ],
 
+    [
+        'title' => 'Admission Panel',
+        'icon'  => 'fa-solid fa-user-graduate fs-3',
+        'routes' => [
+            'admin.admission.index',
+        ],
+
+        'subMenu' => [
+
+            [
+                'title'      => 'Admission Menu & Pages',
+                'permission' => 'view admission',
+                'routes' => [
+                    'admin.admission.index',
+                    'admin.admission.create',
+                    'admin.admission.edit',
+                ],
+                'route' => 'admin.admission.index',
+            ],
+
+        ],
+    ],
 
 
 

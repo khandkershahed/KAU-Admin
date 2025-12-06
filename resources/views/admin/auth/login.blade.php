@@ -36,9 +36,9 @@
 
                         <div class="text-center mb-10">
                             <h1 class="text-dark mb-3">Sign In to {{ optional($setting)->website_name ?? config('app.name') }}</h1>
-                            <div class="text-gray-400 fw-bold fs-4">New Here?
+                            {{-- <div class="text-gray-400 fw-bold fs-4">New Here?
                                 <a href="{{ route('register') }}" class="link-primary fw-bolder">Create an Account</a>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="fv-row mb-10">

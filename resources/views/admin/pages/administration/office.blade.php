@@ -1,14 +1,17 @@
 <x-admin-app-layout :title="'Office: ' . $office->title">
-
+<style>
+    .member-sort{
+        cursor: grab;
+    }
+</style>
     <div class="card shadow-sm">
-
         <!-- =========================
              CARD HEADER
         ========================== -->
         <div class="card-header d-flex align-items-center justify-content-between">
 
             <h3 class="card-title fw-bold">
-                Office: {{ $office->title }}
+               <a href="{{ route('admin.administration.index') }}" class="me-4"><i class="fa-solid fa-circle-arrow-left text-info fs-2"></i></a> Office: {{ $office->title }}
             </h3>
 
             <div class="d-flex align-items-center">
@@ -17,6 +20,7 @@
                 <div class="input-group me-3" style="width: 280px;">
                     <input type="text" id="officeSearchInput" class="form-control form-control-sm"
                         placeholder="Search sections or members..." style="height: 36px; padding-right: 35px;">
+
                     <button type="button" id="clearOfficeSearchBtn" class="btn btn-danger"
                         style="height: 36px; display:none;">
                         <i class="fas fa-x"></i>
@@ -44,30 +48,30 @@
                     <div class="accordion-item mb-3 section-item" data-section-id="{{ $section->id }}">
 
                         <!-- ======================
-                         SECTION HEADER
-                    ======================= -->
+                             SECTION HEADER
+                        ======================= -->
                         <div class="accordion-header d-flex align-items-center justify-content-between px-3 py-2"
                             style="background: aliceblue;" id="sectionHeading{{ $section->id }}">
 
-                            <!-- LEFT SIDE: Sort Handle + Title -->
+                            <!-- LEFT SIDE -->
                             <div class="d-flex align-items-center flex-grow-1 me-2 section-sort" style="cursor: grab;">
 
-                                <!-- SORT HANDLE ICON -->
                                 <span class="section-sort me-3" style="cursor: grab;">
                                     <i class="fa-solid fa-up-down text-muted"></i>
                                 </span>
 
-                                <!-- COLLAPSE TOGGLE BUTTON -->
                                 <button
                                     class="accordion-button collapsed py-2 px-2 shadow-none bg-transparent flex-grow-1"
-                                    type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#sectionCollapse{{ $section->id }}" aria-expanded="false"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sectionCollapse{{ $section->id }}"
+                                    aria-expanded="false"
                                     aria-controls="sectionCollapse{{ $section->id }}">
 
                                     <span class="fw-semibold d-flex align-items-center">
                                         {{ $section->title }}
 
-                                        <span class="badge bg-secondary ms-2">
+                                        <span class="badge badge-info ms-2">
                                             Members: {{ $section->members->count() }}
                                         </span>
                                     </span>
@@ -79,33 +83,36 @@
 
                                 @can('edit admin section')
                                     <button class="btn btn-light-success btn-sm me-2 editSectionBtn"
-                                        data-id="{{ $section->id }}" data-title="{{ $section->title }}">
+                                        data-id="{{ $section->id }}"
+                                        data-title="{{ $section->title }}">
                                         <i class="fa-solid fa-pen-to-square fs-6"></i>
                                     </button>
                                 @endcan
 
                                 @can('delete admin section')
-                                    <button class="btn btn-light-danger btn-sm deleteSectionBtn"
-                                        data-id="{{ $section->id }}">
+                                    <a href="{{ route('admin.administration.section.delete', $section->id) }}"
+                                       class="btn btn-light-danger btn-sm delete"
+                                       data-id="{{ $section->id }}">
                                         <i class="fa-solid fa-trash fs-6"></i>
-                                    </button>
+                                    </a>
                                 @endcan
 
                             </div>
                         </div>
 
                         <!-- ======================
-                         SECTION CONTENT
-                    ======================= -->
+                            SECTION BODY
+                        ======================= -->
                         <div id="sectionCollapse{{ $section->id }}" class="accordion-collapse collapse"
                             data-bs-parent="#officeSectionsAccordion">
 
                             <div class="accordion-body">
 
-                                <!-- ADD MEMBER BUTTON -->
+                                <!-- CREATE MEMBER -->
                                 @can('create admin member')
                                     <button class="btn btn-outline btn-outline-info btn-active-info float-end btn-sm mb-3 createMemberBtn"
-                                        data-section-id="{{ $section->id }}" data-bs-toggle="modal"
+                                        data-section-id="{{ $section->id }}"
+                                        data-bs-toggle="modal"
                                         data-bs-target="#createMemberModal">
                                         <i class="fas fa-plus me-2"></i> Add Member
                                     </button>
@@ -133,12 +140,13 @@
                                             @forelse ($section->members as $member)
                                                 <tr class="member-row" data-id="{{ $member->id }}">
 
-                                                    <td>
-                                                        <i
-                                                            class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
+                                                    <!-- SORT -->
+                                                    <td class=" member-sort">
+                                                        <i class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
                                                     </td>
 
-                                                    <td>
+                                                    <!-- PHOTO -->
+                                                    <td class=" member-sort">
                                                         @if ($member->image)
                                                             <img src="{{ asset('storage/' . $member->image) }}"
                                                                 class="rounded-circle" width="45" height="45">
@@ -148,17 +156,20 @@
                                                         @endif
                                                     </td>
 
-                                                    <td>{{ $member->name }}</td>
+                                                    <!-- NAME -->
+                                                    <td class="member-sort">{{ $member->name }}</td>
 
-                                                    <td>{{ $member->designation }}</td>
+                                                    <!-- DESIGNATION -->
+                                                    <td class="member-sort">{{ $member->designation }}</td>
 
-                                                    <td>{{ $member->email }}</td>
+                                                    <!-- EMAIL -->
+                                                    <td class="member-sort">{{ $member->email }}</td>
 
+                                                    <!-- PHONE -->
                                                     <td>{{ $member->phone }}</td>
 
                                                     <td>
-
-                                                        <!-- EDIT MEMBER -->
+                                                        <!-- EDIT -->
                                                         @can('edit admin member')
                                                             <button class="btn btn-light-success btn-sm me-2 editMemberBtn"
                                                                 data-id="{{ $member->id }}"
@@ -172,20 +183,20 @@
                                                             </button>
                                                         @endcan
 
-                                                        <!-- DELETE MEMBER -->
+                                                        <!-- DELETE -->
                                                         @can('delete admin member')
-                                                            <button class="btn btn-light-danger btn-sm deleteMemberBtn"
+                                                            <a href="{{ route('admin.administration.member.delete', $member->id) }}"
+                                                                class="btn btn-light-danger btn-sm delete"
                                                                 data-id="{{ $member->id }}">
                                                                 <i class="fa fa-trash"></i>
-                                                            </button>
+                                                            </a>
                                                         @endcan
-
                                                     </td>
 
                                                 </tr>
-                                                @empty
+                                            @empty
                                                 <tr>
-                                                    <td class="text-center" colspan="8">No Data Found</td>
+                                                    <td colspan="8" class="text-center">No data found</td>
                                                 </tr>
                                             @endforelse
 
@@ -207,15 +218,14 @@
 
     </div>
 
-    <!-- ========================================
-         INCLUDE ALL PAGE-2 MODALS IN ONE FILE
-    ========================================= -->
+    <!-- =====================
+         PAGE-2 MODALS
+    ====================== -->
     @include('admin.pages.administration.modals.office_modals')
 
-
-    <!-- ========================================
-         INCLUDE PAGE-2 JS SCRIPTS
-    ========================================= -->
+    <!-- =====================
+         PAGE-2 JAVASCRIPT
+    ====================== -->
     @push('scripts')
         @include('admin.pages.administration.scripts.office_js')
     @endpush

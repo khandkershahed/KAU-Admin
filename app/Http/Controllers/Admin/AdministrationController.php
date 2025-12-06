@@ -41,8 +41,8 @@ class AdministrationController extends Controller
         $groups = AdminGroup::with([
             'offices' => fn($q) => $q->orderBy('position')
         ])
-        ->orderBy('position')
-        ->get();
+            ->orderBy('position')
+            ->get();
 
         return view('admin.pages.administration.index', compact('groups'));
     }
@@ -81,7 +81,7 @@ class AdministrationController extends Controller
             Session::flash('success', 'Group created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Session::flash('error', 'Failed to create group: '.$e->getMessage());
+            Session::flash('error', 'Failed to create group: ' . $e->getMessage());
         }
 
         return redirect()->back();
@@ -119,7 +119,7 @@ class AdministrationController extends Controller
             Session::flash('success', 'Group updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Session::flash('error', 'Failed to update group: '.$e->getMessage());
+            Session::flash('error', 'Failed to update group: ' . $e->getMessage());
         }
 
         return redirect()->back();
@@ -129,38 +129,11 @@ class AdministrationController extends Controller
 
     /* =====================================================
         GROUP DELETE  (DELETE METHOD)
-    ====================================================== */
-    public function groupDelete(Request $request)
+    ====================================================== */ 
+    public function groupDelete(string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'id'    => 'required|exists:admin_groups,id'
-        ]);
-
-        if ($validator->fails()) {
-            foreach ($validator->errors()->all() as $msg)
-                Session::flash('error', $msg);
-
-            return response()->json(['error' => true], 422);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $group = AdminGroup::findOrFail($request->id);
-            $group->delete();
-
-            DB::commit();
-
-            return response()->json(['success' => true]);
-        }
-        catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed: '.$e->getMessage()
-            ], 500);
-        }
+        $group = AdminGroup::findOrFail($id);
+        $group->delete();
     }
 
 
@@ -185,14 +158,13 @@ class AdministrationController extends Controller
                 'success' => true,
                 'message' => 'Group order updated.'
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed: '.$e->getMessage()
+                'message' => 'Failed: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -210,7 +182,7 @@ class AdministrationController extends Controller
             'description'     => 'nullable|string',
             'meta_title'      => 'nullable|string|max:255',
             'meta_tags'       => 'nullable|string|max:255',
-            'meta_description'=> 'nullable|string',
+            'meta_description' => 'nullable|string',
         ], [
             'group_id.required' => 'Please select a group.',
             'title.required'    => 'Office title is required.',
@@ -233,16 +205,15 @@ class AdministrationController extends Controller
                 'description'     => $request->description,
                 'meta_title'      => $request->meta_title,
                 'meta_tags'       => $request->meta_tags,
-                'meta_description'=> $request->meta_description,
+                'meta_description' => $request->meta_description,
                 'position'        => $position,
             ]);
 
             DB::commit();
             Session::flash('success', 'Office created successfully.');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
-            Session::flash('error', 'Failed to create office: '.$e->getMessage());
+            Session::flash('error', 'Failed to create office: ' . $e->getMessage());
         }
 
         return redirect()->back();
@@ -262,7 +233,7 @@ class AdministrationController extends Controller
             'description'     => 'nullable|string',
             'meta_title'      => 'nullable|string|max:255',
             'meta_tags'       => 'nullable|string|max:255',
-            'meta_description'=> 'nullable|string',
+            'meta_description' => 'nullable|string',
         ], [
             'title.required' => 'Office title is required.'
         ]);
@@ -282,15 +253,14 @@ class AdministrationController extends Controller
                 'description'     => $request->description,
                 'meta_title'      => $request->meta_title,
                 'meta_tags'       => $request->meta_tags,
-                'meta_description'=> $request->meta_description,
+                'meta_description' => $request->meta_description,
             ]);
 
             DB::commit();
             Session::flash('success', 'Office updated successfully.');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
-            Session::flash('error', 'Failed to update office: '.$e->getMessage());
+            Session::flash('error', 'Failed to update office: ' . $e->getMessage());
         }
 
         return redirect()->back();
@@ -301,38 +271,10 @@ class AdministrationController extends Controller
     /* =====================================================
         OFFICE DELETE (DELETE METHOD)
     ====================================================== */
-    public function officeDelete(Request $request)
+    public function officeDelete(string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'id'    => 'required|exists:admin_offices,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors'  => $validator->errors()
-            ], 422);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $office = AdminOffice::findOrFail($request->id);
-            $office->delete();
-
-            DB::commit();
-
-            return response()->json(['success' => true]);
-        }
-        catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed: '.$e->getMessage()
-            ], 500);
-        }
+        $office = AdminOffice::findOrFail($id);
+        $office->delete();
     }
 
 
@@ -357,14 +299,13 @@ class AdministrationController extends Controller
                 'success' => true,
                 'message' => 'Office order updated.'
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed: '.$e->getMessage()
+                'message' => 'Failed: ' . $e->getMessage()
             ], 500);
         }
     }

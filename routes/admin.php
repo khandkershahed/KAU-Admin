@@ -6,11 +6,13 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TermsController;
+use App\Http\Controllers\Admin\EditorController;
 use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\PrivacyController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\AdmissionController;
 use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -63,6 +65,11 @@ Route::group(['middleware' => 'auth:admin', 'prefix' => 'admin', 'as' => 'admin.
 
 // All Controller
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
+
+
+
+Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
+
 
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -121,7 +128,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ============================== */
         Route::post('/group/store',  [AdministrationController::class, 'groupStore'])->name('group.store');
         Route::put('/group/update', [AdministrationController::class, 'groupUpdate'])->name('group.update');
-        Route::delete('/group/delete', [AdministrationController::class, 'groupDelete'])->name('group.delete');
+        Route::delete('/group/delete/{id}', [AdministrationController::class, 'groupDelete'])->name('group.delete');
         Route::post('/group/sort',   [AdministrationController::class, 'groupSort'])->name('group.sort');
 
 
@@ -130,7 +137,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ============================== */
         Route::post('/office/store',  [AdministrationController::class, 'officeStore'])->name('office.store');
         Route::put('/office/update', [AdministrationController::class, 'officeUpdate'])->name('office.update');
-        Route::delete('/office/delete', [AdministrationController::class, 'officeDelete'])->name('office.delete');
+        Route::delete('/office/delete/{id}', [AdministrationController::class, 'officeDelete'])->name('office.delete');
         Route::post('/office/sort',   [AdministrationController::class, 'officeSort'])->name('office.sort');
 
 
@@ -139,7 +146,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ============================== */
         Route::post('/section/store',  [OfficeStaffController::class, 'sectionStore'])->name('section.store');
         Route::put('/section/update', [OfficeStaffController::class, 'sectionUpdate'])->name('section.update');
-        Route::delete('/section/delete', [OfficeStaffController::class, 'sectionDelete'])->name('section.delete');
+        Route::delete('/section/delete/{id}', [OfficeStaffController::class, 'sectionDelete'])->name('section.delete');
         Route::post('/section/sort',   [OfficeStaffController::class, 'sectionSort'])->name('section.sort');
 
 
@@ -148,11 +155,21 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         ============================== */
         Route::post('/member/store',  [OfficeStaffController::class, 'memberStore'])->name('member.store');
         Route::put('/member/update', [OfficeStaffController::class, 'memberUpdate'])->name('member.update');
-        Route::delete('/member/delete', [OfficeStaffController::class, 'memberDelete'])->name('member.delete');
+        Route::delete('/member/delete/{id}', [OfficeStaffController::class, 'memberDelete'])->name('member.delete');
         Route::post('/member/sort',   [OfficeStaffController::class, 'memberSort'])->name('member.sort');
     });
 
 
+    Route::controller(AdmissionController::class)->prefix('admission')->name('admission.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/sort/parents', 'sortParents')->name('sort.parents');
+        Route::post('/sort/children', 'sortChildren')->name('sort.children');
+    });
 
 
 
