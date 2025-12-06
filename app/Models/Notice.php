@@ -18,10 +18,9 @@ class Notice extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'attachments'   => 'array',
+        'attachments'   => 'array',   // 👈 important
         'publish_date'  => 'date',
         'is_featured'   => 'boolean',
-        'views'         => 'integer',
     ];
 
     public function noticeCategory()

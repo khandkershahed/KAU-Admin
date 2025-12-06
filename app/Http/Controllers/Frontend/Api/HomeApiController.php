@@ -84,19 +84,26 @@ class HomeApiController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // Extract first attachment from JSON array
         $categories->each(function ($category) {
             $category->notices->each(function ($notice) {
-                $attachments = json_decode($notice->attachments, true);
+                // attachments is already array or null because of casts
+                $attachments = $notice->attachments ?? [];
+
+                if (!is_array($attachments)) {
+                    // failsafe if DB has bad data
+                    $attachments = json_decode((string) $attachments, true) ?? [];
+                }
+
                 $notice->first_attachment = $attachments[0] ?? null;
             });
         });
 
         return response()->json([
             'success' => true,
-            'data' => $categories
+            'data'    => $categories,
         ]);
     }
+
 
 
     public function allNotices()
@@ -508,7 +515,7 @@ class HomeApiController extends Controller
         ];
     }
 
-    
+
 
     public function contactStore(Request $request)
     {
