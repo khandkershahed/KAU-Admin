@@ -17,8 +17,31 @@ class Notice extends Model
      */
     protected $guarded = [];
 
+    protected $casts = [
+        'attachments'   => 'array',
+        'publish_date'  => 'date',
+        'is_featured'   => 'boolean',
+        'views'         => 'integer',
+    ];
+
     public function noticeCategory()
     {
         return $this->belongsTo(NoticeCategory::class, 'category_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    public function getFirstAttachmentAttribute()
+    {
+        $attachments = $this->attachments ?? [];
+        return count($attachments) ? $attachments[0] : null;
     }
 }

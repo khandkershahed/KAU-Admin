@@ -1,192 +1,83 @@
-<x-admin-app-layout :title="'Role'">
+<x-admin-app-layout :title="'Roles List'">
 
-    {{-- @if (Auth::guard('admin')->user()->can('all.role')) --}}
-    <div class="post d-flex flex-column-fluid" id="kt_post">
-        <div id="kt_content_container" class="container">
-            <div class="card">
-                <div class="">
-                    <div class="float-end m-4">
-                        <a href="" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#addModal">Add Role</a>
-                    </div>
+    <div class="card shadow-sm">
 
-                </div>
+        {{-- Header --}}
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h3 class="card-title fw-bold">Roles List</h3>
 
-                <div class="card-body pt-0">
-                    <table id="kt_datatable_example_5"
-                        class="table table-striped table-row-bordered gy-5 gs-7 border rounded">
+            <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
+                <i class="fa fa-plus me-2"></i> Add New Role
+            </a>
+        </div>
 
-                        <thead class="bg-dark text-light">
-                            <tr class="text-start text-gray-400 fw-bolder fs-7 gs-0">
+        {{-- Body --}}
+        <div class="card-body">
 
-                                <th>Sl</th>
-                                <th>Role Name</th>
-                                <th>Action</th>
+            <div class="table-responsive">
+                <table class="table table-row-bordered table-striped align-middle gy-4">
+
+                    <thead style="background: aliceblue;">
+                        <tr class="fw-bold text-gray-700">
+                            <th style="width: 30px">#</th>
+                            <th>Role Name</th>
+                            <th style="width: 160px">Users</th>
+                            <th>Permissions</th>
+                            <th style="width: 120px">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach ($roles as $key => $role)
+                            <tr>
+
+                                {{-- Index --}}
+                                <td>{{ $key + 1 }}</td>
+
+                                {{-- Role Name --}}
+                                <td class="fw-semibold fs-6">{{ $role->name }}</td>
+
+                                {{-- User Count --}}
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ count($role->users) }}
+                                    </span>
+                                </td>
+
+                                {{-- Permissions List --}}
+                                <td>
+                                    @if ($role->permissions->count())
+                                        <div class="d-flex flex-wrap">
+
+                                            @foreach ($role->permissions as $permission)
+                                                <span class="badge badge-light-primary text-primary fw-semibold me-2 mb-2">
+                                                    {{ $permission->name }}
+                                                </span>
+                                            @endforeach
+
+                                        </div>
+                                    @else
+                                        <span class="text-muted">No permissions</span>
+                                    @endif
+                                </td>
+
+                                {{-- Edit --}}
+                                <td>
+                                    <a href="{{ route('admin.roles.edit', $role->id) }}"
+                                        class="btn btn-light btn-sm btn-active-light-primary">
+                                        <i class="fa fa-edit"></i> Edit
+                                    </a>
+                                </td>
 
                             </tr>
-                        </thead>
+                        @endforeach
+                    </tbody>
 
-                        <tbody class="fw-bold text-gray-600">
-
-                            @foreach ($roles as $key => $role)
-                                <tr>
-
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $role->name }}</td>
-
-                                    <td>
-
-                                        <a href="" title="Edit" data-bs-toggle="modal"
-                                            data-bs-target="#editModal{{ $role->id }}"><i
-                                                class="bi bi-pencil-square fs-3 text-primary"></i></a>
-
-                                        {{-- Edit Modal --}}
-
-                                        <div class="modal fade" id="editModal{{ $role->id }}" tabindex="-1"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit
-                                                            Role
-                                                        </h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-
-                                                    <form action="{{ route('admin.roles.update', $role->id) }}" method="POST"
-                                                        id="myForm">
-
-                                                        @csrf
-
-                                                        <input type="hidden" name="id"
-                                                            value="{{ $role->id }}">
-
-                                                        <div class="modal-body">
-
-                                                            <div class="form-group">
-                                                                <label for="">Role Name</label>
-                                                                <input type="text" name="name"
-                                                                    value="{{ $role->name }}" autocomplete="off"
-                                                                    placeholder="Role Name" required
-                                                                    class="form-control">
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-primary btn-sm">Update
-                                                                Role</button>
-                                                        </div>
-
-                                                    </form>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <a href="{{ route('admin.roles.destroy', $role->id) }}" title="Delete" id="delete"><i
-                                                class="fa fa-trash fs-4 text-danger"></i></a>
-                                    </td>
-
-                                </tr>
-                            @endforeach
-
-
-                        </tbody>
-
-                    </table>
-                </div>
-
+                </table>
             </div>
+
         </div>
+
     </div>
-    {{-- @endif --}}
-
-
-    {{-- Add Role --}}
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Role</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <form action="{{ route('admin.roles.store') }}" method="POST" id="myForm">
-
-                    @csrf
-
-                    <div class="modal-body">
-
-                        <div class="form-group">
-                            <label for="">Role Name</label>
-                            <input type="text" name="name" autocomplete="off" placeholder="Role Name" required
-                                class="form-control">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </div>
-    {{-- Add Role --}}
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-
-    {{-- validate code  --}}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#myForm').validate({
-                rules: {
-                    name: {
-                        required: true,
-                    },
-                },
-                messages: {
-                    name: {
-                        required: 'Enter Role Name',
-                    },
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                },
-            });
-        });
-    </script>
-
-    @push('scripts')
-        <script>
-            $("#kt_datatable_example_5").DataTable({
-                "language": {
-                    "lengthMenu": "Show _MENU_",
-                },
-                "dom": "<'row'" +
-                    "<'col-sm-6 d-flex align-items-center justify-conten-start'l>" +
-                    "<'col-sm-6 d-flex align-items-center justify-content-end'f>" +
-                    ">" +
-
-                    "<'table-responsive'tr>" +
-
-                    "<'row'" +
-                    "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
-                    "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
-                    ">"
-            });
-        </script>
-    @endpush
 
 </x-admin-app-layout>

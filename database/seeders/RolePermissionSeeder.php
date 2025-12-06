@@ -129,9 +129,18 @@ class RolePermissionSeeder extends Seeder
                     'delete notice',
                 ],
             ],
+            [
+                'group_name' => 'News',
+                'permissions' => [
+                    'view news',
+                    'create news',
+                    'edit news',
+                    'delete news',
+                ],
+            ],
 
             [
-                'group_name' => 'Administration Group',
+                'group_name' => 'Administration Menu',
                 'permissions' => [
                     'view admin group',
                     'create admin group',

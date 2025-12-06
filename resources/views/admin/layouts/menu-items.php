@@ -32,20 +32,39 @@ return [
     ],
     [
         'title' => 'Notice Management',
+        'icon'  => 'fa-solid fa-bullhorn fs-3',
         'routes' => ['admin.notice-category.index', 'admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
         'subMenu' => [
-
             [
-                'title' => 'Notice Category',
-                'permission' => 'view notice category',
-                'routes' => ['admin.notice-category.index'],
-                'route' => 'admin.notice-category.index',
+                'title'      => 'Manage Notices',
+                'permission' => 'view notice',
+                'routes'     => [
+                    'admin.notice.index',
+                    'admin.notice.create',
+                    'admin.notice.edit',
+                ],
+                'route'      => 'admin.notice.index',
             ],
             [
-                'title' => 'Notice',
-                'permission' => 'view notice',
-                'routes' => ['admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
-                'route' => 'admin.notice.index',
+                'title'      => 'Notice Categories',
+                'permission' => 'view notice category',
+                'routes'     => [
+                    'admin.notice.index', // same page
+                ],
+                'route'      => 'admin.notice.index',
+            ],
+        ],
+    ],
+    [
+        'title' => 'News Management',
+        'icon'  => 'fa-solid fa-newspaper fs-3',
+        'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
+        'subMenu' => [
+            [
+                'title' => 'All News',
+                'permission' => 'view news',
+                'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
+                'route' => 'admin.news.index',
             ],
         ],
     ],

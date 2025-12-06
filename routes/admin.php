@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
@@ -113,6 +114,15 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
         Route::delete('/{id}', 'destroy')->name('destroy');
     });
 
+    Route::controller(NewsController::class)->prefix('news')->name('news.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+    });
+
 
     Route::prefix('administration')->name('administration.')->group(function () {
 
@@ -190,63 +200,6 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
 
 
 
-
-
-    // GROUPS
-    Route::controller(AdminGroupController::class)->prefix('admin-groups')->name('admin-groups.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/', 'store')->name('store');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
-        // Drag & Drop Sort
-        Route::post('/sort/update', 'updateSort')->name('updateSort');
-    });
-
-    // OFFICES
-    Route::resource('admin-offices', AdminOfficeController::class);
-    Route::get('admin-offices/{id}/member', [AdminOfficeController::class, 'builder'])
-        ->name('admin-offices.builder');
-
-    Route::post('admin-offices/sort', [AdminOfficeController::class, 'sort'])
-        ->name('admin-offices.sort');
-    Route::get('admin-group/{groupId}/offices', [AdminOfficeController::class, 'getOffices'])
-        ->name('admin-group.offices.ajax');
-
-
-    // SECTIONS (Inside Office)
-    Route::post('admin-sections/store', [AdminOfficeSectionController::class, 'store'])
-        ->name('admin-sections.store');
-
-    Route::put('admin-sections/{id}', [AdminOfficeSectionController::class, 'update'])
-        ->name('admin-sections.update');
-
-    Route::delete('admin-sections/{id}', [AdminOfficeSectionController::class, 'destroy'])
-        ->name('admin-sections.destroy');
-
-    Route::post('admin-sections/sort', [AdminOfficeSectionController::class, 'sort'])
-        ->name('admin-sections.sort');
-
-    // AJAX: get sections for builder
-    Route::get('admin-offices/{officeId}/sections', [AdminOfficeSectionController::class, 'getSectionsForBuilder'])
-        ->name('admin-offices.sections.ajax');
-
-
-    // MEMBERS (Inside Section)
-    Route::post('admin-members/store', [AdminOfficeMemberController::class, 'store'])
-        ->name('admin-members.store');
-
-    Route::put('admin-members/{id}', [AdminOfficeMemberController::class, 'update'])
-        ->name('admin-members.update');
-
-    Route::delete('admin-members/{id}', [AdminOfficeMemberController::class, 'destroy'])
-        ->name('admin-members.destroy');
-
-    Route::post('admin-members/sort', [AdminOfficeMemberController::class, 'sort'])
-        ->name('admin-members.sort');
-
-    // AJAX: get members for builder
-    Route::get('admin-offices/{officeId}/members', [AdminOfficeMemberController::class, 'getMembersForBuilder'])
-        ->name('admin-offices.members.ajax');
 
 
 

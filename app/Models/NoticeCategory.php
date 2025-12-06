@@ -21,4 +21,9 @@ class NoticeCategory extends Model
     {
         return $this->hasMany(Notice::class, 'category_id');
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 }

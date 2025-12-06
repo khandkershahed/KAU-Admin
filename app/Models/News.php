@@ -12,7 +12,7 @@ class News extends Model
     protected $table = 'news';
     protected $slugSourceColumn = 'name';
 
-    
+
     protected $fillable = [
         'title',
         'slug',
@@ -30,7 +30,8 @@ class News extends Model
     ];
 
     protected $casts = [
-        'tags' => 'array',
+        'tags'         => 'array',
+        'is_featured'  => 'boolean',
         'published_at' => 'date',
     ];
 }
