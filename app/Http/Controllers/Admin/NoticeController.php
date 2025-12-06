@@ -39,7 +39,7 @@ class NoticeController extends Controller
         $categories = $categoryQuery->paginate(10, ['*'], 'category_page');
 
         // NOTICE LIST (RIGHT TABLE)
-        $noticeQuery = Notice::with('category')
+        $noticeQuery = Notice::with('noticeCategory')
             ->orderByDesc('publish_date')
             ->orderByDesc('id');
 
@@ -47,7 +47,7 @@ class NoticeController extends Controller
             $search = $request->get('notice_search');
             $noticeQuery->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($q2) use ($search) {
+                    ->orWhereHas('noticeCategory', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
             });
