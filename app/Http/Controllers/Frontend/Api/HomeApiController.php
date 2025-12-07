@@ -116,8 +116,11 @@ class HomeApiController extends Controller
 
         // Extract first attachment + category name
         $notices->each(function ($notice) {
-            $attachments = json_decode($notice->attachments, true);
-            $notice->first_attachment = $attachments[0] ?? null;
+            $attachments = $notice->attachments ?? [];
+                if (!is_array($attachments)) {
+                    $attachments = json_decode((string) $attachments, true) ?? [];
+                }
+                $notice->first_attachment = $attachments[0] ?? null;
 
             // Add category_name directly into response
             $notice->category_name = $notice->category->name ?? null;

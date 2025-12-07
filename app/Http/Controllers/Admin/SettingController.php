@@ -7,176 +7,199 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class SettingController extends Controller
 {
     public function __construct()
-{
-    $this->middleware('permission:view setting')->only(['index']);
-    $this->middleware('permission:update setting')->only(['updateOrCreate']);
-}
+    {
+        $this->middleware('permission:view setting')->only(['index']);
+        $this->middleware('permission:update setting')->only(['updateOrcreateSetting']);
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('admin.pages.setting.index', ['setting' => Setting::first()]);
+        return view('admin.pages.setting.index', [
+            'setting' => Setting::first(),
+        ]);
     }
 
+    /**
+     * Update or create setting.
+     */
     public function updateOrcreateSetting(Request $request)
     {
         try {
-            // Get existing setting or new instance
-            $webSetting = Setting::firstOrNew([]);
+            $setting = Setting::firstOrFail();
 
-            // Files to handle
-            $files = [
-                'site_favicon'    => $request->file('site_favicon'),
-                'site_logo_white' => $request->file('site_logo_white'),
-                'site_logo_black' => $request->file('site_logo_black'),
-                'login_background_image' => $request->file('login_background_image'),
-                'og_image' => $request->file('og_image'),
-            ];
-            $uploadedFiles = [];
+            // Validation
+            $data = $request->validate([
+                // BRANDING
+                'website_name'           => 'nullable|string|max:250',
+                'site_title'             => 'nullable|string|max:250',
+                'site_motto'             => 'nullable|string',
+                'footer_description'     => 'nullable|string',
 
-            foreach ($files as $key => $file) {
-                if (!empty($file)) {
-                    $filePath = 'webSetting/' . $key;
-                    $oldFile = $webSetting->$key ?? null;
+                'site_logo_white'        => 'nullable|string',
+                'site_logo_black'        => 'nullable|string',
+                'site_favicon'           => 'nullable|string',
+                'login_background_image' => 'nullable|string',
 
-                    if ($oldFile) {
-                        Storage::disk('public')->delete($oldFile);
-                    }
-                    $uploadedFiles[$key] = customUpload($file, $filePath);
+                'theme_color'            => 'nullable|string|max:50',
+                'dark_mode'              => 'nullable|boolean',
 
-                    if ($uploadedFiles[$key]['status'] === 0) {
-                        return redirect()->back()->with('error', $uploadedFiles[$key]['error_message']);
-                    }
-                } else {
-                    $uploadedFiles[$key] = ['status' => 0];
+                // Custom assets
+                'custom_css'             => 'nullable|string',
+                'custom_js'              => 'nullable|string',
+
+                // CONTACT INFORMATION
+                'primary_email'          => 'nullable|email',
+                'support_email'          => 'nullable|email',
+                'info_email'             => 'nullable|email',
+                'sales_email'            => 'nullable|email',
+
+                'primary_phone'          => 'nullable|string|max:20',
+                'alternative_phone'      => 'nullable|string|max:20',
+                'whatsapp_number'        => 'nullable|string|max:20',
+
+                // JSON fields
+                'additional_emails'      => 'nullable|array',
+                'addresses'              => 'nullable|array',
+                'social_links'           => 'nullable|array',
+                'business_hours'         => 'nullable|array',
+                'custom_settings'        => 'nullable|array',
+
+                // COMPANY / ORDER
+                'company_name'           => 'nullable|string',
+                'minimum_order_amount'   => 'nullable|integer',
+
+                // LANGUAGE, CURRENCY, TIMEZONE
+                'default_language'       => 'nullable|string|max:20',
+                'default_currency'       => 'nullable|string|max:20',
+                'system_timezone'        => 'nullable|string|max:100',
+                'enable_multilanguage'   => 'nullable|boolean',
+
+                // SEO & META
+                'site_url'               => 'nullable|url',
+                'meta_title'             => 'nullable|string',
+                'meta_keyword'           => 'nullable|string',
+                'meta_tags'              => 'nullable|string',
+                'meta_description'       => 'nullable|string',
+
+                // Open Graph
+                'og_image'               => 'nullable|string',
+                'og_title'               => 'nullable|string',
+                'og_description'         => 'nullable|string',
+                'canonical_url'          => 'nullable|string',
+
+                // SEO Verification
+                'google_site_verification' => 'nullable|string',
+                'bing_site_verification'   => 'nullable|string',
+
+                // Analytics
+                'google_analytics'       => 'nullable|string',
+                'google_adsense'         => 'nullable|string',
+                'facebook_pixel_id'      => 'nullable|string',
+
+                // COPYRIGHT
+                'copyright_title'        => 'nullable|string',
+                'website_url'            => 'nullable|url',
+
+                // LEGAL & COOKIE
+                'privacy_policy_url'     => 'nullable|string',
+                'terms_conditions_url'   => 'nullable|string',
+                'cookie_consent_text'    => 'nullable|string',
+
+                // CAPTCHA
+                'captcha_site_key'       => 'nullable|string',
+                'captcha_secret_key'     => 'nullable|string',
+
+                // MAIL / SMTP
+                'mail_driver'            => 'nullable|string',
+                'mail_host'              => 'nullable|string',
+                'mail_port'              => 'nullable|string',
+                'mail_username'          => 'nullable|string',
+                'mail_password'          => 'nullable|string',
+                'mail_encryption'        => 'nullable|string',
+                'mail_from_address'      => 'nullable|email',
+                'mail_from_name'         => 'nullable|string',
+
+                // BOOLEAN TOGGLES (optional, they will be handled as checkbox too)
+                'maintenance_mode'          => 'nullable|boolean',
+                'enable_user_registration'  => 'nullable|boolean',
+                'enable_email_verification' => 'nullable|boolean',
+                'enable_api_access'         => 'nullable|boolean',
+                'is_demo'                   => 'nullable|boolean',
+                'captcha_enabled'           => 'nullable|boolean',
+                'cookie_consent_enabled'    => 'nullable|boolean',
+                'smtp_active'               => 'nullable|boolean',
+                'smtp_debug_mode'           => 'nullable|boolean',
+            ]);
+
+            // Fill simple fields directly from validated data
+            $setting->fill($data);
+
+            // Handle booleans (checkboxes)
+            $setting->maintenance_mode          = $request->boolean('maintenance_mode');
+            $setting->enable_user_registration  = $request->boolean('enable_user_registration');
+            $setting->enable_email_verification = $request->boolean('enable_email_verification');
+            $setting->enable_api_access         = $request->boolean('enable_api_access');
+            $setting->is_demo                   = $request->boolean('is_demo');
+            $setting->captcha_enabled           = $request->boolean('captcha_enabled');
+            $setting->cookie_consent_enabled    = $request->boolean('cookie_consent_enabled');
+            $setting->smtp_active               = $request->boolean('smtp_active');
+            $setting->smtp_debug_mode           = $request->boolean('smtp_debug_mode');
+            $setting->enable_multilanguage      = $request->boolean('enable_multilanguage');
+            $setting->dark_mode                 = $request->boolean('dark_mode');
+
+            // JSON fields (encode to match migration + seeder style)
+            $setting->additional_emails = $request->filled('additional_emails')
+                ? json_encode($request->input('additional_emails'))
+                : null;
+
+            $setting->addresses = $request->filled('addresses')
+                ? json_encode($request->input('addresses'))
+                : null;
+
+            $setting->social_links = $request->filled('social_links')
+                ? json_encode($request->input('social_links'))
+                : null;
+
+            $setting->business_hours = $request->filled('business_hours')
+                ? json_encode($request->input('business_hours'))
+                : null;
+
+            $setting->custom_settings = $request->filled('custom_settings')
+                ? json_encode($request->input('custom_settings'))
+                : null;
+
+            // Auditing
+            if (Auth::check()) {
+                $setting->updated_by = Auth::id();
+                if (! $setting->created_by) {
+                    $setting->created_by = Auth::id();
                 }
             }
 
-            // Build data array for updateOrCreate
-            $data = [
-                // Branding
-                'website_name'           => $request->website_name,
-                'site_title'             => $request->site_title,
-                'site_motto'             => $request->site_motto,
-                'site_logo_white'        => $uploadedFiles['site_logo_white']['status'] == 1 ? $uploadedFiles['site_logo_white']['file_path'] : $webSetting->site_logo_white,
-                'site_logo_black'        => $uploadedFiles['site_logo_black']['status'] == 1 ? $uploadedFiles['site_logo_black']['file_path'] : $webSetting->site_logo_black,
-                'site_favicon'           => $uploadedFiles['site_favicon']['status'] == 1 ? $uploadedFiles['site_favicon']['file_path'] : $webSetting->site_favicon,
-                'login_background_image' => $uploadedFiles['login_background_image']['status'] == 1 ? $uploadedFiles['login_background_image']['file_path'] : $webSetting->login_background_image,
+            $setting->save();
 
-                // Contact Information
-                'primary_email'          => $request->primary_email,
-                'support_email'          => $request->support_email,
-                'info_email'             => $request->info_email,
-                'news_email'             => $request->news_email,
-                'primary_phone'          => $request->primary_phone,
-                'fax'                    => $request->fax,
-                'alternative_phone'      => $request->alternative_phone,
-                'whatsapp_number'        => $request->whatsapp_number,
+            Session::flash('success', 'Settings updated successfully.');
+            return redirect()->back();
 
-                // Address
-                'address_one'            => $request->address_one,
-                'address_two'            => $request->address_two,
-
-                // Timezone & Language
-                'default_language'       => $request->default_language,
-                'default_currency'       => $request->default_currency,
-                'system_timezone'        => $request->system_timezone,
-
-                // SEO & Analytics
-                'site_url'               => $request->site_url,
-                'meta_title'             => $request->meta_title,
-                'meta_keyword'           => $request->meta_keyword,
-                'meta_tags'              => $request->meta_tags,
-                'meta_description'       => $request->meta_description,
-                'google_analytics'       => $request->google_analytics,
-                'google_adsense'         => $request->google_adsense,
-                'facebook_pixel_id'      => $request->facebook_pixel_id,
-                'og_image'               => $uploadedFiles['og_image']['status'] == 1 ? $uploadedFiles['og_image']['file_path'] : $webSetting->og_image,
-                'og_title'               => $request->og_title,
-                'og_description'         => $request->og_description,
-                'canonical_url'          => $request->canonical_url,
-
-                // Copyright
-                'copyright_title'        => $request->copyright_title,
-                'copyright_url'          => $request->copyright_url,
-
-                // Social Media URLs
-                'facebook_url'           => $request->facebook_url,
-                'instagram_url'          => $request->instagram_url,
-                'linkedin_url'           => $request->linkedin_url,
-                'whatsapp_url'           => $request->whatsapp_url,
-                'twitter_url'            => $request->twitter_url,
-                'youtube_url'            => $request->youtube_url,
-                'pinterest_url'          => $request->pinterest_url,
-                'reddit_url'             => $request->reddit_url,
-                'tumblr_url'             => $request->tumblr_url,
-                'tiktok_url'             => $request->tiktok_url,
-                'website_url'            => $request->website_url,
-
-                // Feature Toggles
-                'maintenance_mode'       => $request->has('maintenance_mode') ? (bool)$request->maintenance_mode : false,
-                'enable_user_registration' => $request->has('enable_user_registration') ? (bool)$request->enable_user_registration : true,
-                'enable_email_verification' => $request->has('enable_email_verification') ? (bool)$request->enable_email_verification : false,
-                'enable_api_access'       => $request->has('enable_api_access') ? (bool)$request->enable_api_access : false,
-                'enable_multilanguage'    => $request->has('enable_multilanguage') ? (bool)$request->enable_multilanguage : false,
-                'is_demo'                 => $request->has('is_demo') ? (bool)$request->is_demo : false,
-
-                // Business Settings
-                'company_name'           => $request->company_name,
-                'minimum_order_amount'   => $request->minimum_order_amount,
-
-                // Business Hours JSON (optional)
-                'business_hours'         => $request->business_hours ? json_encode($request->business_hours) : $webSetting->business_hours,
-
-                // Email Settings
-                'mail_driver'            => $request->mail_driver,
-                'mail_host'              => $request->mail_host,
-                'mail_port'              => $request->mail_port,
-                'mail_username'          => $request->mail_username,
-                'mail_password'          => $request->mail_password,
-                'mail_encryption'        => $request->mail_encryption,
-                'mail_from_address'      => $request->mail_from_address,
-                'mail_from_name'         => $request->mail_from_name,
-
-                // Security & Compliance
-                'captcha_enabled'        => $request->has('captcha_enabled') ? (bool)$request->captcha_enabled : false,
-                'captcha_site_key'       => $request->captcha_site_key,
-                'captcha_secret_key'    => $request->captcha_secret_key,
-                'cookie_consent_enabled' => $request->has('cookie_consent_enabled') ? (bool)$request->cookie_consent_enabled : false,
-                'cookie_consent_text'    => $request->cookie_consent_text,
-                'privacy_policy_url'     => $request->privacy_policy_url,
-                'terms_conditions_url'   => $request->terms_conditions_url,
-
-                // Advanced Settings
-                'theme_color'            => $request->theme_color,
-                'dark_mode'              => $request->has('dark_mode') ? (bool)$request->dark_mode : false,
-                'custom_css'             => $request->custom_css,
-                'custom_js'              => $request->custom_js,
-
-                // Extensible JSON field
-                'custom_settings'        => $request->custom_settings ? json_encode($request->custom_settings) : $webSetting->custom_settings,
-
-                // Auditing
-                'created_by'             => $webSetting->created_by ?? Auth::guard('admin')->user()->id,
-                'updated_by'             => Auth::guard('admin')->user()->id,
-            ];
-
-            // Update or create the setting
-            $setting = Setting::updateOrCreate([], $data);
-
-            $message = $setting->wasRecentlyCreated ? 'Setting created successfully' : 'Setting updated successfully';
-
-            return redirect()->back()->with('success', $message);
+        } catch (ValidationException $e) {
+            Session::flash('error', 'Please correct the errors in the form.');
+            return redirect()
+                ->back()
+                ->withErrors($e->validator)
+                ->withInput();
         } catch (\Exception $e) {
             Session::flash('error', $e->getMessage());
-            return redirect()->back()->withInput();
+            return redirect()
+                ->back()
+                ->withInput();
         }
     }
 }
