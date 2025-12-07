@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 trait HasSlug
 {
@@ -11,7 +11,7 @@ trait HasSlug
     {
         static::creating(function ($model) {
             if (!isset($model->slugSourceColumn)) {
-                throw new \InvalidArgumentException('Slug source column is not defined in the model.');
+                throw new \InvalidArgumentException("Slug source column is not defined.");
             }
 
             $model->slug = $model->generateUniqueSlug($model->{$model->slugSourceColumn});
@@ -19,7 +19,7 @@ trait HasSlug
 
         static::updating(function ($model) {
             if (!isset($model->slugSourceColumn)) {
-                throw new \InvalidArgumentException('Slug source column is not defined in the model.');
+                throw new \InvalidArgumentException("Slug source column is not defined.");
             }
 
             $model->slug = $model->generateUniqueSlug($model->{$model->slugSourceColumn});
@@ -27,16 +27,17 @@ trait HasSlug
     }
 
     /**
-     * Generate unique slug (unicode-safe)
+     * Generate a unique slug with SEO length (max 60 chars).
      */
     private function generateUniqueSlug(string $value): string
     {
-        $baseSlug = $this->makeUnicodeSlug($value);
+        $baseSlug = $this->makeUnicodeSeoSlug($value);
         $slug     = $baseSlug;
         $counter  = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $suffix = '-' . $counter;
+            $slug   = mb_substr($baseSlug, 0, 60 - mb_strlen($suffix, 'UTF-8'), 'UTF-8') . $suffix;
             $counter++;
         }
 
@@ -44,34 +45,46 @@ trait HasSlug
     }
 
     /**
-     * Create a Unicode-safe slug and limit its length.
+     * Create Unicode slug and limit to max 60 chars for SEO.
+     * Works for both Bangla & English.
      */
-    private function makeUnicodeSlug(string $value): string
+    private function makeUnicodeSeoSlug(string $value): string
     {
-        // If ASCII only, use Laravel default
+        $value = trim($value);
+
+        // If it's pure ASCII, use Laravel's normal slug
         if (preg_match('/^[\x20-\x7E]+$/', $value)) {
-            return Str::slug($value);
+            return Str::slug($value, '-', 'en');
         }
 
-        // Unicode slug (Bangla)
-        $slug = preg_replace('/[^\p{L}\p{N}]+/u', '-', $value);
+        // --- Unicode slug (Bangla etc.) ---
+
+        // 1) Replace whitespace + separators + punctuation with '-'
+        $slug = preg_replace('/[\s\p{Z}\p{P}]+/u', '-', $value);
+
+        // 2) Remove anything that's NOT:
+        //    Letter (\p{L}), Number (\p{N}), Mark (\p{M}), or '-'
+        $slug = preg_replace('/[^\p{L}\p{N}\p{M}\-]+/u', '', $slug);
+
+        // 3) Normalize multiple dashes and trim
+        $slug = preg_replace('/-+/u', '-', $slug);
         $slug = trim($slug, '-');
+
+        // 4) Lowercase (works with Bangla too)
         $slug = mb_strtolower($slug, 'UTF-8');
 
-        // 💡 Limit final slug length (safe & SEO-friendly)
-        $maxLength = 58; // Change this if needed
-
+        // 5) Limit to max 60 characters
+        $maxLength = 60;
         if (mb_strlen($slug, 'UTF-8') > $maxLength) {
-            // Prefer trimming at word boundary
-            $trimmed = mb_substr($slug, 0, $maxLength, 'UTF-8');
+            $short = mb_substr($slug, 0, $maxLength, 'UTF-8');
 
-            // If cutting in the middle of a word, cut back to previous "-"
-            $lastDash = mb_strrpos($trimmed, '-', 0, 'UTF-8');
+            // Try to cut at last dash to avoid breaking a word
+            $lastDash = mb_strrpos($short, '-', 0, 'UTF-8');
             if ($lastDash !== false) {
-                $trimmed = mb_substr($trimmed, 0, $lastDash, 'UTF-8');
+                $short = mb_substr($short, 0, $lastDash, 'UTF-8');
             }
 
-            $slug = rtrim($trimmed, '-');
+            $slug = rtrim($short, '-');
         }
 
         return $slug;
