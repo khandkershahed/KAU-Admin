@@ -10,7 +10,7 @@ class News extends Model
 {
     use HasFactory, HasSlug;
     protected $table = 'news';
-    protected $slugSourceColumn = 'name';
+    protected $slugSourceColumn = 'title';
 
 
     protected $fillable = [

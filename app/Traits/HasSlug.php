@@ -6,13 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Summary.
- *
- * In summary, this code is part of a functionality that automatically generates and sets a unique slug for a model based on a specified source column (slugSourceColumn).
- * It ensures that this happens both when a new model instance is created and when an existing instance is updated,
- * and it enforces that the source column for the slug must be explicitly specified in the model.
- */
+
 trait HasSlug
 {
     protected static function bootHasSlug()

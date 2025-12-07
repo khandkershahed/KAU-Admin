@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Notice extends Model
 {
     use HasFactory, HasSlug;
-    protected $slugSourceColumn = 'name';
+    protected $slugSourceColumn = 'title';
     /**
      * The attributes that aren't mass assignable.
      *
