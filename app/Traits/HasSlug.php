@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 trait HasSlug
 {
@@ -28,47 +27,52 @@ trait HasSlug
     }
 
     /**
-     * Generate a unique slug for the given value.
-     * Supports both ASCII (English) and Unicode (e.g. Bangla).
+     * Generate unique slug (unicode-safe)
      */
-    private function generateUniqueSlug($value)
+    private function generateUniqueSlug(string $value): string
     {
-        $baseSlug = $this->makeSlug($value);
+        $baseSlug = $this->makeUnicodeSlug($value);
         $slug     = $baseSlug;
         $counter  = 1;
 
         while ($this->slugExists($slug)) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
-            Log::info("Trying slug: $slug");
         }
 
         return $slug;
     }
 
     /**
-     * Build the base slug string.
-     *
-     * - If string is pure ASCII → use Str::slug (old behavior)
-     * - If string contains non-ASCII (e.g. Bangla) → keep Unicode characters
-     *   and only replace non letters/numbers with "-".
+     * Create a Unicode-safe slug and limit its length.
      */
-    private function makeSlug(string $value): string
+    private function makeUnicodeSlug(string $value): string
     {
-        $value = trim($value);
-
-        // If it is pure ASCII, use the default Laravel slug (for English etc.)
+        // If ASCII only, use Laravel default
         if (preg_match('/^[\x20-\x7E]+$/', $value)) {
             return Str::slug($value);
         }
 
-        // Unicode slug (for Bangla, etc.)
-        // Keep all letters & numbers, replace everything else with "-"
+        // Unicode slug (Bangla)
         $slug = preg_replace('/[^\p{L}\p{N}]+/u', '-', $value);
         $slug = trim($slug, '-');
-
-        // Optional: lowercase – comment this out if you want original case
         $slug = mb_strtolower($slug, 'UTF-8');
+
+        // 💡 Limit final slug length (safe & SEO-friendly)
+        $maxLength = 58; // Change this if needed
+
+        if (mb_strlen($slug, 'UTF-8') > $maxLength) {
+            // Prefer trimming at word boundary
+            $trimmed = mb_substr($slug, 0, $maxLength, 'UTF-8');
+
+            // If cutting in the middle of a word, cut back to previous "-"
+            $lastDash = mb_strrpos($trimmed, '-', 0, 'UTF-8');
+            if ($lastDash !== false) {
+                $trimmed = mb_substr($trimmed, 0, $lastDash, 'UTF-8');
+            }
+
+            $slug = rtrim($trimmed, '-');
+        }
 
         return $slug;
     }
