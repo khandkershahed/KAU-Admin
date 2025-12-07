@@ -14,59 +14,56 @@ return [
     ],
 
     [
-        'title' => 'Banner',
-        'icon' => 'fa-solid fa-layer-group fs-3',
+        'title' => 'Home Page',
+        'icon' => 'fa-solid fa-house fs-3',
         'routes' => [
-            'admin.banner.index',
-            'admin.banner.create',
-            'admin.banner.edit',
+            'admin.homepage.builder.edit',
         ],
-        'subMenu' => [
-            [
-                'title' => 'Banner',
-                'permission' => 'view banner',
-                'routes' => ['admin.banner.index', 'admin.banner.create', 'admin.banner.edit'],
-                'route' => 'admin.banner.index',
-            ],
-        ],
+        'route' => 'admin.homepage.builder.edit'
+
     ],
+    [
+        'title' => 'About Pages',
+        'icon'  => 'fa-solid fa-circle-info fs-3',
+        'routes' => [
+            'admin.about.index',
+            'admin.about.create',
+            'admin.about.edit',
+        ],
+        'route' => 'admin.about.index',
+    ],
+
     [
         'title' => 'Notice Management',
         'icon'  => 'fa-solid fa-bullhorn fs-3',
         'routes' => ['admin.notice-category.index', 'admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
-        'subMenu' => [
-            [
-                'title'      => 'Manage Notices',
-                'permission' => 'view notice',
-                'routes'     => [
-                    'admin.notice.index',
-                    'admin.notice.create',
-                    'admin.notice.edit',
-                ],
-                'route'      => 'admin.notice.index',
-            ],
-            [
-                'title'      => 'Notice Categories',
-                'permission' => 'view notice category',
-                'routes'     => [
-                    'admin.notice.index', // same page
-                ],
-                'route'      => 'admin.notice.index',
-            ],
-        ],
+        'route'      => 'admin.notice.index',
+        // 'subMenu' => [
+        //     [
+        //         'title'      => 'Manage Notices',
+        //         'permission' => 'view notice',
+        //         'routes'     => [
+        //             'admin.notice.index',
+        //             'admin.notice.create',
+        //             'admin.notice.edit',
+        //         ],
+        //         'route'      => 'admin.notice.index',
+        //     ],
+        // ],
     ],
     [
         'title' => 'News Management',
         'icon'  => 'fa-solid fa-newspaper fs-3',
         'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
-        'subMenu' => [
-            [
-                'title' => 'All News',
-                'permission' => 'view news',
-                'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
-                'route' => 'admin.news.index',
-            ],
-        ],
+        'route' => 'admin.news.index',
+        // 'subMenu' => [
+        //     [
+        //         'title' => 'All News',
+        //         'permission' => 'view news',
+        //         'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
+        //         'route' => 'admin.news.index',
+        //     ],
+        // ],
     ],
 
     [
@@ -76,27 +73,27 @@ return [
             'admin.administration.index',
             'admin.administration.office.page',
         ],
+        'route' => 'admin.administration.index',
+        // 'subMenu' => [
 
-        'subMenu' => [
+        //     [
+        //         'title'      => 'Administration Offices',
+        //         'permission' => 'view admin office',
+        //         'routes' => [
+        //             'admin.administration.index',
+        //         ],
+        //         'route' => 'admin.administration.index',
+        //     ],
 
-            [
-                'title'      => 'Administration Offices',
-                'permission' => 'view admin office',
-                'routes' => [
-                    'admin.administration.index',
-                ],
-                'route' => 'admin.administration.index',
-            ],
-
-            [
-                'title'      => 'Administration Members',
-                'permission' => 'view admin member',
-                'routes' => [
-                    'admin.administration.office.page',
-                ],
-                'route' => 'admin.administration.index',
-            ],
-        ],
+        //     [
+        //         'title'      => 'Administration Members',
+        //         'permission' => 'view admin member',
+        //         'routes' => [
+        //             'admin.administration.office.page',
+        //         ],
+        //         'route' => 'admin.administration.index',
+        //     ],
+        // ],
     ],
 
     [
@@ -104,22 +101,24 @@ return [
         'icon'  => 'fa-solid fa-user-graduate fs-3',
         'routes' => [
             'admin.admission.index',
+            'admin.admission.create',
+            'admin.admission.edit',
         ],
+        'route' => 'admin.admission.index',
+        // 'subMenu' => [
 
-        'subMenu' => [
+        //     [
+        //         'title'      => 'Admission Menu & Pages',
+        //         'permission' => 'view admission',
+        //         'routes' => [
+        //             'admin.admission.index',
+        //             'admin.admission.create',
+        //             'admin.admission.edit',
+        //         ],
+        //         'route' => 'admin.admission.index',
+        //     ],
 
-            [
-                'title'      => 'Admission Menu & Pages',
-                'permission' => 'view admission',
-                'routes' => [
-                    'admin.admission.index',
-                    'admin.admission.create',
-                    'admin.admission.edit',
-                ],
-                'route' => 'admin.admission.index',
-            ],
-
-        ],
+        // ],
     ],
 
 
@@ -132,13 +131,20 @@ return [
     [
         'title' => 'CRM & User Management',
         'icon' => 'fa-solid fa-users fs-3',
-        'routes' => ['admin.user.index', 'admin.contact.index', 'admin.subscription.index'],
+        'routes' => [
+            'admin.user.index',
+            'admin.contact.index',
+            'admin.subscription.index',
+            'admin.faq.index',
+            'admin.faq.create',
+            'admin.faq.edit'
+        ],
         'subMenu' => [
             [
-                'title' => 'User List',
-                'permission' => 'view user',
-                'routes' => ['admin.user.index', 'admin.user.create', 'admin.user.edit'],
-                'route' => 'admin.user.index',
+                'title' => 'FAQs',
+                'permission' => 'view faq',
+                'routes' => ['admin.faq.index', 'admin.faq.create', 'admin.faq.edit'],
+                'route' => 'admin.faq.index',
             ],
             [
                 'title' => 'Contact',
@@ -146,12 +152,19 @@ return [
                 'routes' => ['admin.contact.index', 'admin.contact.create', 'admin.contact.edit'],
                 'route' => 'admin.contact.index',
             ],
-            [
-                'title' => 'Subscription',
-                'permission' => 'view subscription',
-                'routes' => ['admin.subscription.index', 'admin.subscription.create', 'admin.subscription.edit'],
-                'route' => 'admin.subscription.index',
-            ],
+            // [
+            //     'title' => 'User List',
+            //     'permission' => 'view user',
+            //     'routes' => ['admin.user.index', 'admin.user.create', 'admin.user.edit'],
+            //     'route' => 'admin.user.index',
+            // ],
+
+            // [
+            //     'title' => 'Subscription',
+            //     'permission' => 'view subscription',
+            //     'routes' => ['admin.subscription.index', 'admin.subscription.create', 'admin.subscription.edit'],
+            //     'route' => 'admin.subscription.index',
+            // ],
         ],
     ],
 

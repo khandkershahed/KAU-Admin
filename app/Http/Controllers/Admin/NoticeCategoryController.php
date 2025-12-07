@@ -38,7 +38,7 @@ class NoticeCategoryController extends Controller
             foreach ($validator->messages()->all() as $message) {
                 Session::flash('error', $message);
             }
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput(); 
         }
 
         NoticeCategory::create([

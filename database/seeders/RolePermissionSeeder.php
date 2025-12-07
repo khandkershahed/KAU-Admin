@@ -22,37 +22,51 @@ class RolePermissionSeeder extends Seeder
                     'view dashboard',
                 ],
             ],
-
             [
-                'group_name' => 'Banner',
+                'group_name' => 'Manage Homepage',
                 'permissions' => [
-                    'view banner',
-                    'create banner',
-                    'edit banner',
-                    'delete banner',
-                    'toggle banner status',
+                    'manage homepage'
                 ],
             ],
-
             [
-                'group_name' => 'Blog Category',
+                'group_name' => 'Manage About Page',
                 'permissions' => [
-                    'view blog category',
-                    'create blog category',
-                    'edit blog category',
-                    'delete blog category',
+                    'view about page',
+                    'create about page',
+                    'edit about page',
+                    'delete about page',
                 ],
             ],
+            // [
+            //     'group_name' => 'Banner',
+            //     'permissions' => [
+            //         'view banner',
+            //         'create banner',
+            //         'edit banner',
+            //         'delete banner',
+            //         'toggle banner status',
+            //     ],
+            // ],
 
-            [
-                'group_name' => 'Blog',
-                'permissions' => [
-                    'view blog',
-                    'create blog',
-                    'edit blog',
-                    'delete blog',
-                ],
-            ],
+            // [
+            //     'group_name' => 'Blog Category',
+            //     'permissions' => [
+            //         'view blog category',
+            //         'create blog category',
+            //         'edit blog category',
+            //         'delete blog category',
+            //     ],
+            // ],
+
+            // [
+            //     'group_name' => 'Blog',
+            //     'permissions' => [
+            //         'view blog',
+            //         'create blog',
+            //         'edit blog',
+            //         'delete blog',
+            //     ],
+            // ],
 
             [
                 'group_name' => 'FAQ',
@@ -138,6 +152,7 @@ class RolePermissionSeeder extends Seeder
                     'delete news',
                 ],
             ],
+
 
             [
                 'group_name' => 'Administration Menu',

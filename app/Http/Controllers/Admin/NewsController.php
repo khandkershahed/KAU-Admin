@@ -272,4 +272,34 @@ class NewsController extends Controller
 
         return redirect()->route('admin.news.index')->with('success', 'News deleted successfully.');
     }
+
+    public function toggleFeatured(News $news, Request $request)
+    {
+        $request->validate([
+            'is_featured' => 'required|boolean',
+        ]);
+
+        $news->is_featured = $request->boolean('is_featured');
+        $news->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Featured status updated.',
+        ]);
+    }
+
+    public function toggleStatus(News $news, Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:draft,published,unpublished',
+        ]);
+
+        $news->status = $request->status;
+        $news->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated.',
+        ]);
+    }
 }

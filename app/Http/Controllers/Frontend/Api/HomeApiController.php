@@ -9,12 +9,21 @@ use App\Models\Notice;
 use App\Models\Contact;
 use App\Models\Setting;
 use App\Models\Category;
+use App\Models\Homepage;
+use App\Models\AboutPage;
 use App\Models\Admission;
 use App\Models\EventType;
 use App\Models\AdminGroup;
 use App\Models\AdminOffice;
 use Illuminate\Http\Request;
+use App\Models\HomepageAbout;
+use App\Models\HomepageBanner;
+use App\Models\HomepageGlance;
 use App\Models\NoticeCategory;
+use App\Models\HomepageExplore;
+use App\Models\HomepageFaculty;
+use App\Models\HomepageSection;
+use App\Models\HomepageVcMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -117,10 +126,10 @@ class HomeApiController extends Controller
         // Extract first attachment + category name
         $notices->each(function ($notice) {
             $attachments = $notice->attachments ?? [];
-                if (!is_array($attachments)) {
-                    $attachments = json_decode((string) $attachments, true) ?? [];
-                }
-                $notice->first_attachment = $attachments[0] ?? null;
+            if (!is_array($attachments)) {
+                $attachments = json_decode((string) $attachments, true) ?? [];
+            }
+            $notice->first_attachment = $attachments[0] ?? null;
 
             // Add category_name directly into response
             $notice->category_name = $notice->category->name ?? null;
@@ -584,5 +593,186 @@ class HomeApiController extends Controller
             'message' => 'Thank You. We have received your message. We will contact you very soon.',
             'data'    => $contact
         ], 201);
+    }
+
+
+
+
+
+    public function homepageShow()
+    {
+        $sections = HomepageSection::orderBy('position')->get();
+
+        $banners = HomepageBanner::orderBy('position')->get();
+
+        $vc = HomepageVcMessage::first();
+
+        $explore = HomepageExplore::with('items')->first();
+        $glance  = HomepageGlance::with('items')->first();
+
+        $faculty = HomepageFaculty::first();
+        $about   = HomepageAbout::first();
+
+        return response()->json([
+            // ================================
+            // SECTION ORDER + ACTIVE DISABLED
+            // ================================
+            'sections' => $sections->map(function ($s) {
+                return [
+                    'section_key' => $s->section_key,
+                    'is_active'   => (bool) $s->is_active,
+                    'position'    => (int) $s->position,
+                ];
+            }),
+
+            // ================================
+            // BANNERS
+            // ================================
+            'banners' => $banners->map(function ($b) {
+                return [
+                    'id'          => $b->id,
+                    'title'       => $b->title,
+                    'subtitle'    => $b->subtitle,
+                    'button_text' => $b->button_text,
+                    'button_url'  => $b->button_url,
+                    'image_url'   => $b->image_path ? asset('storage/' . $b->image_path) : null,
+                    'position'    => (int) $b->position,
+                ];
+            }),
+
+            // ================================
+            // VC MESSAGE
+            // ================================
+            'vc_message' => $vc ? [
+                'vc_name'        => $vc->vc_name,
+                'vc_designation' => $vc->vc_designation,
+                'vc_image_url'   => $vc->vc_image ? asset('storage/' . $vc->vc_image) : null,
+                'message_title'  => $vc->message_title,
+                'message_text'   => $vc->message_text,
+                'button_name'    => $vc->button_name,
+                'button_url'     => $vc->button_url,
+            ] : null,
+
+            // ================================
+            // EXPLORE KAU SECTION
+            // ================================
+            'explore' => $explore ? [
+                'section_title' => $explore->section_title,
+                'items'         => $explore->items
+                    ->sortBy('position')
+                    ->values()
+                    ->map(function ($item) {
+                        return [
+                            'icon'     => $item->icon,
+                            'title'    => $item->title,
+                            'url'      => $item->url,
+                            'position' => (int) $item->position,
+                        ];
+                    }),
+            ] : null,
+
+            // ================================
+            // KAU AT A GLANCE
+            // ================================
+            'glance' => $glance ? [
+                'section_title'    => $glance->section_title,
+                'section_subtitle' => $glance->section_subtitle,
+                'items'            => $glance->items
+                    ->sortBy('position')
+                    ->values()
+                    ->map(function ($item) {
+                        return [
+                            'icon'     => $item->icon,
+                            'title'    => $item->title,
+                            'number'   => $item->number,
+                            'position' => (int) $item->position,
+                        ];
+                    }),
+            ] : null,
+
+            // ================================
+            // FACULTY (title only)
+            // ================================
+            'faculty' => $faculty ? [
+                'section_title'    => $faculty->section_title,
+                'section_subtitle' => $faculty->section_subtitle,
+            ] : null,
+
+            // ================================
+            // ABOUT SECTION
+            // ================================
+            'about' => $about ? [
+                'badge'            => $about->badge,
+                'title'            => $about->title,
+                'subtitle'         => $about->subtitle,
+                'description'      => $about->description,
+                'experience_badge' => $about->experience_badge,
+                'experience_title' => $about->experience_title,
+
+                // Return only non-null images, mapped to full URLs
+                'images' => collect($about->images ?? [])
+                    ->map(function ($path) {
+                        return $path ? asset('storage/' . $path) : null;
+                    })
+                    ->filter()
+                    ->values(),
+            ] : null,
+        ]);
+    }
+
+    public function allAboutPages()
+    {
+        $pages = AboutPage::published()
+            ->ordered()
+            ->get();
+
+        return response()->json([
+            'menu' => $pages->map(function (AboutPage $p) {
+                return [
+                    'id'          => $p->id,
+                    'title'       => $p->title,
+                    'menu_label'  => $p->menu_label ?? $p->title,
+                    'slug'        => $p->slug,
+                    'is_featured' => (bool) $p->is_featured,
+                    'position'    => (int) $p->menu_order,
+                ];
+            }),
+            // helpful so frontend knows default
+            'default_slug' => optional($pages->first())->slug,
+        ]);
+    }
+
+
+    public function aboutPageDetails(string $slug)
+    {
+        $page = AboutPage::published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return response()->json([
+            'page' => [
+                'id'              => $page->id,
+                'title'           => $page->title,
+                'slug'            => $page->slug,
+                'menu_label'      => $page->menu_label ?? $page->title,
+
+                'banner_title'    => $page->banner_title ?? $page->title,
+                'banner_subtitle' => $page->banner_subtitle,
+                'banner_icon'     => $page->banner_icon,
+                'banner_image'    => $page->banner_image
+                    ? asset('storage/' . $page->banner_image)
+                    : null,
+
+                'excerpt'         => $page->excerpt,
+                'content'         => $page->content, // HTML
+
+                'meta_title'       => $page->meta_title,
+                'meta_tags'        => $page->meta_tags,
+                'meta_description' => $page->meta_description,
+
+                'is_featured'      => (bool) $page->is_featured,
+                'position'         => (int) $page->menu_order,
+            ],
+        ]);
     }
 }

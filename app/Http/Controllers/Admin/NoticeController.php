@@ -274,4 +274,28 @@ class NoticeController extends Controller
         $notice->delete();
         return response()->json(['success' => true]);
     }
+
+    public function toggleFeatured(Notice $notice, Request $request)
+    {
+        $request->validate(['is_featured' => 'required|boolean']);
+        $notice->is_featured = $request->boolean('is_featured');
+        $notice->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Featured status updated.',
+        ]);
+    }
+
+    public function toggleStatus(Notice $notice, Request $request)
+    {
+        $request->validate(['status' => 'required|in:draft,published,archived']);
+        $notice->status = $request->status;
+        $notice->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated.',
+        ]);
+    }
 }

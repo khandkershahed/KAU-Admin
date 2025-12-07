@@ -27,7 +27,9 @@ Route::prefix('api/v1')->group(function () {
 
 Route::prefix('api/v1')->group(function () {
 
-
+    Route::get('/homepage', [HomeApiController::class, 'homepageShow']);
+    Route::get('/about-pages', [HomeApiController::class, 'allAboutPages']);
+    Route::get('/about-pages/{slug}', [HomeApiController::class, 'aboutPageDetails']);
     Route::get('/notice-categories', [HomeApiController::class, 'noticeCategories']);
     Route::get('/notices', [HomeApiController::class, 'allNotices']);
     Route::get('/notices/{slug}', [HomeApiController::class, 'noticeDetails']);

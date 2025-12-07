@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             AdminOfficeSectionSeeder::class,
             AdminOfficeMemberSeeder::class,
             AdmissionSeeder::class,
-
+            HomepageSeeder::class,
+            AboutPageSeeder::class
         ]);
         // $this->call(UserSeeder::class);
     }

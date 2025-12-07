@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-row-bordered align-middle">
+    <table class="table table-row-bordered align-middle border">
         <thead class="fw-bold" style="background: #f5f8fa;">
             <tr>
                 <th>#</th>

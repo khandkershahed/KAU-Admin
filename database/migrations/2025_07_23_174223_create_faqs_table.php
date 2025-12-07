@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->nullable()->constrained('faq_categories')->onDelete('set null');
             $table->string('question');
             $table->text('answer');
+            $table->string('category')->nullable();
             $table->string('tag')->nullable();
             $table->integer('order')->default(0);
             $table->string('status')->default('active')->comment('inactive,active');
@@ -23,8 +23,8 @@ return new class extends Migration
             $table->json('related_faqs')->nullable(); // IDs of related FAQs
             $table->boolean('is_featured')->default(false)->nullable(); // Mark FAQ as featured
             $table->text('additional_info')->nullable(); // Additional information or notes
-            $table->foreignId('created_by')->nullable();
-            $table->foreignId('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

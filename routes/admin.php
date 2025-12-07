@@ -13,11 +13,11 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\PrivacyController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\HomepageController;
+use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Admin\AdmissionController;
-use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\AdminOfficeController;
 use App\Http\Controllers\Admin\OfficeStaffController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\BlogCategoryController;
@@ -27,8 +27,6 @@ use App\Http\Controllers\Admin\AdministrationController;
 use App\Http\Controllers\Admin\NoticeCategoryController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\Auth\NewPasswordController;
-use App\Http\Controllers\Admin\AdminOfficeMemberController;
-use App\Http\Controllers\Admin\AdminOfficeSectionController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
@@ -69,7 +67,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
 
-Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
+    Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
 
 
 
@@ -77,6 +75,15 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
     Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [AdminProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Homepage
+    Route::controller(HomepageController::class)->prefix('homepage')->name('homepage.')->group(function () {
+        Route::get('/builder', 'edit')->name('builder.edit');
+        Route::post('/builder', 'update')->name('builder.update');
+        Route::post('/builder/preview', 'preview')->name('builder.preview');
+        Route::post('/builder/sections/sort', 'sortSections')->name('sections.sort');
+        Route::post('/builder/sections/toggle', 'toggleSection')->name('sections.toggle');
+    });
 
 
     //Resource Controller
@@ -98,6 +105,34 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
         ],
     );
 
+    Route::controller(FaqController::class)->prefix('faq')->name('faq.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create'); // AJAX modal
+        Route::post('/', 'store')->name('store');
+        Route::get('/edit/{faq}', 'edit')->name('edit'); // AJAX modal
+        Route::put('/{faq}', 'update')->name('update');
+        Route::delete('/{faq}', 'destroy')->name('destroy');
+        // Toggles
+        Route::post('/{faq}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
+        Route::post('/{faq}/toggle-status', 'toggleStatus')->name('toggle-status');
+        // Sortable
+        Route::post('/sort-order/update', 'sortOrder')->name('sort-order');
+        // Category Suggest
+        Route::get('/category/suggest', 'categorySuggest')->name('category-suggest');
+    });
+
+    Route::controller(AboutPageController::class)->prefix('about')->name('about.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{page}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
+        Route::post('/{page}/toggle-status', 'toggleStatus')->name('toggle-status');
+        Route::post('/sort/order', 'updateOrder')->name('sort.order');
+    });
+
     Route::controller(NoticeCategoryController::class)->prefix('notice/category')->name('notice-category.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'store')->name('store');
@@ -109,21 +144,26 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('/edit/{id}', 'edit')->name('edit');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::get('/edit/{notice}', 'edit')->name('edit');
+        Route::put('/{notice}', 'update')->name('update');
+        Route::delete('/{notice}', 'destroy')->name('destroy');
+        Route::post('/{notice}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
+        Route::post('/{notice}/toggle-status', 'toggleStatus')->name('toggle-status');
     });
 
     Route::controller(NewsController::class)->prefix('news')->name('news.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('/edit/{id}', 'edit')->name('edit');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::get('/edit/{news}', 'edit')->name('edit');
+        Route::put('/{news}', 'update')->name('update');
+        Route::delete('/{news}', 'destroy')->name('destroy');
+        Route::post('/{news}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
+        Route::post('/{news}/toggle-status', 'toggleStatus')->name('toggle-status');
     });
 
 
+    // Administration
     Route::prefix('administration')->name('administration.')->group(function () {
 
         /* =============================
@@ -169,7 +209,7 @@ Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor
         Route::post('/member/sort',   [OfficeStaffController::class, 'memberSort'])->name('member.sort');
     });
 
-
+    // Admission
     Route::controller(AdmissionController::class)->prefix('admission')->name('admission.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');

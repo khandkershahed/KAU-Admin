@@ -26,6 +26,13 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->json('tags')->nullable();
             $table->boolean('is_featured')->default(false)->nullable();
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->text('meta_keywords')->nullable();
+            $table->string('canonical_url')->nullable();
+            $table->string('og_title')->nullable();
+            $table->text('og_description')->nullable();
+            $table->string('og_image')->nullable();
             $table->enum('status', ['draft', 'published', 'unpublished'])->default('published');
             $table->timestamps();
         });
