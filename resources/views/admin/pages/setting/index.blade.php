@@ -1,5 +1,4 @@
 <x-admin-app-layout :title="'Website Setting'">
-
     <div class="row g-2" id="columns-container">
         <div class="row py-10 pt-0">
             <div class="col-lg-2">
@@ -9,12 +8,31 @@
                     </div>
                 </div>
             </div>
+
             <div class="card col-lg-10">
                 <form class="form" action="{{ route('admin.settings.updateOrCreate') }}" method="POST"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+
                     <div class="card-body">
+                        @if (session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if (session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="tab-content bg-white p-5" id="myTabContent">
                             <div class="tab-pane fade active show" id="generalInfo" role="tabpanel">
                                 <div class="row">
@@ -40,18 +58,10 @@
                                 </div>
                             </div>
 
-                            {{-- <div class="tab-pane fade" id="companies" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 company_container">
-                                        @include('admin.pages.setting.partials.companies')
-                                    </div>
-                                </div>
-                            </div> --}}
-
                             <div class="tab-pane fade" id="services" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 service_container">
-                                        {{-- @include('admin.pages.setting.partials.services') --}}
+                                        {{-- Custom if needed --}}
                                     </div>
                                 </div>
                             </div>
@@ -59,7 +69,7 @@
                             <div class="tab-pane fade" id="products" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 product_container">
-                                        {{-- @include('admin.pages.setting.partials.products') --}}
+                                        {{-- Custom if needed --}}
                                     </div>
                                 </div>
                             </div>
@@ -67,7 +77,7 @@
                             <div class="tab-pane fade" id="galleries" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 gallery_container">
-                                        {{-- @include('admin.pages.setting.partials.galleries') --}}
+                                        {{-- Custom if needed --}}
                                     </div>
                                 </div>
                             </div>
@@ -75,19 +85,19 @@
                             <div class="tab-pane fade" id="banner" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 banner_container">
-                                        {{-- @include('admin.pages.setting.partials.banner') --}}
+                                        {{-- Custom if needed --}}
                                     </div>
                                 </div>
                             </div>
-
 
                             <div class="tab-pane fade" id="testimonials" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 testimonial_container">
-                                        {{-- @include('admin.pages.setting.partials.testimonials') --}}
+                                        {{-- Custom if needed --}}
                                     </div>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="seo" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 seo_container">
@@ -103,45 +113,42 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="privacy" role="tabpanel">
+
+                            {{-- <div class="tab-pane fade" id="privacy" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 privacy_container">
-                                        {{-- @include('admin.pages.setting.partials.privacy') --}}
+                                        @include('admin.pages.setting.partials.privacy')
                                     </div>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="terms" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 terms_container">
-                                        {{-- @include('admin.pages.setting.partials.terms') --}}
+                                        @include('admin.pages.setting.partials.terms')
                                     </div>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="fonts" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 fonts_container">
-                                        {{-- @include('admin.pages.setting.partials.fonts') --}}
                                     </div>
                                 </div>
-                            </div>
-                            {{-- <div class="tab-pane fade" id="kt_vtab_pane_15" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-lg-12 terms_container">
-                                            @include('admin.pages.setting.partials.terms')
-                                        </div>
-                                    </div>
-                                </div> --}}
+                            </div> --}}
+
                             <div class="tab-pane fade" id="advance" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 advance_container">
-                                        {{-- @include('admin.pages.setting.partials.advance') --}}
+                                        @include('admin.pages.setting.partials.advance')
                                     </div>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="setting" role="tabpanel">
                                 <div class="row">
                                     <div class="col-lg-12 setting_container">
-                                        {{-- @include('admin.pages.setting.partials.setting') --}}
+                                        @include('admin.pages.setting.partials.setting')
                                     </div>
                                 </div>
                             </div>
@@ -154,11 +161,9 @@
                                 {{ __('Submit') }}
                             </x-metronic.button>
                         </div>
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 </x-admin-app-layout>

@@ -34,7 +34,7 @@
 
     <link href="{{ asset('admin/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('admin/assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-
+    @stack('styles')
     @props(['title'])
     <title>{{ $title ?? config('app.name', 'NewSite') }}</title>
     <style>
