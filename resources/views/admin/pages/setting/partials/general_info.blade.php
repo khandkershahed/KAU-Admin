@@ -5,6 +5,10 @@
         <label class="form-label fw-bold">Website Name</label>
         <input type="text" name="website_name" class="form-control" value="{{ $setting->website_name }}">
     </div>
+    <div class="col-lg-6 mb-5">
+        <label class="form-label fw-bold">Website Name Bangla</label>
+        <input type="text" name="website_name_bn" class="form-control" value="{{ $setting->website_name_bn }}">
+    </div>
 
     {{-- Site Title --}}
     <div class="col-lg-6 mb-5">

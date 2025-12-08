@@ -53,6 +53,7 @@ class HomeApiController extends Controller
             'settings' => [
 
                 'website_name'       => $settings->website_name,
+                'website_name_bn'    => $settings->website_name_bn,
                 'site_title'         => $settings->site_title,
                 'site_motto'         => $settings->site_motto,
                 'footer_description' => $settings->footer_description,

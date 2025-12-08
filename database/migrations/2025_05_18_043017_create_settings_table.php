@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('website_name', 250)->nullable();
+            $table->string('website_name_bn', 250)->nullable();
             $table->string('site_title', 250)->nullable();
             $table->text('site_motto')->nullable();
 

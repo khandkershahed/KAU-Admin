@@ -17,6 +17,7 @@ class SettingSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             'website_name'           => 'Khulna Agricultural University',
+            'website_name_bn'        => 'খুলনা কৃষি বিশ্ববিদ্যালয়',
             'site_title'             => 'Khulna Agricultural University – KAU',
             'site_motto'             => 'Advancing Agriculture Through Innovation & Research',
             'site_logo_white'        => null,

@@ -8,6 +8,7 @@ class Setting extends Model
 {
     protected $fillable = [
         'website_name',
+        'website_name_bn',
         'site_title',
         'site_motto',
 
