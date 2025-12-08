@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('website_name', 250)->nullable();
             $table->string('site_title', 250)->nullable();
             $table->text('site_motto')->nullable();
-            $table->text('footer_description')->nullable();
 
             $table->string('site_logo_white')->nullable();
             $table->string('site_logo_black')->nullable();
@@ -31,23 +30,23 @@ return new class extends Migration
             $table->longText('custom_css')->nullable();
             $table->longText('custom_js')->nullable();
 
+            // Footer
+            $table->text('footer_description')->nullable();
+            $table->json('footer_links')->nullable(); //multiple  ['title', 'url', 'order']
+            $table->text('copyright_text')->nullable();
+            $table->string('developer_text')->nullable();
+            $table->text('developer_link')->nullable();
+            $table->string('website_url')->nullable();
+            $table->json('contact_person')->nullable(); // multiple ['name','designation','email', 'phone]
 
-            $table->string('primary_email')->nullable();
-            $table->string('support_email')->nullable();
-            $table->string('info_email')->nullable();
-            $table->string('sales_email')->nullable();
-            $table->json('additional_emails')->nullable(); // instead of too many individual columns
-
-            $table->string('primary_phone', 20)->nullable();
-            $table->string('alternative_phone', 20)->nullable();
-            $table->string('whatsapp_number', 20)->nullable();
-
-            $table->json('addresses')->nullable();
-
+            // Common
+            $table->json('emails')->nullable();  //multiple ['title','email']
+            $table->json('phone')->nullable(); //multiple ['title','phone']
+            $table->json('addresses')->nullable(); //multiple ['title','address']
+            $table->json('social_links')->nullable();  //multiple  ['url' , 'icon_class' , 'order']
 
             $table->string('company_name')->nullable();
             $table->integer('minimum_order_amount')->nullable();
-
 
             $table->string('default_language', 20)->nullable();
             $table->string('default_currency', 20)->nullable();
@@ -76,12 +75,6 @@ return new class extends Migration
             $table->text('google_adsense')->nullable();
             $table->text('facebook_pixel_id')->nullable();
 
-
-            $table->json('social_links')->nullable();
-
-
-            $table->text('copyright_title')->nullable();
-            $table->string('website_url')->nullable();
 
             $table->boolean('maintenance_mode')->default(false);
             $table->boolean('enable_user_registration')->default(true);

@@ -1,268 +1,127 @@
-@php
-    $setting = $setting ?? null;
-    $addresses = [];
+<div class="row mb-10">
 
-    if ($setting && $setting->addresses) {
-        $addresses = is_array($setting->addresses) ? $setting->addresses : json_decode($setting->addresses, true);
-    }
-
-    $temporaryCampus = $addresses['temporary_campus'] ?? [
-        'en' => '',
-        'bn' => '',
-    ];
-@endphp
-
-<div class="row mb-7">
-    <div class="col-12">
-        <h5 class="mb-3">Branding</h5>
+    {{-- Website Name --}}
+    <div class="col-lg-6 mb-5">
+        <label class="form-label fw-bold">Website Name</label>
+        <input type="text" name="website_name" class="form-control" value="{{ $setting->website_name }}">
     </div>
 
-    <div class="col-md-6 mb-7">
-        <label class="form-label">Website Name</label>
-        <input type="text" name="website_name" class="form-control"
-            value="{{ old('website_name', optional($setting)->website_name) }}">
+    {{-- Site Title --}}
+    <div class="col-lg-6 mb-5">
+        <label class="form-label fw-bold">Site Title</label>
+        <input type="text" name="site_title" class="form-control" value="{{ $setting->site_title }}">
     </div>
 
-    <div class="col-md-6 mb-7">
-        <label class="form-label">Site Title</label>
-        <input type="text" name="site_title" class="form-control"
-            value="{{ old('site_title', optional($setting)->site_title) }}">
+    {{-- Motto --}}
+    <div class="col-lg-12 mb-5">
+        <label class="form-label fw-bold">Site Motto</label>
+        <textarea name="site_motto" rows="2" class="form-control">{{ $setting->site_motto }}</textarea>
     </div>
 
-    <div class="col-md-12 mb-7">
-        <label class="form-label">Site Motto</label>
-        <textarea name="site_motto" class="form-control" rows="2">{{ old('site_motto', optional($setting)->site_motto) }}</textarea>
+    {{-- Theme Color --}}
+    <div class="col-lg-4 mb-5">
+        <label class="form-label fw-bold">Theme Color</label>
+        <x-metronic.color-picker id="themeColor" name="theme_color" :value="old('theme_color', optional($setting)->theme_color)" class="form-control-sm"
+            buttonClass="btn-sm" />
+
     </div>
 
-    <div class="col-md-12 mb-7">
-        <label class="form-label">Footer Description</label>
-        <textarea name="footer_description" class="form-control" rows="3">{{ old('footer_description', optional($setting)->footer_description) }}</textarea>
-    </div>
+    {{-- Dark Mode --}}
+    <div class="col-lg-4 mb-5">
+        <label class="form-label fw-bold d-block">Dark Mode</label>
 
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Site Logo (White Path)</label>
-        <input type="text" name="site_logo_white" class="form-control"
-            value="{{ old('site_logo_white', optional($setting)->site_logo_white) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Site Logo (Black Path)</label>
-        <input type="text" name="site_logo_black" class="form-control"
-            value="{{ old('site_logo_black', optional($setting)->site_logo_black) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Favicon Path</label>
-        <input type="text" name="site_favicon" class="form-control"
-            value="{{ old('site_favicon', optional($setting)->site_favicon) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Login Background Image Path</label>
-        <input type="text" name="login_background_image" class="form-control"
-            value="{{ old('login_background_image', optional($setting)->login_background_image) }}">
-    </div>
-
-    <div class="col-md-4 mb-7">
-        <label class="form-label">Theme Color (Hex)</label>
-        <input type="text" name="theme_color" class="form-control"
-            value="{{ old('theme_color', optional($setting)->theme_color) }}">
-    </div>
-    <div class="col-md-4 mb-7 d-flex align-items-center">
-        <div class="form-check mt-4">
-            <input class="form-check-input" type="checkbox" name="dark_mode" value="1" id="dark_mode"
-                {{ old('dark_mode', optional($setting)->dark_mode) ? 'checked' : '' }}>
-            <label class="form-check-label" for="dark_mode">
-                Enable Dark Mode
-            </label>
+        <div class="form-check form-switch form-check-custom form-check-solid">
+            <input class="form-check-input" type="checkbox" name="dark_mode" value="1"
+                {{ $setting->dark_mode ? 'checked' : '' }}>
         </div>
     </div>
+
+    {{-- Website URL --}}
+    <div class="col-lg-4 mb-5">
+        <label class="form-label fw-bold">Website URL</label>
+        <input type="text" name="website_url" class="form-control" value="{{ $setting->website_url }}">
+    </div>
+
+    {{-- Logos --}}
+    <div class="col-md-4 mb-7">
+        <label class="form-label">Logo (White Path)</label>
+        <x-metronic.file-input name="site_logo_white" class="form-control-sm" :value="old('site_logo_white', optional($setting)->site_logo_white)"></x-metronic.file-input>
+
+    </div>
+    <div class="col-md-4 mb-7">
+        <label class="form-label">Logo (Black Path)</label>
+        <x-metronic.file-input name="site_logo_black" class="form-control-sm" :value="old('site_logo_black', optional($setting)->site_logo_black)"></x-metronic.file-input>
+    </div>
+    <div class="col-md-4 mb-7">
+        <label class="form-label">Favicon</label>
+        <x-metronic.file-input name="site_favicon" class="form-control-sm" :value="old('site_favicon', optional($setting)->site_favicon)"></x-metronic.file-input>
+
+    </div>
+
 </div>
 
-<hr>
+<div class="row">
+    {{-- Emails --}}
+    <div class="mb-10">
+        <label class="form-label fw-bold">Emails</label>
 
-<div class="row mb-7">
-    <div class="col-12">
-        <h5 class="mb-3">Contact Information</h5>
-    </div>
-
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Primary Email</label>
-        <input type="email" name="primary_email" class="form-control"
-            value="{{ old('primary_email', optional($setting)->primary_email) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Support Email</label>
-        <input type="email" name="support_email" class="form-control"
-            value="{{ old('support_email', optional($setting)->support_email) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Info Email</label>
-        <input type="email" name="info_email" class="form-control"
-            value="{{ old('info_email', optional($setting)->info_email) }}">
-    </div>
-    <div class="col-md-3 mb-7">
-        <label class="form-label">Sales Email</label>
-        <input type="email" name="sales_email" class="form-control"
-            value="{{ old('sales_email', optional($setting)->sales_email) }}">
-    </div>
-
-    <div class="col-md-4 mb-7">
-        <label class="form-label">Primary Phone</label>
-        <input type="text" name="primary_phone" class="form-control"
-            value="{{ old('primary_phone', optional($setting)->primary_phone) }}">
-    </div>
-    <div class="col-md-4 mb-7">
-        <label class="form-label">Alternative Phone</label>
-        <input type="text" name="alternative_phone" class="form-control"
-            value="{{ old('alternative_phone', optional($setting)->alternative_phone) }}">
-    </div>
-    <div class="col-md-4 mb-7">
-        <label class="form-label">WhatsApp Number</label>
-        <input type="text" name="whatsapp_number" class="form-control"
-            value="{{ old('whatsapp_number', optional($setting)->whatsapp_number) }}">
-    </div>
-</div>
-
-<hr>
-
-@php
-    $setting = $setting ?? null;
-
-    // Decode existing addresses
-    $addressesRaw = [];
-
-    if ($setting && $setting->addresses) {
-        $addressesRaw = is_array($setting->addresses) ? $setting->addresses : json_decode($setting->addresses, true);
-    }
-
-    // Normalize into a list of items: [ ['title' => '', 'address' => ''], ... ]
-    $addresses = [];
-
-    // If it's already a list of title/address objects
-if (is_array($addressesRaw) && array_is_list($addressesRaw)) {
-    foreach ($addressesRaw as $item) {
-        $addresses[] = [
-            'title' => $item['title'] ?? '',
-            'address' => $item['address'] ?? '',
-        ];
-    }
-}
-// If it's associative (like old seeder style), we try to flatten it
-    elseif (is_array($addressesRaw)) {
-        foreach ($addressesRaw as $key => $value) {
-            // Example old style: 'temporary_campus' => ['en' => '...', 'bn' => '...']
-            if (is_array($value)) {
-                if (!empty($value['en'])) {
-                    $addresses[] = [
-                        'title' => ucfirst(str_replace('_', ' ', $key)) . ' (EN)',
-                        'address' => $value['en'],
-                    ];
-                }
-                if (!empty($value['bn'])) {
-                    $addresses[] = [
-                        'title' => ucfirst(str_replace('_', ' ', $key)) . ' (BN)',
-                        'address' => $value['bn'],
-                    ];
-                }
-            } else {
-                $addresses[] = [
-                    'title' => ucfirst(str_replace('_', ' ', $key)),
-                    'address' => $value,
-                ];
-            }
-        }
-    }
-
-    // If no data at all, give two default rows
-    if (empty($addresses)) {
-        $addresses = [
-            ['title' => 'Address (EN)', 'address' => ''],
-            ['title' => 'Address (BN)', 'address' => ''],
-        ];
-    }
-@endphp
-
-<div class="row mb-4">
-    <div class="col-12">
-        <h5 class="mb-3">Addresses</h5>
-        <small class="text-muted d-block mb-2">
-            Add as many addresses as you need, each with its own title (Temporary EN, Temporary BN, Permanent, etc.)
-        </small>
-    </div>
-
-    <div class="col-12" id="addresses-repeater" data-next-index="{{ count($addresses) }}">
-        @foreach ($addresses as $index => $item)
-            <div class="row address-item align-items-start mb-3">
-                <div class="col-md-4 mb-2">
-                    <label class="form-label">Title</label>
-                    <input type="text" name="addresses[{{ $index }}][title]" class="form-control"
-                        value="{{ old("addresses.$index.title", $item['title']) }}"
-                        placeholder="e.g. Address (EN)">
-                </div>
-                <div class="col-md-7 mb-2">
-                    <label class="form-label">Address</label>
-                    <textarea name="addresses[{{ $index }}][address]" class="form-control" rows="3"
-                        placeholder="Write full address here">{{ old("addresses.$index.address", $item['address']) }}</textarea>
-                </div>
-                <div class="col-md-1 d-flex align-items-end mb-2">
-                    <button type="button" class="btn btn-sm btn-danger remove-address">
-                        &times;
+        <div id="emailRepeater" class="repeater-wrapper" data-field="emails">
+            @foreach ($setting->emails ?? [] as $i => $email)
+                <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+                    <input type="text" name="emails[{{ $i }}][title]" class="form-control form-control-sm w-lg-350px"
+                        placeholder="Title" value="{{ $email['title'] ?? '' }}">
+                    <input type="email" name="emails[{{ $i }}][email]" class="form-control form-control-sm"
+                        placeholder="Email" value="{{ $email['email'] ?? '' }}">
+                    <button type="button" class="btn btn-danger btn-sm delete-row-btn">
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
+
+        <button type="button" id="addEmailBtn" class="btn btn-light-primary btn-sm mt-3">+ Add Email</button>
     </div>
 
-    <div class="col-12">
-        <button type="button" class="btn btn-sm btn-primary" id="add-address-row">
-            + Add Address
-        </button>
-    </div>
-</div>
+    {{-- Phones --}}
+    <div class="mb-10">
+        <label class="form-label fw-bold">Phone Numbers</label>
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const repeater = document.getElementById('addresses-repeater');
-            if (!repeater) return;
-
-            let nextIndex = parseInt(repeater.getAttribute('data-next-index') || '0', 10);
-
-            const template = (index) => `
-            <div class="row address-item align-items-start mb-3">
-                <div class="col-md-4 mb-2">
-                    <label class="form-label">Title</label>
-                    <input type="text"
-                           name="addresses[${index}][title]"
-                           class="form-control"
-                           placeholder="e.g. Permanent Campus (BN)">
-                </div>
-                <div class="col-md-7 mb-2">
-                    <label class="form-label">Address</label>
-                    <textarea name="addresses[${index}][address]"
-                              class="form-control"
-                              rows="3"
-                              placeholder="Write full address here"></textarea>
-                </div>
-                <div class="col-md-1 d-flex align-items-end mb-2">
-                    <button type="button" class="btn btn-sm btn-danger remove-address">
-                        &times;
+        <div id="phoneRepeater" class="repeater-wrapper" data-field="phone">
+            @foreach ($setting->phone ?? [] as $i => $phone)
+                <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+                    <input type="text" name="phone[{{ $i }}][title]" class="form-control form-control-sm w-lg-350px"
+                        placeholder="Title" value="{{ $phone['title'] ?? '' }}">
+                    <input type="text" name="phone[{{ $i }}][phone]" class="form-control form-control-sm w-lg-350px"
+                        placeholder="Phone" value="{{ $phone['phone'] ?? '' }}">
+                    <button type="button" class="btn btn-danger btn-sm delete-row-btn">
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
-            </div>
-        `;
+            @endforeach
+        </div>
 
-            document.getElementById('add-address-row').addEventListener('click', function() {
-                repeater.insertAdjacentHTML('beforeend', template(nextIndex));
-                nextIndex++;
-            });
+        <button type="button" id="addPhoneBtn" class="btn btn-light-primary btn-sm mt-3">+ Add Phone</button>
+    </div>
 
-            repeater.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-address')) {
-                    const row = e.target.closest('.address-item');
-                    if (row) {
-                        row.remove();
-                    }
-                }
-            });
-        });
-    </script>
-@endpush
+    {{-- Addresses --}}
+    <div class="mb-10">
+        <label class="form-label fw-bold">Addresses</label>
+
+        <div id="addressRepeater" class="repeater-wrapper" data-field="addresses">
+            @foreach ($setting->addresses ?? [] as $i => $addr)
+                <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+                    <input type="text" name="addresses[{{ $i }}][title]" class="form-control form-control-sm w-lg-400px"
+                        placeholder="Title" value="{{ $addr['title'] ?? '' }}">
+                    <input type="text" name="addresses[{{ $i }}][address]" class="form-control form-control-sm"
+                        placeholder="Address" value="{{ $addr['address'] ?? '' }}">
+                    <button type="button" class="btn btn-danger btn-sm delete-row-btn">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            @endforeach
+        </div>
+
+        <button type="button" id="addAddressBtn" class="btn btn-light-primary btn-sm mt-3">+ Add Address</button>
+    </div>
+
+</div>

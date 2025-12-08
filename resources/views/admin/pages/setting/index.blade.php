@@ -16,22 +16,6 @@
                     @method('PUT')
 
                     <div class="card-body">
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-                        @if (session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
 
                         <div class="tab-content bg-white p-5" id="myTabContent">
                             <div class="tab-pane fade active show" id="generalInfo" role="tabpanel">
@@ -58,45 +42,6 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="services" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 service_container">
-                                        {{-- Custom if needed --}}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="products" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 product_container">
-                                        {{-- Custom if needed --}}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="galleries" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 gallery_container">
-                                        {{-- Custom if needed --}}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="banner" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 banner_container">
-                                        {{-- Custom if needed --}}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="testimonials" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 testimonial_container">
-                                        {{-- Custom if needed --}}
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="tab-pane fade" id="seo" role="tabpanel">
                                 <div class="row">
@@ -113,29 +58,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- <div class="tab-pane fade" id="privacy" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 privacy_container">
-                                        @include('admin.pages.setting.partials.privacy')
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="terms" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 terms_container">
-                                        @include('admin.pages.setting.partials.terms')
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="fonts" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-lg-12 fonts_container">
-                                    </div>
-                                </div>
-                            </div> --}}
 
                             <div class="tab-pane fade" id="advance" role="tabpanel">
                                 <div class="row">
@@ -166,4 +88,9 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+        @include('admin.pages.setting.partials.setting_js')
+    @endpush
 </x-admin-app-layout>

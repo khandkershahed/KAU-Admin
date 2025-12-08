@@ -3,19 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Setting extends Model
 {
-    use SoftDeletes;
-
-    protected $table = 'settings';
-
     protected $fillable = [
         'website_name',
         'site_title',
         'site_motto',
-        'footer_description',
+
         'site_logo_white',
         'site_logo_black',
         'site_favicon',
@@ -27,17 +22,18 @@ class Setting extends Model
         'custom_css',
         'custom_js',
 
-        'primary_email',
-        'support_email',
-        'info_email',
-        'sales_email',
-        'additional_emails',
+        'footer_description',
+        'footer_links',
+        'copyright_text',
+        'developer_text',
+        'developer_link',
+        'website_url',
+        'contact_person',
 
-        'primary_phone',
-        'alternative_phone',
-        'whatsapp_number',
-
+        'emails',
+        'phone',
         'addresses',
+        'social_links',
 
         'company_name',
         'minimum_order_amount',
@@ -64,11 +60,6 @@ class Setting extends Model
         'google_analytics',
         'google_adsense',
         'facebook_pixel_id',
-
-        'social_links',
-
-        'copyright_title',
-        'website_url',
 
         'maintenance_mode',
         'enable_user_registration',
@@ -105,22 +96,24 @@ class Setting extends Model
     ];
 
     protected $casts = [
-        'additional_emails'        => 'array',
-        'addresses'                => 'array',
-        'social_links'             => 'array',
-        'business_hours'           => 'array',
-        'custom_settings'          => 'array',
-
-        'enable_multilanguage'     => 'boolean',
-        'maintenance_mode'         => 'boolean',
-        'enable_user_registration' => 'boolean',
+        'footer_links'              => 'array',
+        'contact_person'            => 'array',
+        'emails'                    => 'array',
+        'phone'                     => 'array',
+        'addresses'                 => 'array',
+        'social_links'              => 'array',
+        'business_hours'            => 'array',
+        'custom_settings'           => 'array',
+        'dark_mode'                 => 'boolean',
+        'enable_multilanguage'      => 'boolean',
+        'maintenance_mode'          => 'boolean',
+        'enable_user_registration'  => 'boolean',
         'enable_email_verification' => 'boolean',
-        'enable_api_access'        => 'boolean',
-        'is_demo'                  => 'boolean',
-        'captcha_enabled'          => 'boolean',
-        'cookie_consent_enabled'   => 'boolean',
-        'smtp_active'              => 'boolean',
-        'smtp_debug_mode'          => 'boolean',
-        'dark_mode'                => 'boolean',
+        'enable_api_access'         => 'boolean',
+        'is_demo'                   => 'boolean',
+        'captcha_enabled'           => 'boolean',
+        'cookie_consent_enabled'    => 'boolean',
+        'smtp_active'               => 'boolean',
+        'smtp_debug_mode'           => 'boolean',
     ];
 }

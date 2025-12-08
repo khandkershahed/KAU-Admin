@@ -201,7 +201,7 @@ return [
     [
         'title' => 'Web Settings',
         'icon' => 'fa-solid fa-gear fs-3',
-        'routes' => ['admin.settings.index', 'admin.faq.index', 'admin.terms.index', 'admin.privacy.index'],
+        'routes' => ['admin.settings.index', 'admin.terms.index', 'admin.privacy.index'],
         'subMenu' => [
             [
                 'title' => 'Setting',
@@ -210,10 +210,10 @@ return [
                 'route' => 'admin.settings.index',
             ],
             [
-                'title' => 'FAQs',
-                'permission' => 'view faq',
-                'routes' => ['admin.faq.index', 'admin.faq.create', 'admin.faq.edit'],
-                'route' => 'admin.faq.index',
+                'title' => 'Footer Section',
+                'permission' => 'view footer',
+                'routes' => ['admin.footer.index'],
+                'route' => 'admin.footer.index',
             ],
             [
                 'title' => 'Term & Condition',

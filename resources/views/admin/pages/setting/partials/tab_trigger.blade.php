@@ -9,8 +9,6 @@
                     'businessHours'=> 'Business Hours',
                     'seo'          => 'SEO & Analytics',
                     'socialLinks'  => 'Social Links',
-                    // 'privacy'      => 'Privacy',
-                    // 'terms'        => 'Terms',
                     'advance'      => 'Advanced',
                     'setting'      => 'System / SMTP',
                 ];

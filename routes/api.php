@@ -47,6 +47,7 @@ Route::prefix('api/v1')->group(function () {
 
 
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
+    Route::get('/footer', [HomeApiController::class, 'footer']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);
 
     Route::post('/register', [UserApiController::class, 'register']);

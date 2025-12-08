@@ -19,120 +19,126 @@ class SettingSeeder extends Seeder
             'website_name'           => 'Khulna Agricultural University',
             'site_title'             => 'Khulna Agricultural University – KAU',
             'site_motto'             => 'Advancing Agriculture Through Innovation & Research',
-            'footer_description'     => 'Khulna Agricultural University is committed to excellence in agricultural education and research, serving Bangladesh with modern facilities and visionary leadership.',
             'site_logo_white'        => 'uploads/settings/logo-white.png',
             'site_logo_black'        => 'uploads/settings/logo-black.png',
             'site_favicon'           => 'uploads/settings/favicon.png',
             'login_background_image' => 'uploads/settings/login-bg.jpg',
+            'theme_color'            => '#0A4344',
+            'dark_mode'              => false,
 
 
             /*
             |--------------------------------------------------------------------------
-            | CONTACT INFORMATION
+            | FOOTER
             |--------------------------------------------------------------------------
             */
-            'primary_email'          => 'registrar@kau.ac.bd',
-            'support_email'          => null,
-            'info_email'             => 'info@kau.ac.bd',
-            'sales_email'            => null,
-            'primary_phone'          => '+880000000000',
-            'alternative_phone'      => null,
-            'whatsapp_number'        => null,
+            'footer_description' => 'Khulna Agricultural University is committed to excellence in agricultural education and research, serving Bangladesh with modern facilities and visionary leadership.',
+
+            'footer_links' => json_encode([
+                ['title' => 'Application Form', 'url' => '/application', 'order' => 1],
+                ['title' => 'Job Circular',     'url' => '/jobs',        'order' => 2],
+                ['title' => 'Privacy Policy',   'url' => '/privacy',     'order' => 3],
+            ]),
+
+            'contact_person' => json_encode([
+                [
+                    'name'        => 'Registrar',
+                    'designation' => 'Chief Administration Officer',
+                    'email'       => 'registrar@kau.ac.bd',
+                    'phone'       => '+880123456789'
+                ],
+            ]),
+
+            'copyright_text' => '© ' . date('Y') . ' Khulna Agricultural University. All Rights Reserved.',
+            'developer_text' => 'ICT Cell, KAU',
+            'developer_link' => 'https://kau.ac.bd',
+            'website_url'    => 'https://kau.ac.bd',
 
 
             /*
             |--------------------------------------------------------------------------
-            | ADDRESSES (EN + BN)
+            | COMMON CONTACT DETAILS
             |--------------------------------------------------------------------------
             */
+            'emails' => json_encode([
+                ['title' => 'Info', 'email' => 'info@kau.ac.bd'],
+                ['title' => 'Support', 'email' => 'support@kau.ac.bd'],
+            ]),
+
+            'phone' => json_encode([
+                ['title' => 'Hotline', 'phone' => '+880000000000'],
+            ]),
+
             'addresses' => json_encode([
-                'temporary_campus' => [
-                    'en' => 'Temporary Campus: Khulna Agricultural University, 327 Jashore Road, Goalkhali, Khalishpur, Khulna-9000',
-                    'bn' => 'অস্থায়ী অফিস: খুলনা কৃষি বিশ্ববিদ্যালয়, ৩২৭ যশোর রোড, গোয়ালখালী, খালিশপুর, খুলনা-৯০০০',
-                ]
+                ['title' => 'Temporary Campus', 'address' =>
+                    'Khulna Agricultural University, 327 Jashore Road, Goalkhali, Khalishpur, Khulna-9000'
+                ],
             ]),
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | LANGUAGE, CURRENCY, TIMEZONE
-            |--------------------------------------------------------------------------
-            */
-            'default_language'       => 'bn',
-            'default_currency'       => 'BDT',
-            'system_timezone'        => 'Asia/Dhaka',
-            'enable_multilanguage'   => true,
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SEO & META
-            |--------------------------------------------------------------------------
-            */
-            'site_url'               => 'https://kau.ac.bd',
-            'meta_title'             => 'Khulna Agricultural University | KAU Bangladesh',
-            'meta_keyword'           => 'KAU, Khulna Agricultural University, Bangladesh Agriculture, Public University',
-            'meta_tags'              => 'agriculture, university, KAU, Bangladesh',
-            'meta_description'       =>
-                'Khulna Agricultural University (KAU) is a leading agricultural university in Bangladesh, dedicated to excellence in agricultural innovation, research, and education.',
-            'google_analytics'       => null,
-            'google_adsense'         => null,
-            'facebook_pixel_id'      => null,
-            'og_image'               => 'uploads/settings/og-image.jpg',
-            'og_title'               => 'Khulna Agricultural University – Official Website',
-            'og_description'         => 'Explore academic programs, admissions, research updates, notices, and official announcements from Khulna Agricultural University.',
-            'canonical_url'          => 'https://kau.ac.bd',
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | COPYRIGHT
-            |--------------------------------------------------------------------------
-            */
-            'copyright_title'        => '© ' . date('Y') . ' Khulna Agricultural University. All Rights Reserved.',
-            'website_url'            => 'https://kau.ac.bd',
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SOCIAL LINKS
-            |--------------------------------------------------------------------------
-            | (Based on real links from website footer)
-            */
             'social_links' => json_encode([
-                'facebook'  => 'https://www.facebook.com/khulnaagriculturaluniversity',
-                'youtube'   => 'https://www.youtube.com/@kau-official',
-                'linkedin'  => null,
-                'twitter'   => null,
-                'instagram' => null,
-                'pinterest' => null,
-                'reddit'    => null,
-                'tumblr'    => null,
-                'tiktok'    => null,
-                'whatsapp'  => null,
+                ['icon_class' => 'fab fa-facebook-f', 'url' => 'https://facebook.com/khulnaagriculturaluniversity', 'order' => 1],
+                ['icon_class' => 'fab fa-youtube',    'url' => 'https://www.youtube.com/@kau-official',            'order' => 2],
             ]),
 
 
             /*
             |--------------------------------------------------------------------------
-            | FEATURE TOGGLES
+            | COMPANY INFO
             |--------------------------------------------------------------------------
             */
-            'maintenance_mode'          => false,
-            'enable_user_registration'  => false,
-            'enable_email_verification' => false,
-            'enable_api_access'         => false,
-            'is_demo'                   => false,
-            'captcha_enabled'           => false,
-            'cookie_consent_enabled'    => true,
-            'cookie_consent_text'       => 'This website uses cookies to ensure the best experience.',
-            'privacy_policy_url'        => 'https://kau.ac.bd/privacy',
-            'terms_conditions_url'      => 'https://kau.ac.bd/terms',
+            'company_name'          => 'Khulna Agricultural University',
+            'minimum_order_amount'  => null,
 
 
             /*
             |--------------------------------------------------------------------------
-            | BUSINESS HOURS (Universities usually office hours)
+            | LANGUAGE, CURRENCY & TIMEZONE
+            |--------------------------------------------------------------------------
+            */
+            'default_language'     => 'bn',
+            'default_currency'     => 'BDT',
+            'system_timezone'      => 'Asia/Dhaka',
+            'enable_multilanguage' => true,
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | SEO
+            |--------------------------------------------------------------------------
+            */
+            'site_url'          => 'https://kau.ac.bd',
+            'meta_title'        => 'Khulna Agricultural University | KAU Bangladesh',
+            'meta_keyword'      => 'KAU, Khulna Agricultural University, Agriculture Bangladesh',
+            'meta_tags'         => 'agriculture, university, KAU, Bangladesh',
+            'meta_description'  =>
+                'Khulna Agricultural University (KAU) is a leading agricultural university in Bangladesh.',
+
+            'og_image'          => 'uploads/settings/og-image.jpg',
+            'og_title'          => 'Khulna Agricultural University – Official Website',
+            'og_description'    => 'Explore academic programs, admissions, research updates, and notices.',
+            'canonical_url'     => 'https://kau.ac.bd',
+
+            'google_site_verification' => null,
+            'bing_site_verification'   => null,
+            'google_analytics'         => null,
+            'google_adsense'           => null,
+            'facebook_pixel_id'        => null,
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | LEGAL & CONSENT
+            |--------------------------------------------------------------------------
+            */
+            'privacy_policy_url'     => 'https://kau.ac.bd/privacy',
+            'terms_conditions_url'   => 'https://kau.ac.bd/terms',
+            'cookie_consent_enabled' => true,
+            'cookie_consent_text'    => 'This website uses cookies to ensure the best experience.',
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | BUSINESS HOURS
             |--------------------------------------------------------------------------
             */
             'business_hours' => json_encode([
@@ -151,32 +157,30 @@ class SettingSeeder extends Seeder
             | SMTP EMAIL SETTINGS
             |--------------------------------------------------------------------------
             */
-            'mail_driver'               => 'smtp',
-            'mail_host'                 => 'smtp.gmail.com',
-            'mail_port'                 => '587',
-            'mail_username'             => 'registrar@kau.ac.bd',
-            'mail_password'             => null,
-            'mail_encryption'           => 'tls',
-            'mail_from_address'         => 'registrar@kau.ac.bd',
-            'mail_from_name'            => 'Khulna Agricultural University',
-            'smtp_active'               => false,
-            'smtp_debug_mode'           => false,
+            'mail_driver'       => 'smtp',
+            'mail_host'         => 'smtp.gmail.com',
+            'mail_port'         => '587',
+            'mail_username'     => 'registrar@kau.ac.bd',
+            'mail_password'     => null,
+            'mail_encryption'   => 'tls',
+            'mail_from_address' => 'registrar@kau.ac.bd',
+            'mail_from_name'    => 'Khulna Agricultural University',
+            'smtp_active'       => false,
+            'smtp_debug_mode'   => false,
 
 
             /*
             |--------------------------------------------------------------------------
-            | ADVANCED SETTINGS
+            | ADVANCED
             |--------------------------------------------------------------------------
             */
-            'theme_color'               => '#0A4344', // site’s dominant color
-            'dark_mode'                 => false,
-            'custom_css'                => null,
-            'custom_js'                 => null,
+            'custom_css' => null,
+            'custom_js'  => null,
 
 
             /*
             |--------------------------------------------------------------------------
-            | Custom Plugin Settings (Optional)
+            | CUSTOM SETTINGS
             |--------------------------------------------------------------------------
             */
             'custom_settings' => json_encode([
@@ -188,13 +192,13 @@ class SettingSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
-            | Auditing
+            | AUDIT
             |--------------------------------------------------------------------------
             */
-            'created_by'                => 1,
-            'updated_by'                => 1,
-            'created_at'                => Carbon::now(),
-            'updated_at'                => Carbon::now(),
+            'created_by' => 1,
+            'updated_by' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
     }
 }

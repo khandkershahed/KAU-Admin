@@ -119,7 +119,7 @@
 
                         <div class="image-input image-input-outline" data-kt-image-input="true">
                             <div class="image-input-wrapper w-125px h-125px"
-                                style="background-image: url('{{ asset('images/default-user.png') }}')"></div>
+                                style="background-image: url('{{ asset('images/no_image.png') }}')"></div>
 
                             <label class="btn btn-icon btn-circle btn-active-light-primary w-25px h-25px"
                                 data-kt-image-input-action="change">
@@ -230,7 +230,7 @@
 
                         <div class="image-input image-input-outline" data-kt-image-input="true">
                             <div class="image-input-wrapper w-125px h-125px" id="editMemberImagePreview"
-                                style="background-image: url('{{ asset('images/default-user.png') }}')"></div>
+                                style="background-image: url('{{ asset('images/no_image.png') }}')"></div>
 
                             <label class="btn btn-icon btn-circle btn-active-light-primary w-25px h-25px"
                                 data-kt-image-input-action="change">

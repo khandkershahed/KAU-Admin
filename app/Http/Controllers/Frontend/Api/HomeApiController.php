@@ -775,4 +775,24 @@ class HomeApiController extends Controller
             ],
         ]);
     }
+
+    // footer
+    public function footer()
+    {
+        $setting = Setting::first();
+
+        return response()->json([
+            'footer_description' => $setting->footer_description,
+            'footer_links'       => $setting->footer_links,
+            'contact_person'     => $setting->contact_person,
+            'emails'             => $setting->emails,
+            'phone'              => $setting->phone,
+            'addresses'          => $setting->addresses,
+            'social_links'       => $setting->social_links,
+            'copyright_text'     => $setting->copyright_text,
+            'developer_text'     => $setting->developer_text,
+            'developer_link'     => $setting->developer_link,
+            'website_url'        => $setting->website_url,
+        ]);
+    }
 }

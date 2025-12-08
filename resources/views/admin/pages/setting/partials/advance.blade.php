@@ -126,7 +126,7 @@
 <hr>
 
 <div class="row mb-7">
-    <div class="col-12">
+    <div class="col-12 mb-10">
         <h5 class="mb-7">Custom Settings (Key / Value)</h5>
         <small class="text-muted">These map to the <code>custom_settings</code> JSON column.</small>
     </div>
@@ -149,4 +149,41 @@
                 value="{{ old("custom_settings.$key", $value) }}">
         </div>
     @endforeach
+    <div class="mb-10">
+        <label class="form-label fw-bold">Custom CSS</label>
+        <textarea id="customCssEditor" name="custom_css" class="form-control">{{ $setting->custom_css }}</textarea>
+    </div>
+
+    <div class="mb-10">
+        <label class="form-label fw-bold">Custom JS</label>
+        <textarea id="customJsEditor" name="custom_js" class="form-control">{{ $setting->custom_js }}</textarea>
+    </div>
 </div>
+
+
+@push('scripts')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/javascript/javascript.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            CodeMirror.fromTextArea(document.getElementById("customCssEditor"), {
+                mode: "css",
+                theme: "default",
+                lineNumbers: true,
+                tabSize: 2
+            });
+
+            CodeMirror.fromTextArea(document.getElementById("customJsEditor"), {
+                mode: "javascript",
+                theme: "default",
+                lineNumbers: true,
+                tabSize: 2
+            });
+
+        });
+    </script>
+@endpush

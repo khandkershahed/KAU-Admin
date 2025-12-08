@@ -2,7 +2,7 @@
 
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         <!--begin::Toolbar-->
-        
+
         <!--end::Toolbar-->
 
         <!--begin::Post-->
@@ -127,7 +127,7 @@
                             <!--begin::Label-->
                         </div>
                         <!--end::Input group-->
-                        
+
                         <!--end::Notice-->
                     </div>
                     <!--end::Card body-->
@@ -186,7 +186,7 @@
                                 </div>
                             </div>
 
-                            
+
 
                             <div class="col-4">
                                 <div class="form-group mb-2">
@@ -215,7 +215,7 @@
                                 </div>
                             </div>
 
-                            
+
 
                             <div class="col-4">
                                 <!--begin::Input group-->
@@ -232,7 +232,7 @@
                                     <div class="mt-1">
                                         <!--begin::Image input-->
                                         <div class="image-input image-input-outline" data-kt-image-input="true"
-                                            style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                                            style="background-image: url('{{ asset('images/no_image.png') }}')">
                                             <!--begin::Preview existing avatar-->
                                             <div class="image-input-wrapper w-125px h-125px"
                                                 style="background-image: url(assets/media/avatars/300-6.jpg">
