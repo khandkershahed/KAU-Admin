@@ -210,7 +210,8 @@ class NewsController extends Controller
             foreach ($fields as $field => $path) {
                 if ($request->hasFile($field)) {
                     if (!empty($news->$field)) {
-                        Storage::delete('public/' . $news->$field);
+                        // Storage::delete('public/' . $news->$field);
+                        Storage::disk('public')->delete($news->$field);
                     }
                     $upload = customUpload($request->file($field), $path);
                     if ($upload['status'] === 0) {
@@ -260,7 +261,7 @@ class NewsController extends Controller
 
         foreach ($files as $field) {
             if (!empty($news->$field)) {
-                Storage::delete('public/' . $news->$field);
+                Storage::disk('public')->delete($news->$field);
             }
         }
 

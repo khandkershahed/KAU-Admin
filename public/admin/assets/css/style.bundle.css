@@ -47113,7 +47113,9 @@ code:not([class*=language-]) {
 
 .image-input.image-input-outline .image-input-wrapper {
     border: 3px solid #fff;
-    box-shadow: 0 .1rem 1rem .25rem rgba(0, 0, 0, .05)
+    box-shadow: 0 .1rem 1rem .25rem rgba(0, 0, 0, .05);
+    background-position: center;
+    background-size: contain;
 }
 
 .symbol {

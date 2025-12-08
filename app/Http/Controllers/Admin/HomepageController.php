@@ -286,8 +286,10 @@ class HomepageController extends Controller
     protected function updateBanners(Request $request): void
     {
         $items = $request->input('banners', []);
-        $files = $request->file('banner_images', []);
+        $files = $request->file('banners', []);
+        // $files = $request->file('banner_images', []);
 
+        // dd($files);
         // Enforce max 3 banners logically
         if (count($items) > 3) {
             $items = array_slice($items, 0, 3);
@@ -314,15 +316,17 @@ class HomepageController extends Controller
 
             // remove image?
             if (!empty($item['remove_image']) && $item['remove_image'] == 1 && $banner->image_path) {
-                Storage::delete('public/' . $banner->image_path);
+                Storage::disk('public')->delete($banner->image_path);
+
                 $banner->image_path = null;
             }
 
+            $file = $files[$index]['image'] ?? null;
             // upload new image?
-            if (!empty($files[$index] ?? null)) {
-                $file = $files[$index];
+            if ($file) {
                 if ($banner->image_path) {
-                    Storage::delete('public/' . $banner->image_path);
+                    Storage::disk('public')->delete($banner->image_path);
+
                 }
                 $upload = customUpload($file, 'homepage/banners');
                 if ($upload['status'] === 0) {
@@ -330,6 +334,18 @@ class HomepageController extends Controller
                 }
                 $banner->image_path = $upload['file_path'];
             }
+            // if (!empty($files[$index] ?? null)) {
+            //     $file = $files[$index];
+            //     if ($banner->image_path) {
+            //         Storage::disk('public')->delete($banner->image_path);
+
+            //     }
+            //     $upload = customUpload($file, 'homepage/banners');
+            //     if ($upload['status'] === 0) {
+            //         throw new \RuntimeException($upload['error_message']);
+            //     }
+            //     $banner->image_path = $upload['file_path'];
+            // }
 
             $banner->save();
             $existingIds[] = $banner->id;
@@ -340,7 +356,8 @@ class HomepageController extends Controller
             $toDelete = HomepageBanner::whereNotIn('id', $existingIds)->get();
             foreach ($toDelete as $b) {
                 if ($b->image_path) {
-                    Storage::delete('public/' . $b->image_path);
+                    // Storage::delete('public/' . $b->image_path);
+                    Storage::disk('public')->delete($b->image_path);
                 }
                 $b->delete();
             }
@@ -348,7 +365,7 @@ class HomepageController extends Controller
             // If no items submitted, delete all
             foreach (HomepageBanner::all() as $b) {
                 if ($b->image_path) {
-                    Storage::delete('public/' . $b->image_path);
+                    Storage::disk('public')->delete($b->image_path);
                 }
                 $b->delete();
             }
@@ -368,13 +385,14 @@ class HomepageController extends Controller
 
         // remove image?
         if ($request->boolean('vc_image_remove') && $vc->vc_image) {
-            Storage::delete('public/' . $vc->vc_image);
+            // Storage::delete('public/' . $vc->vc_image);
+            Storage::disk('public')->delete($vc->vc_image);
             $vc->vc_image = null;
         }
 
         if ($request->hasFile('vc_image')) {
             if ($vc->vc_image) {
-                Storage::delete('public/' . $vc->vc_image);
+                Storage::disk('public')->delete($vc->vc_image);
             }
             $upload = customUpload($request->file('vc_image'), 'homepage/vc');
             if ($upload['status'] === 0) {
@@ -520,13 +538,14 @@ class HomepageController extends Controller
 
             // Remove requested
             if ($request->boolean($removeField) && !empty($images[$index])) {
-                Storage::delete('public/' . $images[$index]);
+                // Storage::delete('public/' . $images[$index]);
+                Storage::disk('public')->delete($images[$index]);
                 $images[$index] = null;
             }
 
             if ($request->hasFile($fileField)) {
                 if (!empty($images[$index])) {
-                    Storage::delete('public/' . $images[$index]);
+                    Storage::disk('public')->delete($images[$index]);
                 }
                 $upload = customUpload($request->file($fileField), 'homepage/about');
                 if ($upload['status'] === 0) {

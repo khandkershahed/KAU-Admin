@@ -213,7 +213,8 @@ class AdmissionController extends Controller
             $bannerImage = $admission->banner_image;
             if ($request->hasFile('banner_image')) {
                 if ($bannerImage) {
-                    Storage::delete('public/' . $bannerImage);
+                    // Storage::delete('public/' . $bannerImage);
+                    Storage::disk('public')->delete($bannerImage);
                 }
                 $file   = $request->file('banner_image');
                 $path   = 'admissions/banner';
@@ -257,7 +258,8 @@ class AdmissionController extends Controller
         $admission = Admission::findOrFail($id);
 
         if ($admission->banner_image) {
-            Storage::delete('public/' . $admission->banner_image);
+            // Storage::delete('public/' . $admission->banner_image);
+             Storage::disk('public')->delete($admission->banner_image);
         }
 
         // If it has children, Eloquent will keep them; you can decide whether to re-parent or cascade.

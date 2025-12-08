@@ -84,7 +84,7 @@ class HomepageBuilderController extends Controller
 
                 // Explore KAU
                 'explore_section_title'   => 'nullable|string|max:255',
-                'explore_section_subtitle'=> 'nullable|string',
+                'explore_section_subtitle' => 'nullable|string',
                 'explore_boxes'           => 'nullable|array',
                 'explore_boxes.*.icon'    => 'nullable|string|max:255',
                 'explore_boxes.*.title'   => 'nullable|string|max:255',
@@ -117,7 +117,7 @@ class HomepageBuilderController extends Controller
 
                 // Important links
                 'important_links_title'      => 'nullable|string|max:255',
-                'important_links_description'=> 'nullable|string',
+                'important_links_description' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -190,7 +190,8 @@ class HomepageBuilderController extends Controller
                 // explicit remove flag from Metronic image-input
                 if ($request->boolean($field . '_remove')) {
                     if (!empty($homepage->$column)) {
-                        Storage::delete('public/' . $homepage->$column);
+                        // Storage::delete('public/' . $homepage->$column);
+                        Storage::disk('public')->delete($homepage->$column);
                     }
                     $homepage->$column = null;
                     continue;
@@ -198,7 +199,7 @@ class HomepageBuilderController extends Controller
 
                 if ($request->hasFile($field)) {
                     if (!empty($homepage->$column)) {
-                        Storage::delete('public/' . $homepage->$column);
+                        Storage::disk('public')->delete($homepage->$column);
                     }
                     $upload = customUpload($request->file($field), $path);
                     if ($upload['status'] === 0) {
@@ -219,7 +220,8 @@ class HomepageBuilderController extends Controller
 
                 if ($request->boolean($remove)) {
                     if (!empty($aboutImages[$i])) {
-                        Storage::delete('public/' . $aboutImages[$i]);
+                        // Storage::delete('public/' . $aboutImages[$i]);
+                        Storage::disk('public')->delete($aboutImages[$i]);
                     }
                     unset($aboutImages[$i]);
                     continue;
@@ -227,7 +229,7 @@ class HomepageBuilderController extends Controller
 
                 if ($request->hasFile($field)) {
                     if (!empty($aboutImages[$i])) {
-                        Storage::delete('public/' . $aboutImages[$i]);
+                        Storage::disk('public')->delete($aboutImages[$i]);
                     }
                     $upload = customUpload($request->file($field), 'homepage/about');
                     if ($upload['status'] === 0) {
@@ -379,7 +381,7 @@ class HomepageBuilderController extends Controller
             ['key' => 'faculty',        'label' => 'Faculties / Programs', 'enabled' => true],
             ['key' => 'at_a_glance',    'label' => 'KAU at a Glance',      'enabled' => true],
             ['key' => 'about',          'label' => 'About Section',        'enabled' => true],
-            ['key' => 'important_links','label' => 'Important Links',      'enabled' => true],
+            ['key' => 'important_links', 'label' => 'Important Links',      'enabled' => true],
         ];
     }
 
@@ -392,7 +394,7 @@ class HomepageBuilderController extends Controller
             'faculty'        => 'Faculties / Programs',
             'at_a_glance'    => 'KAU at a Glance',
             'about'          => 'About Section',
-            'important_links'=> 'Important Links',
+            'important_links' => 'Important Links',
         ][$key] ?? ucfirst(str_replace('_', ' ', $key));
     }
 }

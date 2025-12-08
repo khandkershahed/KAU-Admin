@@ -125,9 +125,9 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
-        Route::get('/{id}/edit', 'edit')->name('edit');
-        Route::put('/{id}', 'update')->name('update');
-        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::get('/{about}/edit', 'edit')->name('edit');
+        Route::put('/update/{about}', 'update')->name('update');
+        Route::delete('/{about}', 'destroy')->name('destroy');
         Route::post('/{page}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
         Route::post('/{page}/toggle-status', 'toggleStatus')->name('toggle-status');
         Route::post('/sort/order', 'updateOrder')->name('sort.order');
@@ -143,9 +143,9 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::controller(NoticeController::class)->prefix('notice')->name('notice.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/store', 'store')->name('store');
         Route::get('/edit/{notice}', 'edit')->name('edit');
-        Route::put('/{notice}', 'update')->name('update');
+        Route::put('/update/{notice}', 'update')->name('update');
         Route::delete('/{notice}', 'destroy')->name('destroy');
         Route::post('/{notice}/toggle-featured', 'toggleFeatured')->name('toggle-featured');
         Route::post('/{notice}/toggle-status', 'toggleStatus')->name('toggle-status');

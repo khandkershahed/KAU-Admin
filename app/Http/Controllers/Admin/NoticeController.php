@@ -210,7 +210,8 @@ class NoticeController extends Controller
                 if (is_array($storedAttachments)) {
                     foreach ($storedAttachments as $oldFile) {
                         if ($oldFile) {
-                            Storage::delete('public/' . $oldFile);
+                            // Storage::delete('public/' . $oldFile);
+                            Storage::disk('public')->delete($oldFile);
                         }
                     }
                 }
@@ -266,7 +267,7 @@ class NoticeController extends Controller
         if (is_array($notice->attachments)) {
             foreach ($notice->attachments as $file) {
                 if ($file) {
-                    Storage::delete('public/' . $file);
+                    Storage::disk('public')->delete($file);
                 }
             }
         }

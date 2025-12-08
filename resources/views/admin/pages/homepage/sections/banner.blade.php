@@ -38,17 +38,19 @@
                                 @php
                                     $img = $banner->image_path
                                         ? asset('storage/' . $banner->image_path)
-                                        : asset('media/placeholder/blank-image.svg');
+                                        : asset('images/no_image.png');
                                 @endphp
-                                <div class="image-input-wrapper w-200px h-150px"
+                                <div class="image-input-wrapper w-200px"
                                     style="background-image: url('{{ $img }}')"></div>
 
                                 <label
                                     class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                                     data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
                                     <i class="bi bi-pencil-fill fs-7"></i>
-                                    <input type="file" name="banner_images[{{ $loop->index }}]"
+                                    <input type="file" name="image"
                                         accept=".png,.jpg,.jpeg" />
+                                    {{-- <input type="file" name="banner_images[{{ $loop->index }}]"
+                                        accept=".png,.jpg,.jpeg" /> --}}
                                 </label>
 
                                 <span
@@ -111,15 +113,16 @@
                                 Background Image
                             </x-metronic.label>
                             <div class="image-input image-input-outline" data-kt-image-input="true">
-                                <div class="image-input-wrapper w-200px h-150px"
-                                    style="background-image: url('{{ asset('media/placeholder/blank-image.svg') }}')">
+                                <div class="image-input-wrapper w-200px"
+                                    style="background-image: url('{{ asset('images/no_image.png') }}');">
                                 </div>
 
                                 <label
                                     class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                                     data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change image">
                                     <i class="bi bi-pencil-fill fs-7"></i>
-                                    <input type="file" name="banner_images[0]" accept=".png,.jpg,.jpeg" />
+                                    <input type="file" name="image" accept=".png,.jpg,.jpeg" />
+                                    {{-- <input type="file" name="banner_images[0]" accept=".png,.jpg,.jpeg" /> --}}
                                 </label>
 
                                 <span

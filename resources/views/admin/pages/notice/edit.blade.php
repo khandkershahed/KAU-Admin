@@ -37,9 +37,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('admin.notice.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('admin.notice.update',$notice->id) }}" enctype="multipart/form-data">
                 @csrf
-
+                @method('PUT')
                 <div class="row">
                     {{-- MAIN COLUMN --}}
                     <div class="col-lg-10 mb-10">
@@ -98,7 +98,7 @@
                                                     <option value="">-- None --</option>
                                                     @foreach ($categories as $c)
                                                         <option value="{{ $c->id }}"
-                                                            {{ old('category_id') == $c->id ? 'selected' : '' }}>
+                                                            {{ old('category_id',$notice->category_id) == $c->id ? 'selected' : '' }}>
                                                             {{ $c->name }}
                                                         </option>
                                                     @endforeach
@@ -111,7 +111,7 @@
                                                     Title
                                                 </x-metronic.label>
                                                 <x-metronic.input id="title" type="text" name="title"
-                                                    :value="old('title')" required />
+                                                    :value="old('title',$notice->title)" required />
                                             </div>
 
                                             <div class="col-lg-4 mb-6">
@@ -120,7 +120,7 @@
                                                     Publish Date
                                                 </x-metronic.label>
                                                 <x-metronic.input id="publish_date" type="date" name="publish_date"
-                                                    :value="old('publish_date')" />
+                                                    :value="old('publish_date',$notice->publish_date)" />
                                             </div>
 
                                             <div class="col-lg-4 mb-6">

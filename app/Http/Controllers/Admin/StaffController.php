@@ -211,7 +211,8 @@ class StaffController extends Controller
             // Photo update
             if ($request->hasFile('photo')) {
                 if (!empty($admin->photo)) {
-                    Storage::delete('public/' . $admin->photo);
+                    // Storage::delete('public/' . $admin->photo);
+                    Storage::disk('public')->delete($admin->photo);
                 }
 
                 $upload = customUpload($request->file('photo'), 'admins/photo');
@@ -275,7 +276,7 @@ class StaffController extends Controller
         $admin = Admin::findOrFail($id);
 
         if (!empty($admin->photo)) {
-            Storage::delete('public/' . $admin->photo);
+            Storage::disk('public')->delete($admin->photo);
         }
 
         // Remove roles
