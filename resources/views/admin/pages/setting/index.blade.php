@@ -79,9 +79,12 @@
                     </div>
                     <div class="card-footer py-3">
                         <div class="text-end">
-                            <x-metronic.button type="submit" class="primary">
+                            <button type="submit" class="btn btn-outline btn-outline-info btn-active-info rounded-1"
+                                id="saveSettingsBtn">
                                 {{ __('Submit') }}
-                            </x-metronic.button>
+                            </button>
+                            {{-- <x-metronic.button type="submit" class="primary">
+                            </x-metronic.button> --}}
                         </div>
                     </div>
                 </form>

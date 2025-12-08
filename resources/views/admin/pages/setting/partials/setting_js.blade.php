@@ -184,7 +184,7 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
 
-            success: function (res) {
+            success: function (res) { 
                 if (res.success) {
                     Swal.fire({
                         icon: "success",
