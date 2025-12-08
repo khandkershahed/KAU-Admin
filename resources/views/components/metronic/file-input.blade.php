@@ -47,11 +47,13 @@
 
 
 
-@props(['id' => '', 'name', 'source' => ''])
-
+@props(['id', 'name', 'source' => ''])
+@php
+   $uid = $id ?? $name . '-' . uniqid();
+@endphp
 <div class="row gx-1">
     <div class="col-10">
-        <input id="{{ $id ?? 'file-input' }}" type="file"
+        <input id="{{ $uid }}" type="file"
             class="form-control form-control-solid @error($name)is-invalid @enderror" name="{{ $name }}"
             accept="image/*" {{ $attributes }} onchange="previewFile(this)" />
 

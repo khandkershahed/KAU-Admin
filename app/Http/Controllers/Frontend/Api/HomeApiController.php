@@ -41,28 +41,44 @@ class HomeApiController extends Controller
     {
         $settings = DB::table('settings')->first();
 
+        if (!$settings) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Settings not configured.',
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'settings' => [
+
                 'website_name'       => $settings->website_name,
                 'site_title'         => $settings->site_title,
                 'site_motto'         => $settings->site_motto,
                 'footer_description' => $settings->footer_description,
 
                 'branding' => [
-                    'site_logo_white'           => $settings->site_logo_white ? URL::to('storage/' . $settings->site_logo_white)       : null,
-                    'site_logo_black'           => $settings->site_logo_black ? URL::to('storage/' . $settings->site_logo_black)       : null,
-                    'site_favicon'              => $settings->site_favicon ? URL::to('storage/' . $settings->site_favicon)          : null,
+                    'site_logo_white' => $settings->site_logo_white
+                        ? URL::to('storage/' . $settings->site_logo_white) : null,
+
+                    'site_logo_black' => $settings->site_logo_black
+                        ? URL::to('storage/' . $settings->site_logo_black) : null,
+
+                    'site_favicon' => $settings->site_favicon
+                        ? URL::to('storage/' . $settings->site_favicon) : null,
+
                     'theme_color' => $settings->theme_color,
                     'dark_mode'  => (bool) $settings->dark_mode,
                 ],
 
+
                 'contact' => [
-                    'primary_email'   => $settings->primary_email,
-                    'info_email'      => $settings->info_email,
-                    'primary_phone'   => $settings->primary_phone,
-                    'addresses'       => json_decode($settings->addresses, true),
+                    'emails'   => json_decode($settings->emails, true) ?? [],
+                    'phones'   => json_decode($settings->phone, true) ?? [],
+                    'addresses' => json_decode($settings->addresses, true) ?? [],
+                    'contact_person' => json_decode($settings->contact_person, true) ?? [],
                 ],
+
 
                 'seo' => [
                     'site_url'        => $settings->site_url,
@@ -70,17 +86,40 @@ class HomeApiController extends Controller
                     'meta_keyword'    => $settings->meta_keyword,
                     'meta_tags'       => $settings->meta_tags,
                     'meta_description' => $settings->meta_description,
-                    'og_image'        => $settings->og_image ? URL::to('storage/' . $settings->og_image) : null,
-                    'og_title'        => $settings->og_title,
-                    'og_description'  => $settings->og_description,
+
+                    'og_image' => $settings->og_image
+                        ? URL::to('storage/' . $settings->og_image) : null,
+
+                    'og_title'       => $settings->og_title,
+                    'og_description' => $settings->og_description,
+                    'canonical_url'  => $settings->canonical_url,
                 ],
 
-                'social_links'      => json_decode($settings->social_links, true),
-                'business_hours'    => json_decode($settings->business_hours, true),
-                'custom_settings'   => json_decode($settings->custom_settings, true),
+                'social_links' => collect(json_decode($settings->social_links, true) ?? [])
+                    ->sortBy('order')
+                    ->values()
+                    ->all(),
+
+                'footer_links' => collect(json_decode($settings->footer_links, true) ?? [])
+                    ->sortBy('order')
+                    ->values()
+                    ->all(),
+
+                'business_hours' => json_decode($settings->business_hours, true) ?? [],
+
+                'developer' => [
+                    'text' => $settings->developer_text,
+                    'url'  => $settings->developer_link,
+                ],
+
+
+
+                'custom_settings' => json_decode($settings->custom_settings, true) ?? [],
+
             ],
         ]);
     }
+
 
     public function noticeCategories()
     {

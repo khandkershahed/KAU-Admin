@@ -19,10 +19,10 @@ class SettingSeeder extends Seeder
             'website_name'           => 'Khulna Agricultural University',
             'site_title'             => 'Khulna Agricultural University – KAU',
             'site_motto'             => 'Advancing Agriculture Through Innovation & Research',
-            'site_logo_white'        => 'uploads/settings/logo-white.png',
-            'site_logo_black'        => 'uploads/settings/logo-black.png',
-            'site_favicon'           => 'uploads/settings/favicon.png',
-            'login_background_image' => 'uploads/settings/login-bg.jpg',
+            'site_logo_white'        => null,
+            'site_logo_black'        => null,
+            'site_favicon'           => null,
+            'login_background_image' => null,
             'theme_color'            => '#0A4344',
             'dark_mode'              => false,
 
@@ -70,8 +70,22 @@ class SettingSeeder extends Seeder
             ]),
 
             'addresses' => json_encode([
-                ['title' => 'Temporary Campus', 'address' =>
-                    'Khulna Agricultural University, 327 Jashore Road, Goalkhali, Khalishpur, Khulna-9000'
+                [
+                    'title' => 'Temporary Campus',
+                    'address' =>'Khulna Agricultural University
+                     327, Jashore Road, Goalkhali,
+                     Khalishpur, Khulna-9000
+                     E-mail: registrar@kau.ac.bd
+                     Web: www.kau.ac.bd'
+                ],
+                [
+                    'title' => 'অস্থায়ী অফিস',
+                    'address' =>
+                    'খুলনা কৃষি বিশ্ববিদ্যালয়
+                     ৩২৭, যশোর রোড, গোয়ালখালী,
+                     খালিশপুর, খুলনা-৯০০০
+                     ই-মেইল: registrar@kau.ac.bd
+                     ওয়বে: www.kau.ac.bd'
                 ],
             ]),
 
@@ -111,7 +125,7 @@ class SettingSeeder extends Seeder
             'meta_keyword'      => 'KAU, Khulna Agricultural University, Agriculture Bangladesh',
             'meta_tags'         => 'agriculture, university, KAU, Bangladesh',
             'meta_description'  =>
-                'Khulna Agricultural University (KAU) is a leading agricultural university in Bangladesh.',
+            'Khulna Agricultural University (KAU) is a leading agricultural university in Bangladesh.',
 
             'og_image'          => 'uploads/settings/og-image.jpg',
             'og_title'          => 'Khulna Agricultural University – Official Website',
