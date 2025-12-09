@@ -15,8 +15,7 @@
             value="{{ $value }}" autocomplete="off">
 
         {{-- BUTTON --}}
-        <button type="button"
-            class="btn btn-outline icon-picker-toggle {{ $buttonClass }}"
+        <button type="button" class="btn btn-outline icon-picker-toggle {{ $buttonClass }}"
             data-target="{{ $id }}">
             <i class="{{ $value ?: 'fa fa-icons' }}"></i>
         </button>
@@ -41,6 +40,7 @@
     </div>
 </div>
 
+
 @push('styles')
     <style>
         .icon-picker-wrapper .icon-box {
@@ -63,12 +63,18 @@
 @once
     @push('scripts')
         <script>
-            document.addEventListener("DOMContentLoaded", async function() {
+            /* -----------------------------------------------------------
+           GLOBAL ICON PICKER INITIALIZER (Supports Repeaters)
+        ----------------------------------------------------------- */
+
+            let __faIconList = []; // cache icons so we don't reload JSON repeatedly
+            let __faIconLoaded = false;
+
+            // Load icon list once
+            async function loadFaIcons() {
+                if (__faIconLoaded) return __faIconList;
 
                 const ICON_JSON_URL = "{{ asset('fontawesome/icons.json') }}";
-                console.log("Loading FA metadata:", ICON_JSON_URL);
-
-                let faIcons = [];
 
                 try {
                     const response = await fetch(ICON_JSON_URL);
@@ -84,15 +90,27 @@
                                 style === "regular" ? "fa-regular" :
                                 style === "brands" ? "fa-brands" : "";
 
-                            faIcons.push(`${prefix} fa-${iconName}`);
+                            __faIconList.push(`${prefix} fa-${iconName}`);
                         });
                     });
 
-                } catch (e) {
-                    console.error("FA icon load error:", e);
-                }
+                    __faIconLoaded = true;
+                    return __faIconList;
 
-                document.querySelectorAll(".icon-picker-wrapper").forEach(wrapper => {
+                } catch (e) {
+                    console.error("Error loading FontAwesome icons:", e);
+                    return [];
+                }
+            }
+
+            /* -----------------------------------------------------------
+               INIT FUNCTION → Can run multiple times (repeaters)
+            ----------------------------------------------------------- */
+            window.initIconPicker = async function(wrapperElement = document) {
+
+                await loadFaIcons(); // ensure icons loaded
+
+                wrapperElement.querySelectorAll(".icon-picker-wrapper").forEach(wrapper => {
 
                     const input = wrapper.querySelector(".icon-picker-input");
                     const button = wrapper.querySelector(".icon-picker-toggle");
@@ -100,9 +118,12 @@
                     const grid = wrapper.querySelector(".icon-grid");
                     const searchInput = wrapper.querySelector(".icon-search");
 
+                    if (!input || !button || !dropdown || !grid) return;
+
+                    /* RENDER ICONS */
                     function renderIcons(filter = "") {
                         grid.innerHTML = "";
-                        faIcons
+                        __faIconList
                             .filter(icon => icon.toLowerCase().includes(filter.toLowerCase()))
                             .forEach(icon => {
                                 const div = document.createElement("div");
@@ -120,6 +141,7 @@
 
                     renderIcons();
 
+                    /* BUTTON TOGGLE */
                     button.onclick = () => {
                         const isOpen = dropdown.style.display === "block";
                         document.querySelectorAll(".icon-picker-dropdown")
@@ -127,14 +149,21 @@
                         dropdown.style.display = isOpen ? "none" : "block";
                     };
 
+                    /* SEARCH */
                     searchInput.oninput = () => renderIcons(searchInput.value);
 
-                    document.addEventListener("click", e => {
+                    /* CLOSE ON OUTSIDE CLICK */
+                    document.addEventListener("click", (e) => {
                         if (!wrapper.contains(e.target))
                             dropdown.style.display = "none";
                     });
-                });
 
+                });
+            };
+
+            // AUTO-RUN ON PAGE LOAD
+            document.addEventListener("DOMContentLoaded", () => {
+                initIconPicker();
             });
         </script>
     @endpush

@@ -2,6 +2,13 @@
     $(document).ready(function() {
 
         /* ============================================================
+           INIT ICON PICKER FOR EXISTING COMPONENTS
+        ============================================================ */
+        if (typeof initIconPicker !== "undefined") {
+            initIconPicker();
+        }
+
+        /* ============================================================
            TAB MEMORY — Restore Last Opened Tab
         ============================================================ */
         const savedTab = localStorage.getItem("settings_active_tab");
@@ -23,7 +30,7 @@
 
 
         /* ============================================================
-           UTILITY → REBUILD INDEXES (After Add/Delete/Sort)
+           UTILITY — REBUILD INDEXES
         ============================================================ */
         function rebuildIndexes(wrapperSelector, fieldName) {
             $(wrapperSelector).children(".repeater-row").each(function(i) {
@@ -40,7 +47,7 @@
                     $(this).attr("name", name);
                 });
 
-                // FIX SOCIAL ICON PICKER IDs
+                // Fix social icon picker IDs
                 $(this).find("[id^='socialIcon_']").attr("id", `socialIcon_${i}`);
                 $(this).find(".icon-picker-toggle").attr("data-target", `socialIcon_${i}`);
             });
@@ -49,7 +56,7 @@
 
 
         /* ============================================================
-           GENERIC ADD REPEATER ROW
+           GENERIC REPEATER APPEND
         ============================================================ */
         function addRepeater(wrapperSelector, template, fieldName) {
             $(wrapperSelector).append(template);
@@ -59,7 +66,7 @@
 
 
         /* ============================================================
-           DELETE REPEATER ROW
+           DELETE REPEATER
         ============================================================ */
         $(document).on("click", ".delete-row-btn", function() {
             const wrapper = $(this).closest(".repeater-wrapper");
@@ -72,7 +79,7 @@
 
 
         /* ============================================================
-           SORTABLE (Footer Links + Social Links)
+           SORTABLE
         ============================================================ */
         function initSortable() {
             $("#footerLinksRepeater").sortable({
@@ -90,110 +97,50 @@
 
 
         /* ============================================================
-           REPEATER TEMPLATES (ROW STYLE)
+           TEMPLATES (FULL)
         ============================================================ */
 
         const footerLinkTemplate = `
-        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-            <span class="sortable-handle cursor-pointer fs-3">☰</span>
-
-            <input type="text" name="footer_links[0][title]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Title">
-
-            <input type="text" name="footer_links[0][url]"
-                   class="form-control form-control-sm w-50"
-                   placeholder="URL">
-
-            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    `;
-
+    <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <span class="sortable-handle cursor-pointer fs-3">☰</span>
+        <input type="text" name="footer_links[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
+        <input type="text" name="footer_links[0][url]" class="form-control form-control-sm w-50" placeholder="URL">
+        <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
 
         const emailTemplate = `
-        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-            <input type="text" name="emails[0][title]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Title">
-
-            <input type="email" name="emails[0][email]"
-                   class="form-control form-control-sm w-50"
-                   placeholder="Email">
-
-            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    `;
-
+    <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <input type="text" name="emails[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
+        <input type="email" name="emails[0][email]" class="form-control form-control-sm w-50" placeholder="Email">
+        <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
 
         const phoneTemplate = `
-        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-            <input type="text" name="phone[0][title]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Title">
-
-            <input type="text" name="phone[0][phone]"
-                   class="form-control form-control-sm w-50"
-                   placeholder="Phone">
-
-            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    `;
-
+    <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <input type="text" name="phone[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
+        <input type="text" name="phone[0][phone]" class="form-control form-control-sm w-50" placeholder="Phone">
+        <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
 
         const addressTemplate = `
-        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-            <input type="text" name="addresses[0][title]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Title">
-
-            <input type="text" name="addresses[0][address]"
-                   class="form-control form-control-sm w-50"
-                   placeholder="Address">
-
-            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    `;
-
+    <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <input type="text" name="addresses[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
+        <input type="text" name="addresses[0][address]" class="form-control form-control-sm w-50" placeholder="Address">
+        <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
 
         const contactPersonTemplate = `
-        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+    <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <input type="text" name="contact_person[0][name]" class="form-control form-control-sm w-25" placeholder="Name">
+        <input type="text" name="contact_person[0][designation]" class="form-control form-control-sm w-25" placeholder="Designation">
+        <input type="email" name="contact_person[0][email]" class="form-control form-control-sm w-25" placeholder="Email">
+        <input type="text" name="contact_person[0][phone]" class="form-control form-control-sm w-25" placeholder="Phone">
+        <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
 
-            <input type="text" name="contact_person[0][name]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Name">
-
-            <input type="text" name="contact_person[0][designation]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Designation">
-
-            <input type="email" name="contact_person[0][email]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Email">
-
-            <input type="text" name="contact_person[0][phone]"
-                   class="form-control form-control-sm w-25"
-                   placeholder="Phone">
-
-            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-
-        </div>
-    `;
-
-
-
-        /* ============================================================
-           SOCIAL LINKS TEMPLATE (USING BLADE-RENDERED ICON PICKER)
-        ============================================================ */
+        /* ------------------------------------------------------------
+           SOCIAL TEMPLATE USING BLADE ICON-PICKER COMPONENT
+        ------------------------------------------------------------ */
         const rawSocialIconTemplate = $("#socialIconTemplate").html().trim();
 
         function makeSocialTemplate(index) {
@@ -203,31 +150,26 @@
                 .replace(/INDEX/g, index);
 
             return `
-            <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+        <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+            <span class="sortable-handle cursor-pointer fs-3">☰</span>
 
-                <span class="sortable-handle cursor-pointer fs-3">☰</span>
+            <div class="input-group w-lg-300px">${iconPicker}</div>
 
-                <div class="input-group w-lg-300px">
-                    ${iconPicker}
-                </div>
+            <input type="text"
+                   name="social_links[${index}][url]"
+                   class="form-control form-control-sm social-url-input"
+                   placeholder="URL">
 
-                <input type="text"
-                       name="social_links[${index}][url]"
-                       class="form-control form-control-sm social-url-input"
-                       placeholder="URL">
-
-                <button type="button" class="btn btn-danger btn-sm delete-row-btn">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-
-            </div>
-        `;
+            <button type="button" class="btn btn-danger btn-sm delete-row-btn">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>`;
         }
 
 
 
         /* ============================================================
-           ADD BUTTON ACTIONS
+           ADD BUTTONS
         ============================================================ */
 
         $("#addFooterLinkBtn").click(() =>
@@ -255,8 +197,13 @@
             const count = $(wrapper).children().length;
 
             $(wrapper).append(makeSocialTemplate(count));
+
             rebuildIndexes(wrapper, "social_links");
             initSortable();
+
+            // INIT ICON PICKER FOR NEWLY ADDED ROW
+            const newRow = $(wrapper).children().last();
+            initIconPicker(newRow[0]);
         });
 
 
@@ -296,7 +243,7 @@
 
 
         /* ============================================================
-           BUSINESS HOURS TOGGLE
+           BUSINESS HOURS
         ============================================================ */
         $(document).on("change", ".toggle-closed", function() {
             const row = $(this).closest("tr");
