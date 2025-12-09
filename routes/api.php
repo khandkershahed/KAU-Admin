@@ -41,6 +41,7 @@ Route::prefix('api/v1')->group(function () {
 
     Route::get('/administration/office/{slug}', [HomeApiController::class, 'adminOfficeDetails']);
 
+    Route::get('/academics', [HomeApiController::class, 'academicNested']);
 
     Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);

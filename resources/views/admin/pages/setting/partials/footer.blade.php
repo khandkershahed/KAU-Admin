@@ -14,10 +14,10 @@
 
                 <span class="sortable-handle cursor-pointer">☰</span>
 
-                <input type="text" name="footer_links[{{ $i }}][title]" class="form-control"
+                <input type="text" name="footer_links[{{ $i }}][title]" class="form-control form-control-sm"
                     placeholder="Title" value="{{ $item['title'] ?? '' }}">
 
-                <input type="text" name="footer_links[{{ $i }}][url]" class="form-control"
+                <input type="text" name="footer_links[{{ $i }}][url]" class="form-control form-control-sm"
                     placeholder="URL" value="{{ $item['url'] ?? '' }}">
 
                 <button type="button" class="btn btn-danger btn-sm delete-row-btn">Delete</button>

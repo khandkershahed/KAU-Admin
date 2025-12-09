@@ -48,17 +48,28 @@
 
     {{-- Logos --}}
     <div class="col-md-4 mb-7">
-        <label class="form-label">Logo (White Path)</label>
-        <x-metronic.file-input name="site_logo_white" class="form-control-sm" :value="old('site_logo_white', optional($setting)->site_logo_white)"></x-metronic.file-input>
+        <div>
+            <x-metronic.label for="siteLogoWhite" class="col-form-label mb-5">Logo (For Black Backgorund)</x-metronic.label>
+        </div>
+        <x-metronic.image-input name="site_logo_white" id="siteLogoWhite" :source="!empty(optional($setting)->site_logo_white)
+            ? asset('storage/' . optional($setting)->site_logo_white)
+            : ''" />
 
     </div>
     <div class="col-md-4 mb-7">
-        <label class="form-label">Logo (Black Path)</label>
-        <x-metronic.file-input name="site_logo_black" class="form-control-sm" :value="old('site_logo_black', optional($setting)->site_logo_black)"></x-metronic.file-input>
+        <div>
+            <x-metronic.label for="siteLogoBlack" class="col-form-label mb-5">Logo (For White Backgorund)</x-metronic.label>
+        </div>
+        <x-metronic.image-input name="site_logo_black" id="siteLogoBlack" :source="!empty(optional($setting)->site_logo_black)
+            ? asset('storage/' . optional($setting)->site_logo_black)
+            : ''" />
     </div>
     <div class="col-md-4 mb-7">
-        <label class="form-label">Favicon</label>
-        <x-metronic.file-input name="site_favicon" class="form-control-sm" :value="old('site_favicon', optional($setting)->site_favicon)"></x-metronic.file-input>
+        <div>
+            <x-metronic.label for="siteFavicon" class="col-form-label mb-5">Favicon</x-metronic.label>
+        </div>
+        <x-metronic.image-input name="site_favicon" id="siteFavicon" :source="!empty(optional($setting)->site_favicon) ? asset('storage/' . optional($setting)->site_favicon) : ''" />
+
 
     </div>
 
@@ -72,9 +83,10 @@
         <div id="emailRepeater" class="repeater-wrapper" data-field="emails">
             @foreach ($setting->emails ?? [] as $i => $email)
                 <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-                    <input type="text" name="emails[{{ $i }}][title]" class="form-control form-control-sm w-lg-350px"
-                        placeholder="Title" value="{{ $email['title'] ?? '' }}">
-                    <input type="email" name="emails[{{ $i }}][email]" class="form-control form-control-sm"
+                    <input type="text" name="emails[{{ $i }}][title]"
+                        class="form-control form-control-sm w-40" placeholder="Title"
+                        value="{{ $email['title'] ?? '' }}">
+                    <input type="email" name="emails[{{ $i }}][email]" class="form-control form-control-sm w-60"
                         placeholder="Email" value="{{ $email['email'] ?? '' }}">
                     <button type="button" class="btn btn-danger btn-sm delete-row-btn">
                         <i class="fas fa-trash-alt"></i>
@@ -93,10 +105,12 @@
         <div id="phoneRepeater" class="repeater-wrapper" data-field="phone">
             @foreach ($setting->phone ?? [] as $i => $phone)
                 <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-                    <input type="text" name="phone[{{ $i }}][title]" class="form-control form-control-sm w-lg-350px"
-                        placeholder="Title" value="{{ $phone['title'] ?? '' }}">
-                    <input type="text" name="phone[{{ $i }}][phone]" class="form-control form-control-sm w-lg-350px"
-                        placeholder="Phone" value="{{ $phone['phone'] ?? '' }}">
+                    <input type="text" name="phone[{{ $i }}][title]"
+                        class="form-control form-control-sm w-40" placeholder="Title"
+                        value="{{ $phone['title'] ?? '' }}">
+                    <input type="text" name="phone[{{ $i }}][phone]"
+                        class="form-control form-control-sm w-60" placeholder="Phone"
+                        value="{{ $phone['phone'] ?? '' }}">
                     <button type="button" class="btn btn-danger btn-sm delete-row-btn">
                         <i class="fas fa-trash-alt"></i>
                     </button>
@@ -114,10 +128,12 @@
         <div id="addressRepeater" class="repeater-wrapper" data-field="addresses">
             @foreach ($setting->addresses ?? [] as $i => $addr)
                 <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-                    <input type="text" name="addresses[{{ $i }}][title]" class="form-control form-control-sm w-lg-400px"
-                        placeholder="Title" value="{{ $addr['title'] ?? '' }}">
-                    <input type="text" name="addresses[{{ $i }}][address]" class="form-control form-control-sm"
-                        placeholder="Address" value="{{ $addr['address'] ?? '' }}">
+                    <input type="text" name="addresses[{{ $i }}][title]"
+                        class="form-control form-control-sm w-40" placeholder="Title"
+                        value="{{ $addr['title'] ?? '' }}">
+                    <input type="text" name="addresses[{{ $i }}][address]"
+                        class="form-control form-control-sm w-60" placeholder="Address"
+                        value="{{ $addr['address'] ?? '' }}">
                     <button type="button" class="btn btn-danger btn-sm delete-row-btn">
                         <i class="fas fa-trash-alt"></i>
                     </button>

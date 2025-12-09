@@ -23,6 +23,7 @@ use App\Models\NoticeCategory;
 use App\Models\HomepageExplore;
 use App\Models\HomepageFaculty;
 use App\Models\HomepageSection;
+use App\Models\AcademicMenuGroup;
 use App\Models\HomepageVcMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\NewsResource;
 use App\Http\Resources\EventResource;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use App\Http\Resources\EventTypeResource;
 use Illuminate\Support\Facades\Validator;
@@ -834,5 +836,178 @@ class HomeApiController extends Controller
             'developer_link'     => $setting->developer_link,
             'website_url'        => $setting->website_url,
         ]);
+    }
+
+
+    public function academicNested(): JsonResponse
+    {
+        // Cache full nested structure for 10 minutes to make Next.js super fast
+        $result = Cache::remember('api_academics_nested', 600, function () {
+            $groups = AcademicMenuGroup::with([
+                'units.departments',
+                'units.staffSections.department',
+                'units.staffSections.members', // no .links relation anymore
+            ])
+                ->active()
+                ->ordered()
+                ->get();
+
+            return [
+                'Academics' => $groups->map(function ($group) {
+                    return [
+                        'id'       => $group->id,
+                        'title'    => $group->title,
+                        'slug'     => $group->slug,     // "faculty", "institute"
+                        'type'     => 'menu',
+                        'position' => (int) $group->position,
+                        'pages'    => $group->units
+                            ->sortBy('menu_order')
+                            ->values()
+                            ->map(function ($unit) {
+                                $config     = $unit->config ?? [];
+                                $home       = $config['home'] ?? [];
+                                $about      = $config['about'] ?? null;
+                                $facilities = $config['facilities'] ?? null;
+                                $academic   = $config['academic'] ?? null;
+                                $research   = $config['research'] ?? null;
+                                $programs   = $config['programs'] ?? null;
+                                $contact    = $config['contact'] ?? null;
+
+                                // departments list (for department grid)
+                                $deptList = $unit->departments
+                                    ->sortBy('position')
+                                    ->values()
+                                    ->map(function ($d) {
+                                        return [
+                                            'title'      => $d->title,
+                                            'short_code' => $d->short_code,
+                                        ];
+                                    });
+
+                                // faculty_members block (departments -> sections -> members -> links)
+                                $facultyMembers = null;
+
+                                if ($unit->staffSections->count()) {
+                                    // group sections by department
+                                    $byDept = $unit->staffSections
+                                        ->sortBy('position')
+                                        ->groupBy('department_id');
+
+                                    $facultyMembers = [
+                                        [
+                                            'endpoint'  => $config['faculty_members']['endpoint'] ?? '/faculty-member',
+                                            'group_by'  => 'department',
+                                            'departments' => $byDept->map(function ($sections, $departmentId) use ($unit) {
+                                                $dept = $unit->departments->firstWhere('id', (int) $departmentId);
+
+                                                return [
+                                                    'title'      => $dept ? $dept->title : null,
+                                                    'short_code' => $dept ? $dept->short_code : null,
+                                                    'sections'   => $sections->map(function ($section) {
+                                                        return [
+                                                            'id'       => $section->id,
+                                                            'title'    => $section->title,
+                                                            'position' => (int) $section->position,
+                                                            'members'  => $section->members
+                                                                ->sortBy('position')
+                                                                ->values()
+                                                                ->map(function ($m) {
+                                                                    return [
+                                                                        'id'          => $m->id,
+                                                                        'name'        => $m->name,
+                                                                        'designation' => $m->designation,
+                                                                        'email'       => $m->email,
+                                                                        'phone'       => $m->phone,
+                                                                        'image'       => $m->image_path
+                                                                            ? asset('storage/' . $m->image_path)
+                                                                            : null,
+                                                                        'position'    => (int) $m->position,
+                                                                        // links is now a JSON array on the model
+                                                                        'links'       => $m->links ?: [],
+                                                                    ];
+                                                                }),
+                                                        ];
+                                                    }),
+                                                ];
+                                            })->values(),
+                                        ],
+                                    ];
+                                }
+
+                                $contentsBlock = [
+                                    [
+                                        'base_url' => $unit->base_url,
+                                        'home' => [
+                                            [
+                                                'endpoint'            => $home['endpoint'] ?? '/',
+                                                'layout'              => $home['layout'] ?? 'faculty_home',
+                                                'has_hero'            => (bool) ($home['has_hero'] ?? true),
+                                                'has_department_grid' => (bool) ($home['has_department_grid'] ?? true),
+                                            ],
+                                        ],
+                                        'about' => $about ? [
+                                            [
+                                                'endpoint'      => $about['endpoint'] ?? '/about',
+                                                'section_title' => $about['section_title'] ?? ('About ' . $unit->short_name),
+                                            ],
+                                        ] : [],
+                                        'departments' => [
+                                            [
+                                                'endpoint'    => $config['departments']['endpoint'] ?? '/departments',
+                                                'departments' => $deptList,
+                                            ],
+                                        ],
+                                        'facilities' => $facilities ? [
+                                            [
+                                                'endpoint'      => $facilities['endpoint'] ?? '/facilities',
+                                                'section_title' => $facilities['section_title'] ?? 'Facilities',
+                                            ],
+                                        ] : [],
+                                        'faculty_members' => $facultyMembers ?: [],
+                                        'academic' => $academic ? [
+                                            [
+                                                'endpoint'   => $academic['endpoint'] ?? '/academic',
+                                                'menu_label' => $academic['menu_label'] ?? 'Academic',
+                                                'sub_pages'  => $academic['sub_pages'] ?? [],
+                                            ],
+                                        ] : [],
+                                        'research' => $research ? [
+                                            [
+                                                'endpoint'   => $research['endpoint'] ?? '/research',
+                                                'menu_label' => $research['menu_label'] ?? 'Research',
+                                            ],
+                                        ] : [],
+                                        'programs' => $programs ? [
+                                            [
+                                                'endpoint' => $programs['endpoint'],
+                                                'types'    => $programs['types'] ?? [],
+                                            ],
+                                        ] : [],
+                                        'contact' => $contact ? [
+                                            [
+                                                'endpoint'      => $contact['endpoint'],
+                                                'section_title' => $contact['section_title'] ?? 'Contact Information',
+                                            ],
+                                        ] : [],
+                                    ],
+                                ];
+
+                                return [
+                                    'icon'              => $unit->icon,
+                                    'title'             => $unit->name,
+                                    'slug'              => $unit->slug,
+                                    'short_name'        => $unit->short_name,
+                                    'short_description' => $unit->short_description,
+                                    'button_name'       => $unit->button_name,
+                                    'position'          => (int) $unit->menu_order,
+                                    'contents'          => $contentsBlock,
+                                ];
+                            }),
+                    ];
+                })->values(), // just to keep it nice and indexed 0..n
+            ];
+        });
+
+        return response()->json($result);
     }
 }
