@@ -22,9 +22,12 @@ class AcademicSite extends Model
         'config',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-    ];
+    // if you want route-model binding by slug without {site:slug} syntax,
+    // you can add this, but it's optional when you already use {site:slug}
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function group()
     {
@@ -33,32 +36,16 @@ class AcademicSite extends Model
 
     public function navItems()
     {
-        return $this->hasMany(AcademicNavItem::class);
-    }
-
-
-    public function pages()
-    {
-        return $this->hasMany(AcademicPage::class)->orderBy('position');
-    }
-
-    public function departments()
-    {
-        return $this->hasMany(AcademicDepartment::class)->orderBy('position');
-    }
-
-    public function staffGroups()
-    {
-        return $this->hasMany(AcademicStaffGroup::class)->orderBy('position');
+        return $this->hasMany(AcademicNavItem::class, 'academic_site_id');
     }
 
     public function homeWidgets()
     {
-        return $this->hasMany(AcademicHomeWidget::class)->orderBy('position');
+        return $this->hasMany(AcademicHomeWidget::class, 'academic_site_id');
     }
 
-    public function scopeSlug($q, string $slug)
+    public function departments()
     {
-        return $q->where('slug', $slug);
+        return $this->hasMany(AcademicDepartment::class, 'academic_site_id');
     }
 }

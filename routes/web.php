@@ -26,15 +26,12 @@ use App\Http\Controllers\Frontend\ModeratorDashboardController;
 // Route::get('/payment/{id}', [PaymentController::class, 'showPaymentPage'])->name('payment.page');
 
 require __DIR__ . '/frontend.php';
-// web routes (Laravel Blade)
-Route::get('/payment/{booking}', [PaymentController::class, 'showPaymentPage'])
-    ->name('payment.page')
-    ->middleware('signed'); // ensure secure signed URL
 
-Route::post('/stripe/webhook', [PaymentController::class, 'handleStripeWebhook']);
-Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
-Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
-Route::get('api/v1/payment/status', [PaymentController::class, 'paymentStatus']);
+
+
+
+// web routes (Laravel Blade)
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';
