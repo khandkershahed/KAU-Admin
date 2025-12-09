@@ -2,285 +2,372 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\AcademicMenuGroup;
+use Illuminate\Support\Str;
+use App\Models\AcademicPage;
 use App\Models\AcademicSite;
 use App\Models\AcademicNavItem;
-use App\Models\AcademicPage;
-use App\Models\AcademicPageSection;
+use Illuminate\Database\Seeder;
+use App\Models\AcademicMenuGroup;
 use App\Models\AcademicDepartment;
-use App\Models\AcademicStaffGroup;
 use App\Models\AcademicStaffMember;
-use App\Models\AcademicHomeWidget;
-use Illuminate\Support\Str;
+use App\Models\AcademicStaffSection;
 
 class AcademicSeeder extends Seeder
 {
     public function run(): void
     {
-        // ===== GROUPS =====
-        $faculty = AcademicMenuGroup::updateOrCreate(
+        // ============= GROUPS =============
+        $facultyGroup = AcademicMenuGroup::updateOrCreate(
             ['slug' => 'faculty'],
             ['title' => 'Faculty', 'position' => 1, 'is_active' => true]
         );
 
-        $institute = AcademicMenuGroup::updateOrCreate(
+        $instituteGroup = AcademicMenuGroup::updateOrCreate(
             ['slug' => 'institute'],
             ['title' => 'Institute', 'position' => 2, 'is_active' => true]
         );
 
-        // Helper to create site
+        // helper to create sites + minimal pages + nav
         $createSite = function (AcademicMenuGroup $group, array $data) {
-            return AcademicSite::updateOrCreate(
+            $site = AcademicSite::updateOrCreate(
                 ['slug' => $data['slug']],
                 [
                     'academic_menu_group_id' => $group->id,
                     'name'                   => $data['name'],
-                    'short_name'             => $data['short_name'],
-                    'base_url'               => $data['base_url'] ?? '/' . $data['slug'],
+                    'short_name'             => $data['short_name'] ?? null,
+                    'base_url'               => $data['base_url'] ?? null,
                     'subdomain'              => $data['subdomain'] ?? null,
-                    'theme_primary_color'    => $data['theme_primary_color'] ?? '#0f766e',
+                    'short_description'      => $data['short_description'] ?? null,
+                    'theme_primary_color'    => $data['theme_primary_color'] ?? null,
                     'theme_secondary_color'  => $data['theme_secondary_color'] ?? null,
                     'logo_path'              => $data['logo_path'] ?? null,
                     'menu_order'             => $data['menu_order'] ?? 0,
                     'status'                 => 'published',
-                    'config'                 => $data['config'] ?? null,
                 ]
             );
-        };
 
-        // ===== SITES =====
-        $vabs = $createSite($faculty, [
-            'slug'        => 'vabs',
-            'name'        => 'Veterinary, Animal and Biomedical Sciences',
-            'short_name'  => 'VABS',
-            'base_url'    => '/vabs',
-            'menu_order'  => 1,
-        ]);
-
-        $ag = $createSite($faculty, [
-            'slug'        => 'ag',
-            'name'        => 'Agriculture',
-            'short_name'  => 'AG',
-            'base_url'    => '/ag',
-            'menu_order'  => 2,
-        ]);
-
-        $fos = $createSite($faculty, [
-            'slug'        => 'fos',
-            'name'        => 'Fisheries & Ocean Sciences',
-            'short_name'  => 'FOS',
-            'base_url'    => '/fos',
-            'menu_order'  => 3,
-        ]);
-
-        $aeas = $createSite($faculty, [
-            'slug'        => 'aeas',
-            'name'        => 'Agricultural Economics & Agribusiness Studies',
-            'short_name'  => 'AEAS',
-            'base_url'    => '/aeas',
-            'menu_order'  => 4,
-        ]);
-
-        $aet = $createSite($faculty, [
-            'slug'        => 'aet',
-            'name'        => 'Agricultural Engineering & Technology',
-            'short_name'  => 'AET',
-            'base_url'    => '/aet',
-            'menu_order'  => 5,
-        ]);
-
-        $gti = $createSite($institute, [
-            'slug'        => 'gti',
-            'name'        => 'Graduate Training Institute',
-            'short_name'  => 'GTI',
-            'base_url'    => '/graduate-training-institute',
-            'menu_order'  => 1,
-        ]);
-
-        // ========= BASIC CONTENT FOR VABS ONLY (others can be added similarly) =========
-
-        // --- Pages for VABS ---
-        $aboutVabs = AcademicPage::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'page_key' => 'about'],
-            [
-                'slug'             => 'about-vabs',
-                'title'            => 'About VABS',
-                'subtitle'         => null,
-                'page_type'        => 'custom',
-                'banner_title'     => 'About the Faculty of VABS',
-                'banner_subtitle'  => 'Veterinary, Animal and Biomedical Sciences',
-                'banner_image_path'=> null,
-                'meta_title'       => 'About VABS - KAU',
-                'meta_description' => 'Information about the Faculty of Veterinary, Animal and Biomedical Sciences.',
-                'is_active'        => true,
-                'position'         => 1,
-            ]
-        );
-
-        AcademicPageSection::updateOrCreate(
-            ['academic_page_id' => $aboutVabs->id, 'position' => 1],
-            [
-                'section_key' => 'intro',
-                'title'       => 'Welcome to VABS',
-                'subtitle'    => null,
-                'content'     => '<p>VABS focuses on veterinary medicine, animal health, and biomedical sciences.</p>',
-                'extra'       => null,
-            ]
-        );
-
-        $facilitiesVabs = AcademicPage::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'page_key' => 'facilities'],
-            [
-                'slug'            => 'facilities',
-                'title'           => 'Facilities',
-                'page_type'       => 'custom',
-                'banner_title'    => 'Facilities',
-                'banner_subtitle' => 'Modern labs and clinical facilities',
-                'is_active'       => true,
-                'position'        => 2,
-            ]
-        );
-
-        $researchVabs = AcademicPage::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'page_key' => 'research'],
-            [
-                'slug'            => 'research',
-                'title'           => 'Research',
-                'page_type'       => 'custom',
-                'banner_title'    => 'Research at VABS',
-                'is_active'       => true,
-                'position'        => 3,
-            ]
-        );
-
-        // Academic subpages
-        $academicPages = [
-            'academic_program'   => 'Academic Program',
-            'syllabus'           => 'Syllabus',
-            'academic_calendar'  => 'Academic Calendar',
-            'class_routine'      => 'Class Routine',
-            'result'             => 'Result',
-        ];
-
-        $order = 1;
-        foreach ($academicPages as $key => $title) {
-            AcademicPage::updateOrCreate(
-                ['academic_site_id' => $vabs->id, 'page_key' => $key],
+            // ensure exactly 1 home page
+            $homePage = AcademicPage::updateOrCreate(
                 [
-                    'slug'        => Str::slug($title),
-                    'title'       => $title,
-                    'page_type'   => 'academic_subpage',
-                    'banner_title'=> $title,
-                    'is_active'   => true,
-                    'position'    => $order++,
-                ]
-            );
-        }
-
-        // --- Nav items for VABS ---
-        $homeNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'home', 'parent_id' => null],
-            [
-                'label'     => 'Home',
-                'type'      => 'route',
-                'route_name'=> 'frontend.academic.site.home',
-                'position'  => 1,
-                'is_active' => true,
-            ]
-        );
-
-        $aboutNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'about'],
-            [
-                'label'     => 'About VABS',
-                'type'      => 'page',
-                'page_id'   => $aboutVabs->id,
-                'position'  => 2,
-                'is_active' => true,
-            ]
-        );
-
-        $departmentsNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'departments'],
-            [
-                'label'     => 'Departments',
-                'type'      => 'route',
-                'route_name'=> 'frontend.academic.site.departments',
-                'position'  => 3,
-                'is_active' => true,
-            ]
-        );
-
-        $facilitiesNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'facilities'],
-            [
-                'label'     => 'Facilities',
-                'type'      => 'page',
-                'page_id'   => $facilitiesVabs->id,
-                'position'  => 4,
-                'is_active' => true,
-            ]
-        );
-
-        $facultyMemberNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'faculty_member'],
-            [
-                'label'     => 'Faculty Member',
-                'type'      => 'route',
-                'route_name'=> 'frontend.academic.site.staff',
-                'position'  => 5,
-                'is_active' => true,
-            ]
-        );
-
-        $academicNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'academic', 'parent_id' => null],
-            [
-                'label'     => 'Academic',
-                'type'      => 'route',
-                'route_name'=> 'frontend.academic.site.academic',
-                'position'  => 6,
-                'is_active' => true,
-            ]
-        );
-
-        $researchNav = AcademicNavItem::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'menu_key' => 'research'],
-            [
-                'label'     => 'Research',
-                'type'      => 'page',
-                'page_id'   => $researchVabs->id,
-                'position'  => 7,
-                'is_active' => true,
-            ]
-        );
-
-        // children under Academic
-        $position = 1;
-        foreach ($academicPages as $key => $title) {
-            $page = AcademicPage::where('academic_site_id', $vabs->id)
-                ->where('page_key', $key)->first();
-
-            AcademicNavItem::updateOrCreate(
-                [
-                    'academic_site_id' => $vabs->id,
-                    'parent_id'        => $academicNav->id,
-                    'menu_key'         => $key,
+                    'academic_site_id' => $site->id,
+                    'page_key'         => 'home',
                 ],
                 [
-                    'label'     => $title,
-                    'type'      => 'page',
-                    'page_id'   => $page?->id,
-                    'position'  => $position++,
-                    'is_active' => true,
+                    'slug'              => 'home',
+                    'title'             => $site->name,
+                    'is_home'           => true,
+                    'banner_image'      => null,
+                    'content'           => '<p>Welcome to ' . e($site->name) . '.</p>',
+                    'meta_title'        => $site->name . ' - Home',
+                    'meta_description'  => 'Homepage of ' . $site->name,
+                    'og_image'          => null,
+
+                    // home-only fields
+                    'banner_title'      => $site->name,
+                    'banner_subtitle'   => null,
+                    'banner_button'     => 'Learn More',
+                    'banner_button_url' => '#',
+
+                    'is_active'         => true,
+                    'position'          => 1,
                 ]
             );
-        }
 
-        // --- Departments + Staff for VABS (sample) ---
-        $vah = AcademicDepartment::updateOrCreate(
-            ['academic_site_id' => $vabs->id, 'short_code' => 'VAH'],
+            // About page
+            $aboutPage = AcademicPage::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'page_key'         => 'about',
+                ],
+                [
+                    'slug'             => 'about-' . $site->slug,
+                    'title'            => 'About ' . ($site->short_name ?? $site->name),
+                    'subtitle'         => null,
+                    'is_home'          => false,
+                    'banner_image'     => null,
+                    'content'          => '<p>About page content for ' . e($site->name) . '.</p>',
+                    'meta_title'       => 'About ' . $site->name,
+                    'meta_tags'        => null,
+                    'meta_description' => 'About ' . $site->name,
+                    'og_image'         => null,
+                    'is_active'        => true,
+                    'position'         => 2,
+                ]
+            );
+
+            // Facilities
+            $facilitiesPage = AcademicPage::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'page_key'         => 'facilities',
+                ],
+                [
+                    'slug'             => 'facilities',
+                    'title'            => 'Facilities',
+                    'subtitle'         => null,
+                    'is_home'          => false,
+                    'banner_image'     => null,
+                    'content'          => '<p>Facilities content for ' . e($site->name) . '.</p>',
+                    'meta_title'       => 'Facilities - ' . $site->name,
+                    'meta_tags'        => null,
+                    'meta_description' => 'Facilities of ' . $site->name,
+                    'og_image'         => null,
+                    'is_active'        => true,
+                    'position'         => 3,
+                ]
+            );
+
+            // Research
+            $researchPage = AcademicPage::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'page_key'         => 'research',
+                ],
+                [
+                    'slug'             => 'research',
+                    'title'            => 'Research',
+                    'subtitle'         => null,
+                    'is_home'          => false,
+                    'banner_image'     => null,
+                    'content'          => '<p>Research content for ' . e($site->name) . '.</p>',
+                    'meta_title'       => 'Research - ' . $site->name,
+                    'meta_tags'        => null,
+                    'meta_description' => 'Research at ' . $site->name,
+                    'og_image'         => null,
+                    'is_active'        => true,
+                    'position'         => 4,
+                ]
+            );
+
+            // Academic subpages
+            $academicSubpages = [
+                'academic_program'   => 'Academic Program',
+                'syllabus'           => 'Syllabus',
+                'academic_calendar'  => 'Academic Calendar',
+                'class_routine'      => 'Class Routine',
+                'result'             => 'Result',
+            ];
+
+            $academicPages = [];
+            $pos = 5;
+            foreach ($academicSubpages as $key => $title) {
+                $academicPages[$key] = AcademicPage::updateOrCreate(
+                    [
+                        'academic_site_id' => $site->id,
+                        'page_key'         => $key,
+                    ],
+                    [
+                        'slug'             => Str::slug($title),
+                        'title'            => $title,
+                        'subtitle'         => null,
+                        'is_home'          => false,
+                        'banner_image'     => null,
+                        'content'          => '<p>' . $title . ' content for ' . e($site->name) . '.</p>',
+                        'meta_title'       => $title . ' - ' . $site->name,
+                        'meta_tags'        => null,
+                        'meta_description' => $title . ' of ' . $site->name,
+                        'og_image'         => null,
+                        'is_active'        => true,
+                        'position'         => $pos++,
+                    ]
+                );
+            }
+
+            // Now nav items
+            $navHome = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'home',
+                ],
+                [
+                    'parent_id'    => null,
+                    'label'        => 'Home',
+                    'type'         => 'page',
+                    'page_id'      => $homePage->id,
+                    'route_path'   => '/',
+                    'external_url' => null,
+                    'position'     => 1,
+                    'is_active'    => true,
+                ]
+            );
+
+            $navAbout = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'about',
+                ],
+                [
+                    'parent_id'        => null,
+                    'label'            => 'About ' . ($site->short_name ?? $site->name),
+                    'type'             => 'page',
+                    'page_id'          => $aboutPage->id,
+                    'route_path'       => null,
+                    'external_url'     => null,
+                    'position'         => 2,
+                    'is_active'   => true,
+                ]
+            );
+
+            $navDepartments = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'departments',
+                ],
+                [
+                    'parent_id'   => null,
+                    'label'       => 'Departments',
+                    'type'        => 'route',
+                    'page_id'     => null,
+                    'route_path'  => '/departments',
+                    'external_url' => null,
+                    'position'    => 3,
+                    'is_active'   => true,
+                ]
+            );
+
+            $navFacilities = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'facilities',
+                ],
+                [
+                    'parent_id'   => null,
+                    'label'       => 'Facilities',
+                    'type'        => 'page',
+                    'page_id'     => $facilitiesPage->id,
+                    'route_path'  => null,
+                    'external_url' => null,
+                    'position'    => 4,
+                    'is_active'   => true,
+                ]
+            );
+
+            $navFacultyMember = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'faculty_member',
+                ],
+                [
+                    'parent_id'   => null,
+                    'label'       => 'Faculty Member',
+                    'type'        => 'route',
+                    'page_id'     => null,
+                    'route_path'  => '/faculty-member',
+                    'external_url' => null,
+                    'position'    => 5,
+                    'is_active'   => true,
+                ]
+            );
+
+            $navAcademic = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'academic',
+                ],
+                [
+                    'parent_id'   => null,
+                    'label'       => 'Academic',
+                    'type'        => 'group',
+                    'page_id'     => null,
+                    'route_path'  => null,
+                    'external_url' => null,
+                    'position'    => 6,
+                    'is_active'   => true,
+                ]
+            );
+
+            $childPos = 1;
+            foreach ($academicPages as $key => $page) {
+                AcademicNavItem::updateOrCreate(
+                    [
+                        'academic_site_id' => $site->id,
+                        'menu_key'         => $key,
+                    ],
+                    [
+                        'parent_id'   => $navAcademic->id,
+                        'label'       => $page->title,
+                        'type'        => 'page',
+                        'page_id'     => $page->id,
+                        'route_path'  => null,
+                        'external_url' => null,
+                        'position'    => $childPos++,
+                        'is_active'   => true,
+                    ]
+                );
+            }
+
+            $navResearch = AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $site->id,
+                    'menu_key'         => 'research',
+                ],
+                [
+                    'parent_id'   => null,
+                    'label'       => 'Research',
+                    'type'        => 'page',
+                    'page_id'     => $researchPage->id,
+                    'route_path'  => null,
+                    'external_url' => null,
+                    'position'    => 7,
+                    'is_active'   => true,
+                ]
+            );
+
+            return $site;
+        };
+
+        // ============= SITES =============
+        $vabs = $createSite($facultyGroup, [
+            'slug'                => 'vabs',
+            'name'                => 'Veterinary, Animal and Biomedical Sciences',
+            'short_name'          => 'VABS',
+            'base_url'            => '/vabs',
+            'theme_primary_color' => '#0f766e',
+            'menu_order'          => 1,
+        ]);
+
+        $ag = $createSite($facultyGroup, [
+            'slug'                => 'ag',
+            'name'                => 'Agriculture',
+            'short_name'          => 'AG',
+            'base_url'            => '/ag',
+            'theme_primary_color' => '#15803d',
+            'menu_order'          => 2,
+        ]);
+
+        $fos = $createSite($facultyGroup, [
+            'slug'                => 'fos',
+            'name'                => 'Fisheries & Ocean Sciences',
+            'short_name'          => 'FOS',
+            'base_url'            => '/fos',
+            'theme_primary_color' => '#0ea5e9',
+            'menu_order'          => 3,
+        ]);
+
+        $aeas = $createSite($facultyGroup, [
+            'slug'                => 'aeas',
+            'name'                => 'Agricultural Economics & Agribusiness Studies',
+            'short_name'          => 'AEAS',
+            'base_url'            => '/aeas',
+            'theme_primary_color' => '#7c3aed',
+            'menu_order'          => 4,
+        ]);
+
+        $aet = $createSite($facultyGroup, [
+            'slug'                => 'aet',
+            'name'                => 'Agricultural Engineering & Technology',
+            'short_name'          => 'AET',
+            'base_url'            => '/aet',
+            'theme_primary_color' => '#f97316',
+            'menu_order'          => 5,
+        ]);
+
+        // ============= EXAMPLE DEPARTMENTS & STAFF FOR VABS =============
+        $dept = AcademicDepartment::updateOrCreate(
+            [
+                'academic_site_id' => $vabs->id,
+                'short_code'       => 'VAH',
+            ],
             [
                 'title'       => 'Anatomy and Histology',
                 'slug'        => 'anatomy-and-histology',
@@ -290,49 +377,34 @@ class AcademicSeeder extends Seeder
             ]
         );
 
-        $officersGroup = AcademicStaffGroup::updateOrCreate(
+        $vcSection = AcademicStaffSection::updateOrCreate(
             [
                 'academic_site_id'      => $vabs->id,
-                'academic_department_id'=> $vah->id,
-                'title'                 => 'Officers',
+                'academic_department_id' => $dept->id,
+                'title'                 => 'Vice-Chancellor',
             ],
-            ['position' => 1]
+            [
+                'position' => 1,
+            ]
         );
 
         AcademicStaffMember::updateOrCreate(
             [
-                'staff_group_id' => $officersGroup->id,
-                'email'          => 'delwar@kau.ac.bd',
+                'staff_section_id' => $vcSection->id,
+                'email'            => 'vc@kau.ac.bd',
+                'name'             => 'Prof. Dr. Md. Nazmul Ahsan',
             ],
             [
-                'name'        => 'Delwar Hossain',
-                'designation' => 'Ps To Vc (In charge)',
-                'phone'       => '+880 1521 576582',
+                'designation' => 'Vice-Chancellor',
+                'phone'       => null,
                 'image_path'  => null,
                 'position'    => 1,
                 'links'       => [
                     [
                         'icon' => 'fa-solid fa-google-scholar',
-                        'url'  => 'https://example.com/scholar/delwar',
+                        'url'  => 'https://example.com/google-scholar',
                     ],
                 ],
-            ]
-        );
-
-        // --- Home widgets for VABS (sample) ---
-        AcademicHomeWidget::updateOrCreate(
-            [
-                'academic_site_id' => $vabs->id,
-                'widget_type'      => 'hero',
-                'position'         => 1,
-            ],
-            [
-                'title'       => 'Welcome to VABS',
-                'subtitle'    => 'Faculty of Veterinary, Animal and Biomedical Sciences',
-                'content'     => '<p>Fostering excellence in veterinary education and research.</p>',
-                'button_text' => 'Learn More',
-                'button_url'  => '/vabs/about-vabs',
-                'is_active'   => true,
             ]
         );
     }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AcademicStaffGroup extends Model
+class AcademicStaffSection extends Model
 {
     protected $fillable = [
         'academic_site_id',
@@ -25,7 +25,8 @@ class AcademicStaffGroup extends Model
 
     public function members()
     {
-        return $this->hasMany(AcademicStaffMember::class, 'staff_group_id')
-                    ->orderBy('position');
+        return $this->hasMany(AcademicStaffMember::class, 'staff_section_id')
+                    ->orderBy('position')
+                    ->orderBy('id');
     }
 }

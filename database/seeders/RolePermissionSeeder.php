@@ -37,6 +37,48 @@ class RolePermissionSeeder extends Seeder
                     'delete about page',
                 ],
             ],
+
+            [
+                'group_name'  => 'Manage Academic Sites',
+                'permissions' => [
+                    'view academic sites',
+                    'create academic sites',
+                    'edit academic sites',
+                    'delete academic sites',
+                    // for menu groups
+                    'view academic groups',
+                    'create academic groups',
+                    'edit academic groups',
+                    'delete academic groups',
+                    // nav items
+                    'edit academic nav',
+                ],
+            ],
+
+            [
+                'group_name'  => 'Manage Academic Pages',
+                'permissions' => [
+                    'view academic pages',
+                    'create academic pages',
+                    'edit academic pages',
+                    'delete academic pages',
+                ],
+            ],
+
+            [
+                'group_name'  => 'Manage Academic Departments & Staff',
+                'permissions' => [
+                    'view academic departments',
+                    'create academic departments',
+                    'edit academic departments',
+                    'delete academic departments',
+
+                    'view academic staff',
+                    'create academic staff',
+                    'edit academic staff',
+                    'delete academic staff',
+                ],
+            ],
             // [
             //     'group_name' => 'Banner',
             //     'permissions' => [

@@ -97,6 +97,43 @@ return [
     ],
 
     [
+        'title' => 'Academic Module',
+        'icon' => 'fa-solid fa-graduation-cap fs-3',
+        'routes' => [
+            'admin.academic.sites.index',
+            'admin.academic.pages.index',
+            'admin.academic.staff.index',
+        ],
+        'subMenu' => [
+            [
+                'title' => 'Sites & Menus',
+                'permission' => 'view academic sites',
+                'routes' => [
+                    'admin.academic.sites.index',
+                ],
+                'route' => 'admin.academic.sites.index',
+            ],
+            [
+                'title' => 'Pages',
+                'permission' => 'view academic pages',
+                'routes' => [
+                    'admin.academic.pages.index',
+                ],
+                'route' => 'admin.academic.pages.index',
+            ],
+            [
+                'title' => 'Departments & Staff',
+                'permission' => 'view academic departments',
+                'routes' => [
+                    'admin.academic.staff.index',
+                ],
+                'route' => 'admin.academic.staff.index',
+            ],
+        ],
+    ],
+
+
+    [
         'title' => 'Admission Panel',
         'icon'  => 'fa-solid fa-user-graduate fs-3',
         'routes' => [

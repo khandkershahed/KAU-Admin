@@ -14,22 +14,21 @@ return new class extends Migration {
                   ->constrained()
                   ->onDelete('cascade');
 
-            $table->unsignedBigInteger('parent_id')->nullable(); // self-reference
+            $table->foreignId('parent_id')
+                  ->nullable()
+                  ->constrained('academic_nav_items')
+                  ->onDelete('cascade');
 
-            $table->string('label');         // "Home", "About VABS"
-            $table->string('menu_key')->nullable(); // home, about, departments, etc.
-
-            $table->enum('type', ['route', 'page', 'external'])
-                  ->default('page');
-
-            $table->foreignId('page_id')->nullable()
-                  ->constrained('academic_pages')
-                  ->nullOnDelete();
-
-            $table->string('route_name')->nullable();
+            $table->string('label');
+            $table->string('menu_key')->nullable(); // 'home','about','departments',etc.
+            $table->enum('type', ['route', 'page', 'external', 'group'])->default('page');
+            // when type = 'page'
+            $table->unsignedBigInteger('page_id')->nullable();
+            // when type = 'route'
+            $table->string('route_path')->nullable(); // e.g. '/departments', '/faculty-member'
+            // when type = 'external'
             $table->string('external_url')->nullable();
-
-            $table->string('icon')->nullable(); // use icon-picker here
+            $table->string('icon')->nullable();
 
             $table->unsignedInteger('position')->default(0);
             $table->boolean('is_active')->default(true);

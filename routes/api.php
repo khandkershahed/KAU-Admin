@@ -44,11 +44,12 @@ Route::prefix('api/v1')->group(function () {
 
     Route::prefix('academics')->group(function () {
         Route::get('/sites', [AcademicApiController::class, 'sites']);
-        Route::get('//{site:slug}', [AcademicApiController::class, 'site']);
-        Route::get('/sites/{site:slug}/home', [AcademicApiController::class, 'home']);
-        Route::get('/sites/{site:slug}/page/{pageSlug}', [AcademicApiController::class, 'page']);
-        Route::get('/sites/{site:slug}/staff', [AcademicApiController::class, 'staff']);
+        Route::get('/sites/{site_slug}/pages', [AcademicApiController::class, 'sitePages']);
+        Route::get('/sites/{site_slug}/departments-and-staff', [AcademicApiController::class, 'siteDepartmentsStaff']);
     });
+
+    // Route::get('/sites/{site_slug}/page/{pageSlug}', [AcademicApiController::class, 'sitePageDetails']);
+
 
     Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);

@@ -11,37 +11,37 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('academic_site_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->unsignedBigInteger('nav_item_id')->nullable(); // optional
 
-            $table->string('page_key'); // about, facilities, academic_program, ...
+            $table->string('page_key')->nullable(); // about, facilities, academic_program, ...
             $table->string('slug');     // about-vabs, academic-program
             $table->string('title');
             $table->string('subtitle')->nullable();
 
-            $table->enum('page_type', ['home', 'custom', 'academic_subpage', 'info'])
-                  ->default('custom');
-
+            $table->boolean('is_home')->default(false);
             // Banner
             $table->string('banner_title')->nullable();
             $table->string('banner_subtitle')->nullable();
-            $table->string('banner_image_path')->nullable();
+            $table->string('banner_button')->nullable();
+            $table->string('banner_button_url')->nullable();
 
-            $table->json('layout_config')->nullable();
-
+            $table->string('banner_image')->nullable();
+            $table->longText('content')->nullable();
             // Meta
             $table->string('meta_title')->nullable();
             $table->string('meta_tags')->nullable();
             $table->text('meta_description')->nullable();
+            $table->string('og_image')->nullable();
 
             $table->boolean('is_active')->default(true);
             $table->unsignedInteger('position')->default(0);
 
             $table->timestamps();
 
-            $table->unique(['academic_site_id', 'page_key']);
+            $table->unique(['academic_site_id', 'slug']);
         });
     }
 

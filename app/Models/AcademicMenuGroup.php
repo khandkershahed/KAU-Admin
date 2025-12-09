@@ -19,7 +19,9 @@ class AcademicMenuGroup extends Model
 
     public function sites()
     {
-        return $this->hasMany(AcademicSite::class)->orderBy('menu_order');
+        return $this->hasMany(AcademicSite::class, 'academic_menu_group_id')
+                    ->orderBy('menu_order')
+                    ->orderBy('id');
     }
 
     public function scopeActive($q)
@@ -29,6 +31,6 @@ class AcademicMenuGroup extends Model
 
     public function scopeOrdered($q)
     {
-        return $q->orderBy('position');
+        return $q->orderBy('position')->orderBy('id');
     }
 }

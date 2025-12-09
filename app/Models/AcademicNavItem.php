@@ -13,7 +13,7 @@ class AcademicNavItem extends Model
         'menu_key',
         'type',
         'page_id',
-        'route_name',
+        'route_path',
         'external_url',
         'icon',
         'position',
@@ -29,18 +29,25 @@ class AcademicNavItem extends Model
         return $this->belongsTo(AcademicSite::class, 'academic_site_id');
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(AcademicNavItem::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(AcademicNavItem::class, 'parent_id')
+                    ->orderBy('position')
+                    ->orderBy('id');
+    }
+
     public function page()
     {
         return $this->belongsTo(AcademicPage::class, 'page_id');
     }
 
-    public function parent()
+    public function scopeActive($q)
     {
-        return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('position');
+        return $q->where('is_active', true);
     }
 }

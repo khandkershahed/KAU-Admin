@@ -10,21 +10,19 @@ return new class extends Migration {
         Schema::create('academic_staff_members', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('staff_group_id')
-                  ->constrained('academic_staff_groups')
+            $table->foreignId('staff_section_id')
+                  ->constrained('academic_staff_sections')
                   ->onDelete('cascade');
 
             $table->string('name');
-
             $table->string('designation')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-
             $table->string('image_path')->nullable();
 
             $table->unsignedInteger('position')->default(0);
 
-            // JSON array of { icon, url }
+            // JSON: [ { "icon": "fa-solid fa-google-scholar", "url": "..." }, ...]
             $table->json('links')->nullable();
 
             $table->timestamps();

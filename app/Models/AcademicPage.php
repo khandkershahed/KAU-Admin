@@ -13,21 +13,24 @@ class AcademicPage extends Model
         'slug',
         'title',
         'subtitle',
-        'page_type',
-        'banner_title',
-        'banner_subtitle',
-        'banner_image_path',
-        'layout_config',
+        'is_home',
+        'banner_image',
+        'content',
         'meta_title',
         'meta_tags',
         'meta_description',
+        'og_image',
+        'banner_title',
+        'banner_subtitle',
+        'banner_button',
+        'banner_button_url',
         'is_active',
         'position',
     ];
 
     protected $casts = [
-        'layout_config' => 'array',
-        'is_active'     => 'boolean',
+        'is_home'   => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function site()
@@ -38,13 +41,6 @@ class AcademicPage extends Model
     public function navItem()
     {
         return $this->belongsTo(AcademicNavItem::class, 'nav_item_id');
-    }
-
-    public function sections()
-    {
-        return $this->hasMany(AcademicPageSection::class, 'academic_page_id')
-                    ->orderBy('position')
-                    ->orderBy('id');
     }
 
     public function scopeActive($q)

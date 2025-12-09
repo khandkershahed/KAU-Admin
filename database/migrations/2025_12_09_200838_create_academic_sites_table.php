@@ -11,26 +11,24 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('academic_menu_group_id')
-                ->constrained()
-                ->onDelete('cascade');
+                  ->constrained()
+                  ->onDelete('cascade');
 
-            $table->string('name');        // full name
-            $table->string('short_name');  // VABS, AG, ...
-            $table->string('slug')->unique(); // vabs, ag, fos...
+            $table->string('name');
+            $table->string('short_name')->nullable();
+            $table->string('slug')->unique(); // e.g. 'vabs', 'ag', etc.
 
-            // For routing / domains
-            $table->string('base_url')->nullable();    // e.g. /vabs
-            $table->string('subdomain')->nullable();   // e.g. vabs.kau.ac.bd
+            // either you use subdomain or base path
+            $table->string('base_url')->nullable();     // e.g. '/vabs'
+            $table->string('subdomain')->nullable();
             $table->text('short_description')->nullable();
 
-            // Branding
             $table->string('theme_primary_color')->nullable();
             $table->string('theme_secondary_color')->nullable();
             $table->string('logo_path')->nullable();
 
             $table->unsignedInteger('menu_order')->default(0);
-
-            $table->enum('status', ['draft', 'published', 'archived'])->default('published');
+            $table->string('status')->default('published'); // draft/published/archived
 
             $table->json('config')->nullable();
 

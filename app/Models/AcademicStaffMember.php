@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AcademicStaffMember extends Model
 {
     protected $fillable = [
-        'staff_group_id',
+        'staff_section_id',
         'name',
         'designation',
         'email',
@@ -21,8 +21,8 @@ class AcademicStaffMember extends Model
         'links' => 'array',
     ];
 
-    public function group()
+    public function section()
     {
-        return $this->belongsTo(AcademicStaffGroup::class, 'staff_group_id');
+        return $this->belongsTo(AcademicStaffSection::class, 'staff_section_id');
     }
 }

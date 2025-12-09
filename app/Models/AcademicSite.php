@@ -12,8 +12,8 @@ class AcademicSite extends Model
         'short_name',
         'slug',
         'base_url',
-        'short_description',
         'subdomain',
+        'short_description',
         'theme_primary_color',
         'theme_secondary_color',
         'logo_path',
@@ -22,12 +22,9 @@ class AcademicSite extends Model
         'config',
     ];
 
-    // if you want route-model binding by slug without {site:slug} syntax,
-    // you can add this, but it's optional when you already use {site:slug}
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+    protected $casts = [
+        'config' => 'array',
+    ];
 
     public function group()
     {
@@ -36,16 +33,34 @@ class AcademicSite extends Model
 
     public function navItems()
     {
-        return $this->hasMany(AcademicNavItem::class, 'academic_site_id');
+        return $this->hasMany(AcademicNavItem::class, 'academic_site_id')
+            ->orderBy('position')
+            ->orderBy('id');
     }
 
-    public function homeWidgets()
+    public function pages()
     {
-        return $this->hasMany(AcademicHomeWidget::class, 'academic_site_id');
+        return $this->hasMany(AcademicPage::class, 'academic_site_id')
+            ->orderBy('position')
+            ->orderBy('id');
     }
 
     public function departments()
     {
-        return $this->hasMany(AcademicDepartment::class, 'academic_site_id');
+        return $this->hasMany(AcademicDepartment::class, 'academic_site_id')
+            ->orderBy('position')
+            ->orderBy('id');
+    }
+
+    public function staffSections()
+    {
+        return $this->hasMany(AcademicStaffSection::class, 'academic_site_id')
+            ->orderBy('position')
+            ->orderBy('id');
+    }
+
+    public function scopePublished($q)
+    {
+        return $q->where('status', 'published');
     }
 }

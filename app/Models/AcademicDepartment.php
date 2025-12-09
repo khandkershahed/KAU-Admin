@@ -25,9 +25,10 @@ class AcademicDepartment extends Model
         return $this->belongsTo(AcademicSite::class, 'academic_site_id');
     }
 
-    public function staffGroups()
+    public function staffSections()
     {
-        return $this->hasMany(AcademicStaffGroup::class, 'academic_department_id')
-                    ->orderBy('position');
+        return $this->hasMany(AcademicStaffSection::class, 'academic_department_id')
+                    ->orderBy('position')
+                    ->orderBy('id');
     }
 }
