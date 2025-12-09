@@ -33,8 +33,9 @@ class AcademicSite extends Model
 
     public function navItems()
     {
-        return $this->hasMany(AcademicNavItem::class)->orderBy('position');
+        return $this->hasMany(AcademicNavItem::class);
     }
+
 
     public function pages()
     {
