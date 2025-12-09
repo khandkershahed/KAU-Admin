@@ -103,29 +103,29 @@
         const footerLinkTemplate = `
     <div class="repeater-row d-flex gap-2 align-items-center mb-2">
         <span class="sortable-handle cursor-pointer fs-3">☰</span>
-        <input type="text" name="footer_links[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
-        <input type="text" name="footer_links[0][url]" class="form-control form-control-sm w-50" placeholder="URL">
+        <input type="text" name="footer_links[0][title]" class="form-control form-control-sm" placeholder="Title">
+        <input type="text" name="footer_links[0][url]" class="form-control form-control-sm" placeholder="URL">
         <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
     </div>`;
 
         const emailTemplate = `
     <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-        <input type="text" name="emails[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
-        <input type="email" name="emails[0][email]" class="form-control form-control-sm w-50" placeholder="Email">
+        <input type="text" name="emails[0][title]" class="form-control form-control-sm w-40" placeholder="Title">
+        <input type="email" name="emails[0][email]" class="form-control form-control-sm w-60" placeholder="Email">
         <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
     </div>`;
 
         const phoneTemplate = `
     <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-        <input type="text" name="phone[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
-        <input type="text" name="phone[0][phone]" class="form-control form-control-sm w-50" placeholder="Phone">
+        <input type="text" name="phone[0][title]" class="form-control form-control-sm w-40" placeholder="Title">
+        <input type="text" name="phone[0][phone]" class="form-control form-control-sm w-60" placeholder="Phone">
         <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
     </div>`;
 
         const addressTemplate = `
     <div class="repeater-row d-flex gap-2 align-items-center mb-2">
-        <input type="text" name="addresses[0][title]" class="form-control form-control-sm w-25" placeholder="Title">
-        <input type="text" name="addresses[0][address]" class="form-control form-control-sm w-50" placeholder="Address">
+        <input type="text" name="addresses[0][title]" class="form-control form-control-sm w-40" placeholder="Title">
+        <input type="text" name="addresses[0][address]" class="form-control form-control-sm w-60" placeholder="Address">
         <button type="button" class="btn btn-danger btn-sm delete-row-btn"><i class="fas fa-trash-alt"></i></button>
     </div>`;
 

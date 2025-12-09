@@ -63,10 +63,7 @@
 @once
     @push('scripts')
         <script>
-            /* -----------------------------------------------------------
-           GLOBAL ICON PICKER INITIALIZER (Supports Repeaters)
-        ----------------------------------------------------------- */
-
+           
             let __faIconList = []; // cache icons so we don't reload JSON repeatedly
             let __faIconLoaded = false;
 
