@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Admin extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */ 
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**

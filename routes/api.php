@@ -5,6 +5,7 @@ use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\Api\HomeApiController;
 use App\Http\Controllers\Frontend\Api\UserApiController;
+use App\Http\Controllers\Frontend\Api\AcademicApiController;
 
 
 // Login
@@ -41,7 +42,13 @@ Route::prefix('api/v1')->group(function () {
 
     Route::get('/administration/office/{slug}', [HomeApiController::class, 'adminOfficeDetails']);
 
-    Route::get('/academics', [HomeApiController::class, 'academicNested']);
+    Route::prefix('academics')->group(function () {
+        Route::get('/sites', [AcademicApiController::class, 'sites']);
+        Route::get('/site/{site:slug}', [AcademicApiController::class, 'site']);
+        Route::get('/site/{site:slug}/home', [AcademicApiController::class, 'home']);
+        Route::get('/site/{site:slug}/page/{pageSlug}', [AcademicApiController::class, 'page']);
+        Route::get('/site/{site:slug}/staff', [AcademicApiController::class, 'staff']);
+    });
 
     Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);

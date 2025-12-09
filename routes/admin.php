@@ -18,7 +18,9 @@ use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Admin\AdmissionController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\AcademicNavController;
 use App\Http\Controllers\Admin\OfficeStaffController;
+use App\Http\Controllers\Admin\AcademicSiteController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\SubscriptionController;
@@ -26,8 +28,10 @@ use App\Http\Controllers\Admin\Auth\PasswordController;
 use App\Http\Controllers\Admin\AdministrationController;
 use App\Http\Controllers\Admin\NoticeCategoryController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\AcademicContentController;
 use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Admin\AcademicDepartmentStaffController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 
@@ -223,6 +227,59 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
 
+    Route::prefix('academic')->name('academic.')->group(function () {
+
+        // Module 1: Sites & Menus
+        Route::get('/sites', [AcademicSiteController::class, 'index'])->name('sites.index');
+        Route::post('/groups', [AcademicSiteController::class, 'storeGroup'])->name('groups.store');
+        Route::post('/groups/{group}', [AcademicSiteController::class, 'updateGroup'])->name('groups.update');
+        Route::delete('/groups/{group}', [AcademicSiteController::class, 'destroyGroup'])->name('groups.destroy');
+        Route::post('/groups/sort', [AcademicSiteController::class, 'sortGroups'])->name('groups.sort');
+
+        Route::post('/sites', [AcademicSiteController::class, 'storeSite'])->name('sites.store');
+        Route::post('/sites/{site}', [AcademicSiteController::class, 'updateSite'])->name('sites.update');
+        Route::delete('/sites/{site}', [AcademicSiteController::class, 'destroySite'])->name('sites.destroy');
+        Route::post('/sites/sort', [AcademicSiteController::class, 'sortSites'])->name('sites.sort');
+
+        // Nav
+        Route::post('/sites/{site}/nav', [AcademicNavController::class, 'store'])->name('nav.store');
+        Route::post('/nav/{item}', [AcademicNavController::class, 'update'])->name('nav.update');
+        Route::delete('/nav/{item}', [AcademicNavController::class, 'destroy'])->name('nav.destroy');
+        Route::post('/sites/{site}/nav/sort', [AcademicNavController::class, 'sort'])->name('nav.sort');
+
+        // Module 2: Pages & Home Content
+        Route::get('/pages', [AcademicContentController::class, 'index'])->name('pages.index');
+        Route::post('/pages', [AcademicContentController::class, 'storePage'])->name('pages.store');
+        Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])->name('pages.update');
+        Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])->name('pages.destroy');
+
+        Route::post('/pages/{page}/sections', [AcademicContentController::class, 'storeSection'])->name('sections.store');
+        Route::post('/sections/{section}', [AcademicContentController::class, 'updateSection'])->name('sections.update');
+        Route::delete('/sections/{section}', [AcademicContentController::class, 'destroySection'])->name('sections.destroy');
+        Route::post('/pages/{page}/sections/sort', [AcademicContentController::class, 'sortSections'])->name('sections.sort');
+
+        Route::post('/sites/{site}/widgets', [AcademicContentController::class, 'storeWidget'])->name('widgets.store');
+        Route::post('/widgets/{widget}', [AcademicContentController::class, 'updateWidget'])->name('widgets.update');
+        Route::delete('/widgets/{widget}', [AcademicContentController::class, 'destroyWidget'])->name('widgets.destroy');
+        Route::post('/sites/{site}/widgets/sort', [AcademicContentController::class, 'sortWidgets'])->name('widgets.sort');
+
+        // Module 3: Departments & Staff
+        Route::get('/departments-staff', [AcademicDepartmentStaffController::class, 'index'])->name('staff.index');
+        Route::post('/sites/{site}/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');
+        Route::post('/departments/{department}', [AcademicDepartmentStaffController::class, 'updateDepartment'])->name('departments.update');
+        Route::delete('/departments/{department}', [AcademicDepartmentStaffController::class, 'destroyDepartment'])->name('departments.destroy');
+        Route::post('/sites/{site}/departments/sort', [AcademicDepartmentStaffController::class, 'sortDepartments'])->name('departments.sort');
+
+        Route::post('/departments/{department}/groups', [AcademicDepartmentStaffController::class, 'storeGroup'])->name('groups.staff.store');
+        Route::post('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'updateGroup'])->name('groups.staff.update');
+        Route::delete('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'destroyGroup'])->name('groups.staff.destroy');
+        Route::post('/departments/{department}/groups/sort', [AcademicDepartmentStaffController::class, 'sortGroups'])->name('groups.staff.sort');
+
+        Route::post('/staff-groups/{group}/members', [AcademicDepartmentStaffController::class, 'storeMember'])->name('members.store');
+        Route::post('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'updateMember'])->name('members.update');
+        Route::delete('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'destroyMember'])->name('members.destroy');
+        Route::post('/staff-groups/{group}/members/sort', [AcademicDepartmentStaffController::class, 'sortMembers'])->name('members.sort');
+    });
 
 
 

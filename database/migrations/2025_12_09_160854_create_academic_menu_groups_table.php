@@ -9,8 +9,8 @@ return new class extends Migration {
     {
         Schema::create('academic_menu_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('title');          // "Faculty", "Institute"
-            $table->string('slug')->unique(); // "faculty", "institute"
+            $table->string('title');
+            $table->string('slug')->unique(); // faculty, institute, ...
             $table->unsignedInteger('position')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

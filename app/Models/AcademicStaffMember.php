@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AcademicUnitStaffMember extends Model
+class AcademicStaffMember extends Model
 {
     protected $fillable = [
-        'staff_section_id',
+        'staff_group_id',
         'name',
         'designation',
         'email',
@@ -18,11 +18,11 @@ class AcademicUnitStaffMember extends Model
     ];
 
     protected $casts = [
-        'links' => 'array',   
+        'links' => 'array',
     ];
 
-    public function section()
+    public function group()
     {
-        return $this->belongsTo(AcademicUnitStaffSection::class, 'staff_section_id');
+        return $this->belongsTo(AcademicStaffGroup::class, 'staff_group_id');
     }
 }

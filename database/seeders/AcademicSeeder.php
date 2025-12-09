@@ -4,504 +4,336 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\AcademicMenuGroup;
-use App\Models\AcademicUnit;
-use App\Models\AcademicUnitDepartment;
-use App\Models\AcademicUnitStaffSection;
-use App\Models\AcademicUnitStaffMember;
+use App\Models\AcademicSite;
+use App\Models\AcademicNavItem;
+use App\Models\AcademicPage;
+use App\Models\AcademicPageSection;
+use App\Models\AcademicDepartment;
+use App\Models\AcademicStaffGroup;
+use App\Models\AcademicStaffMember;
+use App\Models\AcademicHomeWidget;
+use Illuminate\Support\Str;
 
 class AcademicSeeder extends Seeder
 {
     public function run(): void
     {
-        // ===== FACULTY GROUP =====
-        $facultyGroup = AcademicMenuGroup::updateOrCreate(
+        // ===== GROUPS =====
+        $faculty = AcademicMenuGroup::updateOrCreate(
             ['slug' => 'faculty'],
-            [
-                'title'    => 'Faculty',
-                'position' => 1,
-                'is_active'=> true,
-            ]
+            ['title' => 'Faculty', 'position' => 1, 'is_active' => true]
         );
 
-        // ===== INSTITUTE GROUP =====
-        $instituteGroup = AcademicMenuGroup::updateOrCreate(
+        $institute = AcademicMenuGroup::updateOrCreate(
             ['slug' => 'institute'],
-            [
-                'title'    => 'Institute',
-                'position' => 2,
-                'is_active'=> true,
-            ]
+            ['title' => 'Institute', 'position' => 2, 'is_active' => true]
         );
 
-        /*
-         * Helper to create a unit, its departments, config, and (optionally) staff
-         */
-        $createFaculty = function (AcademicMenuGroup $group, array $data) {
-            $unit = AcademicUnit::updateOrCreate(
+        // Helper to create site
+        $createSite = function (AcademicMenuGroup $group, array $data) {
+            return AcademicSite::updateOrCreate(
                 ['slug' => $data['slug']],
                 [
-                    'academic_menu_group_id'     => $group->id,
-                    'icon'                       => $data['icon'] ?? null,
-                    'name'                       => $data['title'],
-                    'short_name'                 => $data['short_name'] ?? null,
-                    'short_description'          => $data['short_description'] ?? null,
-                    'button_name'                => $data['button_name'] ?? null,
-                    'menu_order'                 => $data['position'] ?? 0,
-                    'base_url'                   => $data['base_url'] ?? '/' . $data['slug'],
-                    'home_layout'                => $data['home_layout'] ?? 'faculty_home',
-                    'home_has_hero'              => $data['home_has_hero'] ?? true,
-                    'home_has_department_grid'   => $data['home_has_department_grid'] ?? true,
-                    'config'                     => $data['config'] ?? null,
-                    'status'                     => 'published',
+                    'academic_menu_group_id' => $group->id,
+                    'name'                   => $data['name'],
+                    'short_name'             => $data['short_name'],
+                    'base_url'               => $data['base_url'] ?? '/' . $data['slug'],
+                    'subdomain'              => $data['subdomain'] ?? null,
+                    'theme_primary_color'    => $data['theme_primary_color'] ?? '#0f766e',
+                    'theme_secondary_color'  => $data['theme_secondary_color'] ?? null,
+                    'logo_path'              => $data['logo_path'] ?? null,
+                    'menu_order'             => $data['menu_order'] ?? 0,
+                    'status'                 => 'published',
+                    'config'                 => $data['config'] ?? null,
                 ]
             );
-
-            // ==========================
-            // DEPARTMENTS
-            // ==========================
-            $position = 1;
-            foreach ($data['departments'] as $dept) {
-                AcademicUnitDepartment::updateOrCreate(
-                    [
-                        'academic_unit_id' => $unit->id,
-                        'short_code'       => $dept['short_code'],
-                    ],
-                    [
-                        'title'      => $dept['title'],
-                        'position'   => $position++,
-                    ]
-                );
-            }
-
-            // cache departments keyed by short_code for staff creation
-            $departmentsByCode = $unit->departments()->get()->keyBy('short_code');
-
-            // ==========================
-            // STAFF (optional – only VABS currently)
-            // ==========================
-            if (!empty($data['staff'])) {
-                foreach ($data['staff'] as $deptShortCode => $sections) {
-                    /** @var \App\Models\AcademicUnitDepartment|null $department */
-                    $department = $departmentsByCode->get($deptShortCode);
-
-                    if (!$department) {
-                        continue;
-                    }
-
-                    $secPos = 1;
-                    foreach ($sections as $sectionData) {
-                        $section = AcademicUnitStaffSection::updateOrCreate(
-                            [
-                                'academic_unit_id' => $unit->id,
-                                'department_id'    => $department->id,
-                                'title'            => $sectionData['title'],
-                            ],
-                            [
-                                'position' => $secPos++,
-                            ]
-                        );
-
-                        $memPos = 1;
-                        foreach ($sectionData['members'] as $memberData) {
-                            AcademicUnitStaffMember::updateOrCreate(
-                                [
-                                    'staff_section_id' => $section->id,
-                                    'email'            => $memberData['email'] ?? null,
-                                    'name'             => $memberData['name'],
-                                ],
-                                [
-                                    'designation' => $memberData['designation'] ?? null,
-                                    'phone'       => $memberData['phone'] ?? null,
-                                    'image_path'  => $memberData['image_path'] ?? null,
-                                    'position'    => $memPos++,
-                                    // JSON links array on the member itself
-                                    'links'       => $memberData['links'] ?? [],
-                                ]
-                            );
-                        }
-                    }
-                }
-            }
         };
 
-        // ========= DATA PER FACULTY =========
+        // ===== SITES =====
+        $vabs = $createSite($faculty, [
+            'slug'        => 'vabs',
+            'name'        => 'Veterinary, Animal and Biomedical Sciences',
+            'short_name'  => 'VABS',
+            'base_url'    => '/vabs',
+            'menu_order'  => 1,
+        ]);
 
-        // VABS
-        $createFaculty($facultyGroup, [
-            'icon'         => 'fa-solid fa-circle-info',
-            'title'        => 'Veterinary, Animal and Biomedical Sciences',
-            'slug'         => 'vabs',
-            'short_name'   => 'VABS',
-            'short_description' => 'Faculty focused on veterinary medicine, animal health and biomedical sciences with DVM program and 15 specialized departments.',
-            'button_name'  => 'Go To VABS',
-            'position'     => 1,
-            'base_url'     => '/vabs',
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/',
-                    'layout'              => 'faculty_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => true,
+        $ag = $createSite($faculty, [
+            'slug'        => 'ag',
+            'name'        => 'Agriculture',
+            'short_name'  => 'AG',
+            'base_url'    => '/ag',
+            'menu_order'  => 2,
+        ]);
+
+        $fos = $createSite($faculty, [
+            'slug'        => 'fos',
+            'name'        => 'Fisheries & Ocean Sciences',
+            'short_name'  => 'FOS',
+            'base_url'    => '/fos',
+            'menu_order'  => 3,
+        ]);
+
+        $aeas = $createSite($faculty, [
+            'slug'        => 'aeas',
+            'name'        => 'Agricultural Economics & Agribusiness Studies',
+            'short_name'  => 'AEAS',
+            'base_url'    => '/aeas',
+            'menu_order'  => 4,
+        ]);
+
+        $aet = $createSite($faculty, [
+            'slug'        => 'aet',
+            'name'        => 'Agricultural Engineering & Technology',
+            'short_name'  => 'AET',
+            'base_url'    => '/aet',
+            'menu_order'  => 5,
+        ]);
+
+        $gti = $createSite($institute, [
+            'slug'        => 'gti',
+            'name'        => 'Graduate Training Institute',
+            'short_name'  => 'GTI',
+            'base_url'    => '/graduate-training-institute',
+            'menu_order'  => 1,
+        ]);
+
+        // ========= BASIC CONTENT FOR VABS ONLY (others can be added similarly) =========
+
+        // --- Pages for VABS ---
+        $aboutVabs = AcademicPage::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'page_key' => 'about'],
+            [
+                'slug'             => 'about-vabs',
+                'title'            => 'About VABS',
+                'subtitle'         => null,
+                'page_type'        => 'custom',
+                'banner_title'     => 'About the Faculty of VABS',
+                'banner_subtitle'  => 'Veterinary, Animal and Biomedical Sciences',
+                'banner_image_path'=> null,
+                'meta_title'       => 'About VABS - KAU',
+                'meta_description' => 'Information about the Faculty of Veterinary, Animal and Biomedical Sciences.',
+                'is_active'        => true,
+                'position'         => 1,
+            ]
+        );
+
+        AcademicPageSection::updateOrCreate(
+            ['academic_page_id' => $aboutVabs->id, 'position' => 1],
+            [
+                'section_key' => 'intro',
+                'title'       => 'Welcome to VABS',
+                'subtitle'    => null,
+                'content'     => '<p>VABS focuses on veterinary medicine, animal health, and biomedical sciences.</p>',
+                'extra'       => null,
+            ]
+        );
+
+        $facilitiesVabs = AcademicPage::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'page_key' => 'facilities'],
+            [
+                'slug'            => 'facilities',
+                'title'           => 'Facilities',
+                'page_type'       => 'custom',
+                'banner_title'    => 'Facilities',
+                'banner_subtitle' => 'Modern labs and clinical facilities',
+                'is_active'       => true,
+                'position'        => 2,
+            ]
+        );
+
+        $researchVabs = AcademicPage::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'page_key' => 'research'],
+            [
+                'slug'            => 'research',
+                'title'           => 'Research',
+                'page_type'       => 'custom',
+                'banner_title'    => 'Research at VABS',
+                'is_active'       => true,
+                'position'        => 3,
+            ]
+        );
+
+        // Academic subpages
+        $academicPages = [
+            'academic_program'   => 'Academic Program',
+            'syllabus'           => 'Syllabus',
+            'academic_calendar'  => 'Academic Calendar',
+            'class_routine'      => 'Class Routine',
+            'result'             => 'Result',
+        ];
+
+        $order = 1;
+        foreach ($academicPages as $key => $title) {
+            AcademicPage::updateOrCreate(
+                ['academic_site_id' => $vabs->id, 'page_key' => $key],
+                [
+                    'slug'        => Str::slug($title),
+                    'title'       => $title,
+                    'page_type'   => 'academic_subpage',
+                    'banner_title'=> $title,
+                    'is_active'   => true,
+                    'position'    => $order++,
+                ]
+            );
+        }
+
+        // --- Nav items for VABS ---
+        $homeNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'home', 'parent_id' => null],
+            [
+                'label'     => 'Home',
+                'type'      => 'route',
+                'route_name'=> 'frontend.academic.site.home',
+                'position'  => 1,
+                'is_active' => true,
+            ]
+        );
+
+        $aboutNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'about'],
+            [
+                'label'     => 'About VABS',
+                'type'      => 'page',
+                'page_id'   => $aboutVabs->id,
+                'position'  => 2,
+                'is_active' => true,
+            ]
+        );
+
+        $departmentsNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'departments'],
+            [
+                'label'     => 'Departments',
+                'type'      => 'route',
+                'route_name'=> 'frontend.academic.site.departments',
+                'position'  => 3,
+                'is_active' => true,
+            ]
+        );
+
+        $facilitiesNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'facilities'],
+            [
+                'label'     => 'Facilities',
+                'type'      => 'page',
+                'page_id'   => $facilitiesVabs->id,
+                'position'  => 4,
+                'is_active' => true,
+            ]
+        );
+
+        $facultyMemberNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'faculty_member'],
+            [
+                'label'     => 'Faculty Member',
+                'type'      => 'route',
+                'route_name'=> 'frontend.academic.site.staff',
+                'position'  => 5,
+                'is_active' => true,
+            ]
+        );
+
+        $academicNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'academic', 'parent_id' => null],
+            [
+                'label'     => 'Academic',
+                'type'      => 'route',
+                'route_name'=> 'frontend.academic.site.academic',
+                'position'  => 6,
+                'is_active' => true,
+            ]
+        );
+
+        $researchNav = AcademicNavItem::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'menu_key' => 'research'],
+            [
+                'label'     => 'Research',
+                'type'      => 'page',
+                'page_id'   => $researchVabs->id,
+                'position'  => 7,
+                'is_active' => true,
+            ]
+        );
+
+        // children under Academic
+        $position = 1;
+        foreach ($academicPages as $key => $title) {
+            $page = AcademicPage::where('academic_site_id', $vabs->id)
+                ->where('page_key', $key)->first();
+
+            AcademicNavItem::updateOrCreate(
+                [
+                    'academic_site_id' => $vabs->id,
+                    'parent_id'        => $academicNav->id,
+                    'menu_key'         => $key,
                 ],
-                'about' => [
-                    'endpoint'      => '/about-vabs',
-                    'section_title' => 'About VABS',
-                ],
-                'departments' => [
-                    'endpoint' => '/departments',
-                ],
-                'facilities' => [
-                    'endpoint'      => '/facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'faculty_members' => [
-                    'endpoint' => '/faculty-member',
-                ],
-                'academic' => [
-                    'endpoint'   => '/academic',
-                    'menu_label' => 'Academic',
-                    'sub_pages'  => [
-                        'Academic Program',
-                        'Syllabus',
-                        'Academic Calendar',
-                        'Class Routine',
-                        'Result',
-                    ],
-                ],
-                'research' => [
-                    'endpoint'   => '/research',
-                    'menu_label' => 'Research',
-                ],
+                [
+                    'label'     => $title,
+                    'type'      => 'page',
+                    'page_id'   => $page?->id,
+                    'position'  => $position++,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // --- Departments + Staff for VABS (sample) ---
+        $vah = AcademicDepartment::updateOrCreate(
+            ['academic_site_id' => $vabs->id, 'short_code' => 'VAH'],
+            [
+                'title'       => 'Anatomy and Histology',
+                'slug'        => 'anatomy-and-histology',
+                'description' => null,
+                'position'    => 1,
+                'is_active'   => true,
+            ]
+        );
+
+        $officersGroup = AcademicStaffGroup::updateOrCreate(
+            [
+                'academic_site_id'      => $vabs->id,
+                'academic_department_id'=> $vah->id,
+                'title'                 => 'Officers',
             ],
-            'departments' => [
-                ['title' => 'Anatomy and Histology', 'short_code' => 'VAH'],
-                ['title' => 'Physiology', 'short_code' => 'VPH'],
-                ['title' => 'Pharmacology and Toxicology', 'short_code' => 'VPT'],
-                ['title' => 'Microbiology and Public Health', 'short_code' => 'MPH'],
-                ['title' => 'Livestock Production and Management', 'short_code' => 'LPM'],
-                ['title' => 'Pathology', 'short_code' => 'PAT'],
-                ['title' => 'Parasitology', 'short_code' => 'PAR'],
-                ['title' => 'Genetics and Animal Breeding', 'short_code' => 'GAB'],
-                ['title' => 'Dairy Science', 'short_code' => 'DSC'],
-                ['title' => 'Poultry Science', 'short_code' => 'PSC'],
-                ['title' => 'Epidemiology and Preventive Medicine', 'short_code' => 'EPM'],
-                ['title' => 'Animal Nutrition', 'short_code' => 'ANT'],
-                ['title' => 'Medicine', 'short_code' => 'MED'],
-                ['title' => 'Surgery', 'short_code' => 'SGR'],
-                ['title' => 'Theriogenology', 'short_code' => 'THE'],
+            ['position' => 1]
+        );
+
+        AcademicStaffMember::updateOrCreate(
+            [
+                'staff_group_id' => $officersGroup->id,
+                'email'          => 'delwar@kau.ac.bd',
             ],
-            'staff' => [
-                'VAH' => [
+            [
+                'name'        => 'Delwar Hossain',
+                'designation' => 'Ps To Vc (In charge)',
+                'phone'       => '+880 1521 576582',
+                'image_path'  => null,
+                'position'    => 1,
+                'links'       => [
                     [
-                        'title'   => 'Vice-Chancellor',
-                        'members' => [
-                            [
-                                'name'        => 'Prof. Dr. Md. Nazmul Ahsan',
-                                'designation' => 'Vice-Chancellor',
-                                'email'       => 'vc@kau.ac.bd',
-                                'phone'       => null,
-                                'image_path'  => 'members/7bsdUYWlQo1wyAGQBRziwdaseOaD3ZgfgAppZDKT.png',
-                                'links'       => [
-                                    [
-                                        'icon' => 'fa-solid fa-google-scholar',
-                                        'url'  => 'https://admin.kau.khandkershahed.com/storage/members/7bsdUYWlQo1wyAGQBRziwdaseOaD3ZgfgAppZDKT.png',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'title'   => 'Officers',
-                        'members' => [
-                            [
-                                'name'        => 'Delwar Hossain',
-                                'designation' => 'Ps To Vc (In charge)',
-                                'email'       => 'delwar@kau.ac.bd',
-                                'phone'       => '+880 1521 576582',
-                                'links'       => [],
-                            ],
-                            [
-                                'name'        => 'Md. Murad Hossain',
-                                'designation' => 'Administrative Officer',
-                                'email'       => 'kaumurad@gmail.com',
-                                'phone'       => '+880 1629 964723',
-                                'links'       => [],
-                            ],
-                            [
-                                'name'        => 'Md. Abid Hossain',
-                                'designation' => 'Administrative Officer',
-                                'email'       => 'hossainmdabid007@gmail.com',
-                                'phone'       => '+880 1833 293355',
-                                'links'       => [],
-                            ],
-                        ],
+                        'icon' => 'fa-solid fa-google-scholar',
+                        'url'  => 'https://example.com/scholar/delwar',
                     ],
                 ],
-            ],
-        ]);
+            ]
+        );
 
-        // AG
-        $createFaculty($facultyGroup, [
-            'icon'         => 'fa-solid fa-leaf',
-            'title'        => 'Agriculture',
-            'slug'         => 'ag',
-            'short_name'   => 'AG',
-            'short_description' => 'Second-largest faculty offering BSc Ag (Hons) with 11 departments covering crop, soil, plant, extension and agroforestry sciences.',
-            'button_name'  => 'Go To AG',
-            'position'     => 2,
-            'base_url'     => '/ag',
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/',
-                    'layout'              => 'faculty_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => true,
-                ],
-                'about' => [
-                    'endpoint'      => '/about-ag',
-                    'section_title' => 'About AG',
-                ],
-                'departments' => ['endpoint' => '/departments'],
-                'facilities'  => [
-                    'endpoint'      => '/facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'faculty_members' => ['endpoint' => '/faculty-member'],
-                'academic' => [
-                    'endpoint'   => '/academic',
-                    'menu_label' => 'Academic',
-                    'sub_pages'  => [
-                        'Academic Program',
-                        'Syllabus',
-                        'Academic Calendar',
-                        'Class Routine',
-                        'Result',
-                    ],
-                ],
-                'research' => [
-                    'endpoint'   => '/research',
-                    'menu_label' => 'Research',
-                ],
+        // --- Home widgets for VABS (sample) ---
+        AcademicHomeWidget::updateOrCreate(
+            [
+                'academic_site_id' => $vabs->id,
+                'widget_type'      => 'hero',
+                'position'         => 1,
             ],
-            'departments' => [
-                ['title' => 'Agronomy', 'short_code' => 'AGM'],
-                ['title' => 'Soil Science', 'short_code' => 'SOS'],
-                ['title' => 'Entomology', 'short_code' => 'ENT'],
-                ['title' => 'Horticulture', 'short_code' => 'HRT'],
-                ['title' => 'Plant Pathology', 'short_code' => 'PP'],
-                ['title' => 'Crop Botany', 'short_code' => 'CB'],
-                ['title' => 'Plant Genetics and Biotechnology', 'short_code' => 'PGB'],
-                ['title' => 'Agricultural Extension and Information Systems', 'short_code' => 'AEIS'],
-                ['title' => 'Agroforestry', 'short_code' => 'AF'],
-                ['title' => 'Agricultural Chemistry', 'short_code' => 'ACH'],
-                ['title' => 'Biochemistry and Molecular Biology', 'short_code' => 'BMB'],
-            ],
-            'staff' => [],
-        ]);
-
-        // FOS
-        $createFaculty($facultyGroup, [
-            'icon'         => 'fa-solid fa-fish',
-            'title'        => 'Fisheries & Ocean Sciences',
-            'slug'         => 'fos',
-            'short_name'   => 'FOS',
-            'short_description' => 'Faculty established in 2019 offering BSc in Fisheries (Honours) and research on inland and marine resources.',
-            'button_name'  => 'Go To FOS',
-            'position'     => 3,
-            'base_url'     => '/fos',
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/',
-                    'layout'              => 'faculty_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => true,
-                ],
-                'about' => [
-                    'endpoint'      => '/about-fos',
-                    'section_title' => 'About FOS',
-                ],
-                'departments' => ['endpoint' => '/departments'],
-                'facilities'  => [
-                    'endpoint'      => '/facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'faculty_members' => ['endpoint' => '/faculty-member'],
-                'academic' => [
-                    'endpoint'   => '/academic',
-                    'menu_label' => 'Academic',
-                    'sub_pages'  => [
-                        'Academic Program',
-                        'Syllabus',
-                        'Academic Calendar',
-                        'Class Routine',
-                        'Result',
-                    ],
-                ],
-                'research' => [
-                    'endpoint'   => '/research',
-                    'menu_label' => 'Research',
-                ],
-            ],
-            'departments' => [
-                ['title' => 'Fishery Biology and Genetics', 'short_code' => 'FBG'],
-                ['title' => 'Aquaculture', 'short_code' => 'AQ'],
-                ['title' => 'Fishery Resources Conservation and Management', 'short_code' => 'FRCM'],
-                ['title' => 'Fisheries Technology and Quality Control', 'short_code' => 'FTQC'],
-                ['title' => 'Oceanography', 'short_code' => 'OC'],
-                ['title' => 'Fish Health Management', 'short_code' => 'FHM'],
-            ],
-            'staff' => [],
-        ]);
-
-        // AEAS
-        $createFaculty($facultyGroup, [
-            'icon'         => 'fa-solid fa-chart-line',
-            'title'        => 'Agricultural Economics & Agribusiness Studies',
-            'slug'         => 'aeas',
-            'short_name'   => 'AEAS',
-            'short_description' => 'Faculty covering agricultural economics, rural development, statistics, finance and agribusiness for modern agri-food systems.',
-            'button_name'  => 'Go To AEAS',
-            'position'     => 4,
-            'base_url'     => '/aeas',
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/',
-                    'layout'              => 'faculty_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => true,
-                ],
-                'about' => [
-                    'endpoint'      => '/about-aeas',
-                    'section_title' => 'About AEAS',
-                ],
-                'departments' => ['endpoint' => '/departments'],
-                'facilities'  => [
-                    'endpoint'      => '/facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'faculty_members' => ['endpoint' => '/faculty-member'],
-                'academic' => [
-                    'endpoint'   => '/academic',
-                    'menu_label' => 'Academic',
-                    'sub_pages'  => [
-                        'Academic Program',
-                        'Syllabus',
-                        'Academic Calendar',
-                        'Class Routine',
-                        'Result',
-                    ],
-                ],
-                'research' => [
-                    'endpoint'   => '/research',
-                    'menu_label' => 'Research',
-                ],
-            ],
-            'departments' => [
-                ['title' => 'Agricultural Economics', 'short_code' => 'AE'],
-                ['title' => 'Sociology and Rural Development', 'short_code' => 'SRD'],
-                ['title' => 'Agribusiness and Marketing', 'short_code' => 'AM'],
-                ['title' => 'Agricultural Statistics and Bioinformatics', 'short_code' => 'ASB'],
-                ['title' => 'Agricultural Finance, Co-operative and Banking', 'short_code' => 'AFCB'],
-                ['title' => 'Language and Communication Studies', 'short_code' => 'LCS'],
-            ],
-            'staff' => [],
-        ]);
-
-        // AET
-        $createFaculty($facultyGroup, [
-            'icon'         => 'fa-solid fa-gears',
-            'title'        => 'Agricultural Engineering & Technology',
-            'slug'         => 'aet',
-            'short_name'   => 'AET',
-            'short_description' => 'Engineering-focused faculty with programs in structures, machinery, water management, computing and physical sciences for agriculture.',
-            'button_name'  => 'Go To AET',
-            'position'     => 5,
-            'base_url'     => '/aet',
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/',
-                    'layout'              => 'faculty_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => true,
-                ],
-                'about' => [
-                    'endpoint'      => '/about-aet',
-                    'section_title' => 'About AET',
-                ],
-                'departments' => ['endpoint' => '/departments'],
-                'facilities'  => [
-                    'endpoint'      => '/facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'faculty_members' => ['endpoint' => '/faculty-member'],
-                'academic' => [
-                    'endpoint'   => '/academic',
-                    'menu_label' => 'Academic',
-                    'sub_pages'  => [
-                        'Academic Program',
-                        'Syllabus',
-                        'Academic Calendar',
-                        'Class Routine',
-                        'Result',
-                    ],
-                ],
-                'research' => [
-                    'endpoint'   => '/research',
-                    'menu_label' => 'Research',
-                ],
-            ],
-            'departments' => [
-                ['title' => 'Farm Structure', 'short_code' => 'FS'],
-                ['title' => 'Farm Power and Machinery', 'short_code' => 'FPM'],
-                ['title' => 'Irrigation and Water Management', 'short_code' => 'IWM'],
-                ['title' => 'Computer Science and Engineering', 'short_code' => 'CSE'],
-                ['title' => 'Mathematics and Physics', 'short_code' => 'MP'],
-            ],
-            'staff' => [],
-        ]);
-
-        // GTI (Institute)
-        $createFaculty($instituteGroup, [
-            'icon'         => 'fa-solid fa-graduation-cap',
-            'title'        => 'Graduate Training Institute',
-            'slug'         => 'gti',
-            'short_name'   => 'GTI',
-            'short_description' => 'Central institute for graduate-level training, short courses and professional development within KAU.',
-            'button_name'  => 'Go To GTI',
-            'position'     => 1,
-            'base_url'     => 'https://kau.ac.bd',
-            'home_layout'  => 'institute_home',
-            'home_has_department_grid' => false,
-            'config'       => [
-                'home' => [
-                    'endpoint'            => '/graduate-training-institute',
-                    'layout'              => 'institute_home',
-                    'has_hero'            => true,
-                    'has_department_grid' => false,
-                ],
-                'about' => [
-                    'endpoint'      => '/graduate-training-institute#about',
-                    'section_title' => 'About GTI',
-                ],
-                'programs' => [
-                    'endpoint' => '/graduate-training-institute#programs',
-                    'types' => [
-                        'Short Courses',
-                        'Workshops',
-                        'Professional Training',
-                    ],
-                ],
-                'facilities' => [
-                    'endpoint'      => '/graduate-training-institute#facilities',
-                    'section_title' => 'Facilities',
-                ],
-                'contact' => [
-                    'endpoint'      => '/graduate-training-institute#contact',
-                    'section_title' => 'Contact Information',
-                ],
-            ],
-            'departments' => [], // institute-level only
-            'staff'       => [],
-        ]);
+            [
+                'title'       => 'Welcome to VABS',
+                'subtitle'    => 'Faculty of Veterinary, Animal and Biomedical Sciences',
+                'content'     => '<p>Fostering excellence in veterinary education and research.</p>',
+                'button_text' => 'Learn More',
+                'button_url'  => '/vabs/about-vabs',
+                'is_active'   => true,
+            ]
+        );
     }
 }

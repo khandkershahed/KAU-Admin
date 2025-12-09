@@ -7,19 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('academic_unit_staff_sections', function (Blueprint $table) {
+        Schema::create('academic_staff_groups', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('academic_unit_id')
+            $table->foreignId('academic_site_id')
                   ->constrained()
                   ->onDelete('cascade');
 
-            $table->foreignId('department_id')
+            $table->foreignId('academic_department_id')
                   ->nullable()
-                  ->constrained('academic_unit_departments')
-                  ->onDelete('cascade');
+                  ->constrained('academic_departments')
+                  ->nullOnDelete();
 
-            $table->string('title');                 // e.g. Vice-Chancellor, Officers
+            $table->string('title'); // Vice-Chancellor, Officers, Teachers...
+
             $table->unsignedInteger('position')->default(0);
 
             $table->timestamps();
@@ -28,6 +29,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('academic_unit_staff_sections');
+        Schema::dropIfExists('academic_staff_groups');
     }
 };
