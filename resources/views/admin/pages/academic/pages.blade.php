@@ -151,6 +151,13 @@
                                         <label class="form-check-label" for="createIsHome">Is Home Page?</label>
                                     </div>
                                 </div>
+                                <div class="col-md-3 d-flex align-items-center">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="is_department_boxes" value="1"
+                                               id="createIsDepartment" {{ old('is_department_boxes') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="createIsDepartment">Show Department cards?</label>
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
                                     <x-metronic.label class="col-form-label fw-bold fs-6">Active</x-metronic.label>
                                     <select name="is_active" class="form-select form-select-sm">
@@ -285,9 +292,18 @@
                                 <div class="col-md-3 d-flex align-items-center">
                                     <div class="form-check mt-4">
                                         <input class="form-check-input" type="checkbox" name="is_home" value="1"
-                                            id="editIsHome-{{ $page->id }}" {{ old('is_home', $page->is_home) ? 'checked' : '' }}>
+                                            id="editIsDepartment-{{ $page->id }}" {{ old('is_Department', $page->is_home) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="editIsHome-{{ $page->id }}">
                                             Is Home Page?
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-center">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" name="is_department_boxes" value="1"
+                                            id="editIsHome-{{ $page->id }}" {{ old('is_department_boxes', $page->is_department_boxes) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="editIsHome-{{ $page->id }}">
+                                            Show Department Cards?
                                         </label>
                                     </div>
                                 </div>
