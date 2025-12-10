@@ -13,28 +13,28 @@ use Illuminate\Support\Facades\Storage;
 
 class AcademicDepartmentStaffController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:view academic staff')->only(['index']);
-        $this->middleware('permission:manage academic staff')->only([
-            'storeDepartment','updateDepartment','destroyDepartment','sortDepartments',
-            'storeGroup','updateGroup','destroyGroup','sortGroups',
-            'storeMember','updateMember','destroyMember','sortMembers',
-        ]);
-    }
-
     // public function __construct()
     // {
-    //     $this->middleware('permission:view academic departments')->only(['index']);
-    //     $this->middleware('permission:create academic departments')->only(['storeDepartment']);
-    //     $this->middleware('permission:edit academic departments')->only(['updateDepartment', 'sortDepartments']);
-    //     $this->middleware('permission:delete academic departments')->only(['destroyDepartment']);
-
     //     $this->middleware('permission:view academic staff')->only(['index']);
-    //     $this->middleware('permission:create academic staff')->only(['storeGroup', 'storeMember']);
-    //     $this->middleware('permission:edit academic staff')->only(['updateGroup', 'updateMember', 'sortGroups', 'sortMembers']);
-    //     $this->middleware('permission:delete academic staff')->only(['destroyGroup', 'destroyMember']);
+    //     $this->middleware('permission:manage academic staff')->only([
+    //         'storeDepartment','updateDepartment','destroyDepartment','sortDepartments',
+    //         'storeGroup','updateGroup','destroyGroup','sortGroups',
+    //         'storeMember','updateMember','destroyMember','sortMembers',
+    //     ]);
     // }
+
+    public function __construct()
+    {
+        $this->middleware('permission:view academic departments')->only(['index']);
+        $this->middleware('permission:create academic departments')->only(['storeDepartment']);
+        $this->middleware('permission:edit academic departments')->only(['updateDepartment', 'sortDepartments']);
+        $this->middleware('permission:delete academic departments')->only(['destroyDepartment']);
+
+        $this->middleware('permission:view academic staff')->only(['index']);
+        $this->middleware('permission:create academic staff')->only(['storeGroup', 'storeMember']);
+        $this->middleware('permission:edit academic staff')->only(['updateGroup', 'updateMember', 'sortGroups', 'sortMembers']);
+        $this->middleware('permission:delete academic staff')->only(['destroyGroup', 'destroyMember']);
+    }
     /* ==========================================================================
         INDEX
        ========================================================================== */

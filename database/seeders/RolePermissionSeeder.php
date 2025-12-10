@@ -45,6 +45,7 @@ class RolePermissionSeeder extends Seeder
                     'create academic sites',
                     'edit academic sites',
                     'delete academic sites',
+                    'manage academic sites',
                     // for menu groups
                     'view academic groups',
                     'create academic groups',
