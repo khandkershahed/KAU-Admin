@@ -14,6 +14,7 @@ class AcademicPage extends Model
         'title',
         'subtitle',
         'is_home',
+        'is_department_boxes',
         'banner_image',
         'content',
         'meta_title',
@@ -30,6 +31,7 @@ class AcademicPage extends Model
 
     protected $casts = [
         'is_home'   => 'boolean',
+        'is_department_boxes'   => 'boolean',
         'is_active' => 'boolean',
     ];
 
