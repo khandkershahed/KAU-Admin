@@ -153,6 +153,7 @@ class AcademicApiController extends Controller
                     'page_key'          => $p->page_key,
                     'slug'              => $p->slug,
                     'is_home'           => (bool) $p->is_home,
+                    'is_department_boxes'           => (bool) $p->is_department_boxes,
                     'title'             => $p->title,
                     'subtitle'          => $p->subtitle,
                     'content'           => $p->content,
