@@ -70,11 +70,11 @@
                                     <td class="text-end">
 
                                         @can('edit academic pages')
-                                            <button class="btn btn-light-success btn-sm"
+                                            <a href="javascript:void(0);" class="me-5"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#editPageModal-{{ $page->id }}">
-                                                <i class="fa-solid fa-pen fs-6"></i>
-                                            </button>
+                                                <i class="fa-solid fa-pencil-square fs-2 text-primary"></i>
+                                            </a>
                                         @endcan
 
                                         @can('delete academic pages')

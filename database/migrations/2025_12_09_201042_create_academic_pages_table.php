@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->string('subtitle')->nullable();
 
             $table->boolean('is_home')->default(false);
+            $table->boolean('is_department_boxes')->default(false);
             // Banner
             $table->string('banner_title')->nullable();
             $table->string('banner_subtitle')->nullable();
