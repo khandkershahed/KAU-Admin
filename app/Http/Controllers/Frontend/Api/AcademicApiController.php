@@ -148,18 +148,24 @@ class AcademicApiController extends Controller
             // Pages (light)
             $pagesList = $site->pages->map(function ($p) {
                 return [
-                    'id'          => $p->id,
-                    'page_key'    => $p->page_key,
-                    'slug'        => $p->slug,
-                    'title'       => $p->title,
-                    'subtitle'    => $p->subtitle,
-                    'is_home'     => (bool) $p->is_home,
-                    'banner_image' => $p->banner_image ? asset('storage/' . $p->banner_image) : null,
-                    'meta_title'  => $p->meta_title,
-                    'meta_tags'   => $p->meta_tags,
-                    'meta_description' => $p->meta_description,
-                    'og_image'    => $p->og_image ? asset('storage/' . $p->og_image) : null,
-                    'position'    => (int) $p->position,
+                    'id'                => $p->id,
+                    'page_key'          => $p->page_key,
+                    'slug'              => $p->slug,
+                    'is_home'           => (bool) $p->is_home,
+                    'title'             => $p->title,
+                    'subtitle'          => $p->subtitle,
+                    'content'           => $p->content,
+                    'banner_image'      => $p->banner_image ? asset('storage/' . $p->banner_image): null,
+                    'banner_title'      => $p->banner_title,
+                    'banner_subtitle'   => $p->banner_subtitle,
+                    'banner_button'     => $p->banner_button,
+                    'banner_button_url' => $p->banner_button_url,
+                    'meta_title'        => $p->meta_title,
+                    'meta_tags'         => $p->meta_tags,
+                    'meta_description'  => $p->meta_description,
+                    'og_image'          => $p->og_image ? asset('storage/' . $p->og_image)        : null,
+                    
+                    'position'          => (int) $p->position,
                 ];
             })->values();
 

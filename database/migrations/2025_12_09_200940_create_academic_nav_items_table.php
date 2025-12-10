@@ -20,7 +20,7 @@ return new class extends Migration {
                   ->onDelete('cascade');
 
             $table->string('label');
-            $table->string('menu_key')->nullable(); // 'home','about','departments',etc.
+            $table->string('menu_key')->nullable(); // 'home','about','departments',etc. 
             $table->enum('type', ['route', 'page', 'external', 'group'])->default('page');
             // when type = 'page'
             $table->unsignedBigInteger('page_id')->nullable();
