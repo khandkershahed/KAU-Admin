@@ -56,12 +56,13 @@ class AcademicSeeder extends Seeder
              | NAVIGATION ITEMS (Root + Child Items)
              |------------------------------------------------------------ */
             $rootNavs = [
-                'home' => ['Home', 'page'],
-                'about' => ['About ' . ($site->short_name ?? $site->name), 'page'],
-                'departments' => ['Departments', 'page'],
-                'facilities' => ['Facilities', 'page'],
-                'research' => ['Research', 'page'],
-                'academic' => ['Academic', 'group']
+                'home'            => ['Home', 'page'],
+                'about'           => ['About ' . ($site->short_name ?? $site->name), 'page'],
+                'departments'     => ['Departments', 'page'],
+                'facilities'      => ['Facilities', 'page'],
+                'faculty_members' => ['Faculty Members', 'page'],
+                'research'        => ['Research', 'page'],
+                'academic'        => ['Academic', 'group']
             ];
 
             $navItems = [];

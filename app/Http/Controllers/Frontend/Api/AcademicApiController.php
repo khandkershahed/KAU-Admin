@@ -19,13 +19,13 @@ class AcademicApiController extends Controller
     public function sites(): JsonResponse
     {
         $groups = AcademicMenuGroup::with([
-                'sites' => function ($q) {
-                    $q->where('status','published')
-                      ->orderBy('position')
-                      ->orderBy('id');
-                }
-            ])
-            ->where('status','published')
+            'sites' => function ($q) {
+                $q->where('status', 'published')
+                    ->orderBy('position')
+                    ->orderBy('id');
+            }
+        ])
+            ->where('status', 'published')
             ->orderBy('position')
             ->orderBy('id')
             ->get();
@@ -45,7 +45,7 @@ class AcademicApiController extends Controller
                             'slug'                 => $site->slug,
                             'short_description'    => $site->short_description,
                             'theme_primary_color'  => $site->theme_primary_color,
-                            'theme_secondary_color'=> $site->theme_secondary_color,
+                            'theme_secondary_color' => $site->theme_secondary_color,
                             'logo_url'             => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
                             'position'             => (int) $site->position,
                         ];
@@ -63,7 +63,7 @@ class AcademicApiController extends Controller
     public function sitePages(Request $request, string $site_slug): JsonResponse
     {
         $site = AcademicSite::where('slug', $site_slug)
-            ->where('status','published')
+            ->where('status', 'published')
             ->firstOrFail();
 
         /* --------------------------------------------------------
@@ -72,7 +72,7 @@ class AcademicApiController extends Controller
         if ($request->filled('slug')) {
             $page = AcademicPage::where('academic_site_id', $site->id)
                 ->where('slug', $request->query('slug'))
-                ->where('status','published')
+                ->where('status', 'published')
                 ->firstOrFail();
 
             return response()->json([
@@ -83,7 +83,7 @@ class AcademicApiController extends Controller
                     'short_name'           => $site->short_name,
                     'short_description'    => $site->short_description,
                     'theme_primary_color'  => $site->theme_primary_color,
-                    'theme_secondary_color'=> $site->theme_secondary_color,
+                    'theme_secondary_color' => $site->theme_secondary_color,
                     'logo_url'             => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
                 ],
                 'page' => [
@@ -117,59 +117,104 @@ class AcademicApiController extends Controller
          * -------------------------------------------------------- */
 
         $site->load([
-            'navItems' => fn($q) => $q->where('status','published')
+            'navItems' => fn($q) => $q->where('status', 'published')
                 ->with('page')
                 ->orderBy('position')->orderBy('id'),
 
-            'pages' => fn($q) => $q->where('status','published')
+            'pages' => fn($q) => $q->where('status', 'published')
                 ->orderBy('position')->orderBy('id'),
         ]);
+
+        // $navItems = $site->navItems;
+        // $grouped  = $navItems->groupBy('parent_id');
+
+        // $buildTree = function ($parentId) use (&$buildTree, $grouped) {
+        //     return $grouped->get($parentId, collect())
+        //         ->map(function ($item) use (&$buildTree) {
+        //             return [
+        //                 'label'        => $item->label,
+        //                 'slug'         => $item->slug,
+        //                 'type'         => $item->type,
+        //                 'external_url' => $item->external_url,
+        //                 'page_slug'    => $item->page?->slug,
+        //                 'position'     => (int)$item->position,
+        //                 'children'     => $buildTree($item->id),
+        //             ];
+        //         })->values();
+        // };
+
+        // $navTree = $buildTree(null);
+        // Preload departments for faculty member navigation expansion
+        $departments = AcademicDepartment::where('academic_site_id', $site->id)
+            ->where('status', 'published')
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get();
 
         $navItems = $site->navItems;
         $grouped  = $navItems->groupBy('parent_id');
 
-        $buildTree = function ($parentId) use (&$buildTree, $grouped) {
+        $buildTree = function ($parentId) use (&$buildTree, $grouped, $departments) {
             return $grouped->get($parentId, collect())
-                ->map(function ($item) use (&$buildTree) {
+                ->map(function ($item) use (&$buildTree, $departments) {
+
+                    // Build normal children first
+                    $children = $buildTree($item->id);
+
+                    /** ----------------------------------------------------
+                     * EXPAND NAV ITEM IF PAGE HAS is_faculty_members = true
+                     * ---------------------------------------------------- */
+                    if ($item->page && $item->page->is_faculty_members) {
+
+                        $deptChildren = $departments->map(function ($dept) {
+                            return [
+                                'label'        => $dept->title,
+                                'slug'         => $dept->slug,
+                                'type'         => 'department',
+                                'external_url' => null,
+                                'page_slug'    => null,
+                                'position'     => (int)$dept->position,
+                                'children'     => [], // departments do not have sub-items
+                            ];
+                        })->values();
+
+                        // Append department nodes
+                        $children = $children->merge($deptChildren);
+                    }
+
                     return [
-                        'id'           => $item->id,
                         'label'        => $item->label,
-                        'slug'          => $item->slug,
+                        'slug'         => $item->slug,
                         'type'         => $item->type,
-                        'route'        => $item->route_path,
                         'external_url' => $item->external_url,
-                        'page_id'      => $item->page_id,
                         'page_slug'    => $item->page?->slug,
-                        'icon'         => $item->icon,
                         'position'     => (int)$item->position,
-                        'children'     => $buildTree($item->id),
+                        'children'     => $children,
                     ];
                 })->values();
         };
 
         $navTree = $buildTree(null);
 
+
         return response()->json([
             'site' => [
-                'id'                   => $site->id,
                 'slug'                 => $site->slug,
                 'name'                 => $site->name,
                 'short_name'           => $site->short_name,
                 'short_description'    => $site->short_description,
                 'theme_primary_color'  => $site->theme_primary_color,
-                'theme_secondary_color'=> $site->theme_secondary_color,
+                'theme_secondary_color' => $site->theme_secondary_color,
                 'logo_url'             => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
             ],
             'navigation' => $navTree,
             'pages'      => $site->pages->map(function ($p) {
                 return [
-                    'id'                  => $p->id,
-                    'page_key'            => $p->page_key,
                     'slug'                => $p->slug,
                     'title'               => $p->title,
-                    'subtitle'            => $p->subtitle,
                     'is_home'             => (bool)$p->is_home,
                     'is_department_boxes' => (bool)$p->is_department_boxes,
+                    'is_faculty_members'  => (bool)$p->is_faculty_members,
 
                     'banner_image'        => $p->banner_image ? asset('storage/' . $p->banner_image) : null,
                     'banner_title'        => $p->banner_title,
@@ -196,16 +241,16 @@ class AcademicApiController extends Controller
     public function siteDepartmentsStaff(string $site_slug): JsonResponse
     {
         $site = AcademicSite::where('slug', $site_slug)
-            ->where('status','published')
+            ->where('status', 'published')
             ->firstOrFail();
 
         $site->load([
-            'departments' => fn($q) => $q->where('status','published')
+            'departments' => fn($q) => $q->where('status', 'published')
                 ->orderBy('position')->orderBy('id'),
 
             'staffSections.members' => fn($q) =>
-                $q->where('status','published')
-                  ->orderBy('position')->orderBy('id'),
+            $q->where('status', 'published')
+                ->orderBy('position')->orderBy('id'),
         ]);
 
         // Index by department ID
