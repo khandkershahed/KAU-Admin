@@ -10,17 +10,15 @@ return new class extends Migration {
         Schema::create('academic_departments', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('academic_site_id')
-                  ->constrained()
-                  ->onDelete('cascade');
-
+            $table->foreignId('academic_site_id')->nullable()->constrained('academic_sites')->onDelete('cascade');
             $table->string('title');
             $table->string('short_code')->nullable();
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
 
             $table->unsignedInteger('position')->default(0);
-            $table->boolean('is_active')->default(true);
+            $table->enum('status',['published','draft','archived'])->default('published');
+
 
             $table->timestamps();
         });

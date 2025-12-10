@@ -10,9 +10,7 @@ return new class extends Migration {
         Schema::create('academic_staff_members', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('staff_section_id')
-                  ->constrained('academic_staff_sections')
-                  ->onDelete('cascade');
+            $table->foreignId('staff_section_id')->constrained('academic_staff_sections')->onDelete('cascade');
 
             $table->string('name');
             $table->string('designation')->nullable();
@@ -21,6 +19,7 @@ return new class extends Migration {
             $table->string('image_path')->nullable();
 
             $table->unsignedInteger('position')->default(0);
+            $table->enum('status',['published','draft','archived'])->default('published');
 
             // JSON: [ { "icon": "fa-solid fa-google-scholar", "url": "..." }, ...]
             $table->json('links')->nullable();

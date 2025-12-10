@@ -12,7 +12,8 @@ return new class extends Migration {
             $table->string('title');
             $table->string('slug')->unique();
             $table->unsignedInteger('position')->default(0);
-            $table->boolean('is_active')->default(true);
+            $table->enum('status',['published','draft','archived'])->default('published');
+
             $table->timestamps();
         });
     }

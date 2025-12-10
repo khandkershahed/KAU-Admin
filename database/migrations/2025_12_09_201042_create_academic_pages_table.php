@@ -9,20 +9,16 @@ return new class extends Migration {
     {
         Schema::create('academic_pages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('academic_site_id')->nullable()->constrained('academic_sites')->onDelete('cascade');
+            $table->foreignId('nav_item_id')->nullable()->constrained('academic_nav_items')->onDelete('cascade');
+            $table->string('page_key')->nullable(); //must be same as the slug of its selected academic_nav_item's menu_key
+            $table->string('slug');     //must be same as the slug of its selected academic_nav_item's slug
 
-            $table->foreignId('academic_site_id')
-                ->constrained()
-                ->onDelete('cascade');
-
-            $table->unsignedBigInteger('nav_item_id')->nullable(); // optional
-
-            $table->string('page_key')->nullable(); // about, facilities, academic_program, ...
-            $table->string('slug');     // about-vabs, academic-program
             $table->string('title');
-            $table->string('subtitle')->nullable();
 
             $table->boolean('is_home')->default(false);
             $table->boolean('is_department_boxes')->default(false);
+            $table->boolean('is_faculty_members')->default(false);
             // Banner
             $table->string('banner_title')->nullable();
             $table->string('banner_subtitle')->nullable();
@@ -37,7 +33,8 @@ return new class extends Migration {
             $table->text('meta_description')->nullable();
             $table->string('og_image')->nullable();
 
-            $table->boolean('is_active')->default(true);
+            $table->enum('status',['published','draft','archived'])->default('published');
+ // published/draft/archived
             $table->unsignedInteger('position')->default(0);
 
             $table->timestamps();

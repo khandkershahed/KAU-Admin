@@ -8,6 +8,7 @@ use App\Models\AcademicSite;
 use App\Models\AcademicNavItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AcademicSiteController extends Controller
 {
@@ -15,44 +16,35 @@ class AcademicSiteController extends Controller
     {
         $this->middleware('permission:view academic sites')->only(['index']);
         $this->middleware('permission:create academic sites')->only(['storeSite', 'storeGroup']);
-        $this->middleware('permission:edit academic sites')->only(['updateSite', 'sortSites']);
-        $this->middleware('permission:delete academic sites')->only(['destroySite']);
-
-        $this->middleware('permission:view academic groups')->only(['index']);
-        $this->middleware('permission:create academic groups')->only(['storeGroup']);
-        $this->middleware('permission:edit academic groups')->only(['updateGroup', 'sortGroups']);
-        $this->middleware('permission:delete academic groups')->only(['destroyGroup']);
+        $this->middleware('permission:edit academic sites')->only(['updateSite', 'updateGroup']);
+        $this->middleware('permission:delete academic sites')->only(['destroySite', 'destroyGroup']);
     }
 
+    /**
+     * MAIN PAGE — Groups + Sites + Nav
+     */
     public function index(Request $request)
     {
-        $groups = AcademicMenuGroup::with(['sites' => function ($q) {
-            $q->orderBy('menu_order')->orderBy('id');
-        }])
-            ->orderBy('position')
-            ->get();
+        $groups = AcademicMenuGroup::with([
+            'sites' => fn($q) => $q->orderBy('position'),
+        ])->orderBy('position')->get();
 
-        // Optionally, pre-load nav for a selected site
-        $selectedSiteId = $request->get('site_id');
+        $firstSiteId = optional(optional($groups->first())->sites->first())->id;
+        $selectedSiteId = $request->get('site_id', $firstSiteId);
+
         $selectedSite = null;
         $navItemsTree = [];
 
         if ($selectedSiteId) {
-            $selectedSite = AcademicSite::with(['navItems.page'])
-                ->find($selectedSiteId);
+            $selectedSite = AcademicSite::find($selectedSiteId);
 
             if ($selectedSite) {
-                $navItems = $selectedSite->navItems()->orderBy('position')->orderBy('id')->get();
-                $navByParent = $navItems->groupBy('parent_id');
-                $buildTree = function ($parentId) use (&$buildTree, $navByParent) {
-                    return ($navByParent[$parentId] ?? collect())->map(function ($item) use (&$buildTree) {
-                        return [
-                            'model' => $item,
-                            'children' => $buildTree($item->id),
-                        ];
-                    });
-                };
-                $navItemsTree = $buildTree(null);
+                $navItems = AcademicNavItem::where('academic_site_id', $selectedSite->id)
+                    ->orderBy('position')
+                    ->get();
+
+                // Build hierarchical tree
+                $navItemsTree = $this->buildTree($navItems);
             }
         }
 
@@ -63,68 +55,69 @@ class AcademicSiteController extends Controller
         ]);
     }
 
-    // ----- GROUPS -----
+    /**
+     * Build tree structure from flat nav list
+     */
+    private function buildTree($items)
+    {
+        $grouped = $items->groupBy('parent_id');
+        $build = function ($parentId) use (&$build, $grouped) {
+            return ($grouped[$parentId] ?? collect())->map(function ($item) use (&$build) {
+                return [
+                    'model'    => $item,
+                    'children' => $build($item->id)
+                ];
+            });
+        };
+        return $build(null);
+    }
+
+
+
 
     public function storeGroup(Request $request)
     {
         $data = $request->validate([
             'title'    => 'required|string|max:255',
-            'slug'     => 'required|string|max:255|unique:academic_menu_groups,slug',
-            'position' => 'nullable|integer',
+            'status'   => 'required|in:published,draft,archived',
         ]);
 
-        AcademicMenuGroup::create([
-            'title'     => $data['title'],
-            'slug'      => $data['slug'],
-            'position'  => $data['position'] ?? 0,
-            'is_active' => true,
-        ]);
+        $data['position'] = AcademicMenuGroup::max('position') + 1;
 
-        return redirect()->back()->with('success', 'Group created successfully.');
+        AcademicMenuGroup::create($data);
+
+        return back()->with('success', 'Group created successfully.');
     }
 
-    public function updateGroup(Request $request, AcademicMenuGroup $group)
+    public function updateGroup(AcademicMenuGroup $group, Request $request)
     {
         $data = $request->validate([
-            'title'    => 'required|string|max:255',
-            'slug'     => 'required|string|max:255|unique:academic_menu_groups,slug,' . $group->id,
-            'position' => 'nullable|integer',
-            'is_active' => 'nullable|boolean',
+            'title'  => 'required|string|max:255',
+            'status' => 'required|in:published,draft,archived',
         ]);
 
-        $group->update([
-            'title'     => $data['title'],
-            'slug'      => $data['slug'],
-            'position'  => $data['position'] ?? $group->position,
-            'is_active' => $request->boolean('is_active'),
-        ]);
+        $group->update($data);
 
-        return redirect()->back()->with('success', 'Group updated successfully.');
+        return back()->with('success', 'Group updated successfully.');
     }
 
     public function destroyGroup(AcademicMenuGroup $group)
     {
         $group->delete();
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'message' => 'Group deleted.']);
     }
 
     public function sortGroups(Request $request)
     {
-        $request->validate([
-            'order' => 'required|array',
-        ]);
+        DB::transaction(function () use ($request) {
+            foreach ($request->order as $index => $id) {
+                AcademicMenuGroup::where('id', $id)->update(['position' => $index + 1]);
+            }
+        });
 
-        foreach ($request->order as $position => $id) {
-            AcademicMenuGroup::where('id', $id)->update(['position' => $position + 1]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Group order updated.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'Groups sorted successfully.']);
     }
 
-    // ----- SITES -----
 
     public function storeSite(Request $request)
     {
@@ -133,65 +126,76 @@ class AcademicSiteController extends Controller
             'name'                   => 'required|string|max:255',
             'short_name'             => 'nullable|string|max:50',
             'slug'                   => 'required|string|max:255|unique:academic_sites,slug',
-            'base_url'               => 'nullable|string|max:255',
             'short_description'      => 'nullable|string',
-            'theme_primary_color'    => 'nullable|string|max:50',
+            'theme_primary_color'    => 'nullable|string|max:20',
+            'theme_secondary_color'  => 'nullable|string|max:20',
+            'status'                 => 'required|in:published,draft,archived',
+            'logo'                   => 'nullable|image|max:2048',
         ]);
 
-        $maxOrder = AcademicSite::where('academic_menu_group_id', $data['academic_menu_group_id'])->max('menu_order') ?? 0;
+        $logoPath = null;
 
-        AcademicSite::create([
-            'academic_menu_group_id' => $data['academic_menu_group_id'],
-            'name'                   => $data['name'],
-            'short_name'             => $data['short_name'] ?? null,
-            'slug'                   => $data['slug'],
-            'base_url'               => $data['base_url'] ?? null,
-            'short_description'      => $data['short_description'] ?? null,
-            'theme_primary_color'    => $data['theme_primary_color'] ?? null,
-            'menu_order'             => $maxOrder + 1,
-            'status'                 => 'published',
-        ]);
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('academic/sites/logos', 'public');
+        }
 
-        return redirect()->back()->with('success', 'Site created successfully.');
+        $data['logo_path'] = $logoPath;
+        $data['position']  = AcademicSite::where('academic_menu_group_id', $data['academic_menu_group_id'])->max('position') + 1;
+
+        AcademicSite::create($data);
+
+        return back()->with('success', 'Site created successfully.');
     }
 
-    public function updateSite(Request $request, AcademicSite $site)
+    public function updateSite(AcademicSite $site, Request $request)
     {
         $data = $request->validate([
-            'name'                   => 'required|string|max:255',
-            'short_name'             => 'nullable|string|max:50',
-            'slug'                   => 'required|string|max:255|unique:academic_sites,slug,' . $site->id,
-            'base_url'               => 'nullable|string|max:255',
-            'short_description'      => 'nullable|string',
-            'theme_primary_color'    => 'nullable|string|max:50',
-            'theme_secondary_color'  => 'nullable|string|max:50',
-            'status'                 => 'nullable|in:draft,published,archived',
+            'name'                  => 'required|string|max:255',
+            'short_name'            => 'nullable|string|max:50',
+            'slug'                  => 'required|string|max:255|unique:academic_sites,slug,' . $site->id,
+            'short_description'     => 'nullable|string',
+            'theme_primary_color'   => 'nullable|string|max:20',
+            'theme_secondary_color' => 'nullable|string|max:20',
+            'status'                => 'required|in:published,draft,archived',
+            'logo'                  => 'nullable|image|max:2048',
         ]);
+
+        $logoPath = $site->logo_path;
+
+        if ($request->hasFile('logo')) {
+            if ($logoPath) Storage::disk('public')->delete($logoPath);
+            $logoPath = $request->file('logo')->store('academic/sites/logos', 'public');
+        }
+
+        $data['logo_path'] = $logoPath;
 
         $site->update($data);
 
-        return redirect()->back()->with('success', 'Site updated successfully.');
+        return back()->with('success', 'Site updated successfully.');
     }
 
     public function destroySite(AcademicSite $site)
     {
+        if ($site->logo_path) {
+            Storage::disk('public')->delete($site->logo_path);
+        }
+
         $site->delete();
-        return response()->json(['success' => true]);
+
+        return response()->json(['success' => true, 'message' => 'Site deleted.']);
     }
 
     public function sortSites(Request $request)
     {
-        $request->validate([
-            'order' => 'required|array',
-        ]);
+        DB::transaction(function () use ($request) {
+            foreach ($request->order as $index => $id) {
+                AcademicSite::where('id', $id)->update([
+                    'position'               => $index + 1,
+                    'academic_menu_group_id' => $request->group_id,
+                ]);
+            }
+        });
 
-        foreach ($request->order as $position => $id) {
-            AcademicSite::where('id', $id)->update(['menu_order' => $position + 1]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Site order updated.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'Sites sorted successfully.']);
     }
 }

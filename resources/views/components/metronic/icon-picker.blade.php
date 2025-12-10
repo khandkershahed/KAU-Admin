@@ -15,9 +15,9 @@
             value="{{ $value }}" autocomplete="off">
 
         {{-- BUTTON --}}
-        <button type="button" class="btn btn-outline icon-picker-toggle {{ $buttonClass }}"
+        <button type="button" class="btn btn-outline btn-outline-info icon-picker-toggle p-2 px-5 {{ $buttonClass }}"
             data-target="{{ $id }}">
-            <i class="{{ $value ?: 'fa fa-icons' }}"></i>
+            <i class="{{ $value ?: 'fa fa-icons ' }}"></i>
         </button>
     </div>
 
@@ -63,7 +63,7 @@
 @once
     @push('scripts')
         <script>
-           
+
             let __faIconList = []; // cache icons so we don't reload JSON repeatedly
             let __faIconLoaded = false;
 

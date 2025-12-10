@@ -2,35 +2,34 @@
 
 namespace App\Models;
 
+use App\Traits\HasSlug;
+use App\Enums\AcademicStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AcademicMenuGroup extends Model
 {
+    use HasFactory, HasSlug;
+    protected $slugSourceColumn = 'title';
     protected $fillable = [
         'title',
-        'slug',
         'position',
-        'is_active',
+        'status',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        // 'status' => AcademicStatus::class,
     ];
 
     public function sites()
     {
         return $this->hasMany(AcademicSite::class, 'academic_menu_group_id')
-                    ->orderBy('menu_order')
-                    ->orderBy('id');
+            ->orderBy('position');
     }
 
-    public function scopeActive($q)
+    // Scopes
+    public function scopePublished($query)
     {
-        return $q->where('is_active', true);
-    }
-
-    public function scopeOrdered($q)
-    {
-        return $q->orderBy('position')->orderBy('id');
+        return $query->where('status', 'published');
     }
 }

@@ -2,26 +2,29 @@
 
 namespace App\Models;
 
+use App\Enums\AcademicStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AcademicNavItem extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'academic_site_id',
         'parent_id',
         'label',
+        'slug',
         'menu_key',
         'type',
-        'page_id',
-        'route_path',
         'external_url',
         'icon',
         'position',
-        'is_active',
+        'status',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        // 'status' => AcademicStatus::class,
     ];
 
     public function site()
@@ -37,17 +40,37 @@ class AcademicNavItem extends Model
     public function children()
     {
         return $this->hasMany(AcademicNavItem::class, 'parent_id')
-                    ->orderBy('position')
-                    ->orderBy('id');
+                    ->orderBy('position');
     }
 
     public function page()
     {
-        return $this->belongsTo(AcademicPage::class, 'page_id');
+        return $this->hasOne(AcademicPage::class, 'nav_item_id');
     }
 
-    public function scopeActive($q)
+    // Check before delete (Option B)
+    public function canBeDeleted(): bool
     {
-        return $q->where('is_active', true);
+        return $this->page === null;
+    }
+
+    // Build recursive tree structure
+    public static function getTreeForSite($siteId)
+    {
+        $items = self::where('academic_site_id', $siteId)
+                     ->orderBy('position')
+                     ->get()
+                     ->groupBy('parent_id');
+
+        $buildTree = function ($parentId) use (&$buildTree, $items) {
+            return ($items[$parentId] ?? collect())->map(function ($item) use (&$buildTree) {
+                return [
+                    'model' => $item,
+                    'children' => $buildTree($item->id),
+                ];
+            })->toArray();
+        };
+
+        return $buildTree(null);
     }
 }

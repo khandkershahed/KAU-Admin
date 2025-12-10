@@ -1,53 +1,61 @@
+@php
+    /** @var \App\Models\AcademicNavItem $item */
+    /** @var \App\Models\AcademicSite $site */
+    /** @var \Illuminate\Support\Collection $navItemsTree */
+    $children = isset($navItemsTree) ? $navItemsTree->get($item->id, collect()) : collect();
+@endphp
+
 <li class="list-group-item nav-item-row mb-2 d-flex align-items-center justify-content-between"
-    data-id="{{ $node['model']->id }}" style="cursor: grab;">
+    data-id="{{ $item->id }}" style="cursor:grab;">
 
     <div class="d-flex align-items-center">
         <span class="me-3 nav-handle">
             <i class="fa-solid fa-up-down text-muted"></i>
         </span>
 
-        <span class="fw-semibold">{{ $node['model']->label }}</span>
+        <div class="d-flex flex-column">
+            <span class="fw-semibold">
+                {{ $item->label }}
+                @if ($item->status !== 'published')
+                    <span class="badge bg-secondary ms-2">{{ ucfirst($item->status) }}</span>
+                @endif
+            </span>
 
-        @if ($node['model']->menu_key)
-            <span class="badge bg-light text-muted ms-2">{{ $node['model']->menu_key }}</span>
-        @endif
-
-        @if ($node['model']->type === 'route')
-            <small class="text-muted ms-2">/ {{ $node['model']->route_path }}</small>
-        @endif
-        @if ($node['model']->type === 'external')
-            <small class="text-muted ms-2">→ {{ $node['model']->external_url }}</small>
-        @endif
-        @if ($node['model']->type === 'page' && $node['model']->page)
-            <small class="text-muted ms-2">{{ $node['model']->page->title }}</small>
-        @endif
+            <div class="small text-muted">
+                slug: <code>{{ $item->slug }}</code>
+                @if ($item->menu_key)
+                    &nbsp; | key: <code>{{ $item->menu_key }}</code>
+                @endif
+                &nbsp; | type: <span>{{ $item->type }}</span>
+                @if ($item->type === 'external' && $item->external_url)
+                    &nbsp; → <span>{{ $item->external_url }}</span>
+                @endif
+            </div>
+        </div>
     </div>
 
     <div class="d-flex align-items-center">
-        {{-- Edit Button --}}
-        <button class="btn btn-light-success btn-sm editNavItemBtn me-2" data-id="{{ $node['model']->id }}"
-            data-label="{{ $node['model']->label }}" data-menu_key="{{ $node['model']->menu_key }}"
-            data-type="{{ $node['model']->type }}" data-page_id="{{ $node['model']->page_id }}"
-            data-route_path="{{ $node['model']->route_path }}" data-external_url="{{ $node['model']->external_url }}"
-            data-parent_id="{{ $node['model']->parent_id }}" data-icon="{{ $node['model']->icon }}"
-            data-active="{{ $node['model']->is_active ? 1 : 0 }}">
+        <button type="button" class="btn btn-light-success btn-sm me-2 editNavItemBtn" data-id="{{ $item->id }}"
+            data-label="{{ $item->label }}" data-slug="{{ $item->slug }}" data-menu_key="{{ $item->menu_key }}"
+            data-type="{{ $item->type }}" data-external_url="{{ $item->external_url }}"
+            data-icon="{{ $item->icon }}" data-status="{{ $item->status }}"
+            data-parent_id="{{ $item->parent_id }}">
             <i class="fa-solid fa-pen-to-square fs-6"></i>
         </button>
 
-        {{-- Delete --}}
-        <a href="{{ route('admin.academic.nav.destroy', $node['model']->id) }}" class="delete">
+        <a href="{{ route('admin.academic.nav.destroy', $item->id) }}" class="delete">
             <i class="fa-solid fa-trash text-danger fs-4"></i>
         </a>
     </div>
+
 </li>
 
-{{-- Render children --}}
-@if (!empty($node['children']))
+@if ($children->count() > 0)
     <ul class="list-group ms-5 mt-2">
-        @foreach ($node['children'] as $child)
+        @foreach ($children as $child)
             @include('admin.pages.academic.partials.nav_item', [
-                'node' => $child,
-                'level' => ($level ?? 0) + 1,
+                'item' => $child,
+                'site' => $site,
             ])
         @endforeach
     </ul>

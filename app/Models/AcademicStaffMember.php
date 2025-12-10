@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\AcademicStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AcademicStaffMember extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'staff_section_id',
         'name',
@@ -14,10 +18,12 @@ class AcademicStaffMember extends Model
         'phone',
         'image_path',
         'position',
+        'status',
         'links',
     ];
 
     protected $casts = [
+        // 'status' => AcademicStatus::class,
         'links' => 'array',
     ];
 
