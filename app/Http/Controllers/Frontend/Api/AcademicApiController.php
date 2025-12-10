@@ -18,7 +18,7 @@ class AcademicApiController extends Controller
      */
     public function sites(): JsonResponse
     {
-        $data = Cache::remember('api_academics_sites', 600, function () {
+        $data = Cache::remember('api_academics_sites', 0, function () {
             $groups = AcademicMenuGroup::with(['sites' => function ($q) {
                 $q->published()->orderBy('menu_order')->orderBy('id');
             }])
@@ -111,7 +111,7 @@ class AcademicApiController extends Controller
         // No slug: structure + pages list (no heavy content)
         $cacheKey = 'api_academics_site_' . $site->id . '_pages_index';
 
-        $data = Cache::remember($cacheKey, 600, function () use ($site) {
+        $data = Cache::remember($cacheKey, 0, function () use ($site) {
             $site->load([
                 'navItems' => function ($q) {
                     $q->active()->orderBy('position')->orderBy('id');
@@ -164,7 +164,7 @@ class AcademicApiController extends Controller
                     'meta_tags'         => $p->meta_tags,
                     'meta_description'  => $p->meta_description,
                     'og_image'          => $p->og_image ? asset('storage/' . $p->og_image)        : null,
-                    
+
                     'position'          => (int) $p->position,
                 ];
             })->values();
@@ -202,7 +202,7 @@ class AcademicApiController extends Controller
 
         $cacheKey = 'api_academics_site_' . $site->id . '_departments_staff';
 
-        $data = Cache::remember($cacheKey, 600, function () use ($site) {
+        $data = Cache::remember($cacheKey, 0, function () use ($site) {
             $site->load([
                 'departments' => function ($q) {
                     $q->where('is_active', true)
