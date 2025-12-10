@@ -1,258 +1,281 @@
-<x-admin-app-layout :title="'Academic Pages'">
+<x-admin-app-layout :title="'Academic Sites & Menus'">
 
-    <div class="card card-flash">
+    <div class="card">
         <div class="card-header align-items-center">
-            <h3 class="card-title fw-bold">Academic Pages</h3>
+            <h3 class="card-title fw-bold">Academic Sites & Menus</h3>
 
             <div class="card-toolbar d-flex">
-                <form method="GET" action="{{ route('admin.academic.pages.index') }}" class="me-3">
-                    <div class="d-flex align-items-center">
-                        <select name="site_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                            @foreach ($sites as $site)
-                                <option value="{{ $site->id }}" {{ optional($selectedSite)->id == $site->id ? 'selected' : '' }}>
-                                    {{ $site->name }} ({{ $site->short_name }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </form>
+                @can('create academic groups')
+                    <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                        <i class="fa fa-plus me-2"></i> Add Group
+                    </button>
+                @endcan
 
-                @can('create academic pages')
-                    @if ($selectedSite)
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createPageModal">
-                            <i class="fa fa-plus me-2"></i> Add Page
-                        </button>
-                    @endif
+                @can('create academic sites')
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createSiteModal">
+                        <i class="fa fa-plus me-2"></i> Add Site
+                    </button>
                 @endcan
             </div>
         </div>
 
         <div class="card-body">
-            @if (!$selectedSite)
-                <p class="text-muted">Please create an academic site first.</p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-row-bordered table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Key</th>
-                                <th>Slug</th>
-                                <th>Home?</th>
-                                <th>Active?</th>
-                                <th>Position</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pages as $page)
-                                <tr>
-                                    <td>{{ $page->title }}</td>
-                                    <td><span class="badge badge-light">{{ $page->page_key }}</span></td>
-                                    <td><code>{{ $page->slug }}</code></td>
-                                    <td>{!! $page->is_home ? '<span class="badge bg-success">Yes</span>' : '' !!}</td>
-                                    <td>{!! $page->is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>' !!}</td>
-                                    <td>{{ $page->position }}</td>
+            <div class="row">
+                {{-- LEFT: Groups & Sites --}}
+                <div class="col-md-6">
+                    <div class="accordion" id="academicGroupsAccordion">
+                        @foreach ($groups as $group)
+                            <div class="accordion-item mb-4 group-item" data-id="{{ $group->id }}">
+                                <div class="accordion-header d-flex align-items-center justify-content-between px-3 py-2"
+                                    style="background: #f8fafc;">
 
-                                    <td class="text-end">
-                                        @can('edit academic pages')
-                                            <button class="btn btn-light-success btn-sm editPageBtn"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editPageModal"
-                                                data-json='@json($page)'
-                                                data-banner="{{ $page->banner_image }}"
-                                                data-og="{{ $page->og_image }}">
-                                                <i class="fa-solid fa-pen fs-6"></i>
+                                    <div class="d-flex align-items-center flex-grow-1 group-sort" style="cursor: grab;">
+                                        <span class="me-3">
+                                            <i class="fa-solid fa-up-down text-muted"></i>
+                                        </span>
+                                        <button
+                                            class="accordion-button collapsed py-1 px-2 shadow-none bg-transparent flex-grow-1"
+                                            type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#group-{{ $group->id }}">
+                                            <span class="fw-semibold">
+                                                {{ $group->title }}
+                                                <small class="text-muted">({{ $group->slug }})</small>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    <div class="d-flex align-items-center ms-3">
+                                        @can('edit academic groups')
+                                            <button class="btn btn-light-success btn-sm me-2 editGroupBtn"
+                                                data-id="{{ $group->id }}" data-title="{{ $group->title }}"
+                                                data-slug="{{ $group->slug }}" data-position="{{ $group->position }}"
+                                                data-active="{{ $group->is_active ? 1 : 0 }}">
+                                                <i class="fa-solid fa-pen-to-square fs-6"></i>
                                             </button>
                                         @endcan
 
-                                        @can('delete academic pages')
-                                            <a href="{{ route('admin.academic.pages.destroy', $page->id) }}" class="delete ms-2">
+                                        @can('delete academic groups')
+                                            <a href="{{ route('admin.academic.groups.destroy', $group->id) }}"
+                                                class="delete">
                                                 <i class="fa-solid fa-trash text-danger fs-4"></i>
                                             </a>
                                         @endcan
-                                    </td>
+                                    </div>
+                                </div>
 
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-    </div>
+                                <div id="group-{{ $group->id }}"
+                                    class="accordion-collapse collapse @if ($loop->first) show @endif">
+                                    <div class="accordion-body">
 
+                                        <div class="mb-3 text-end">
+                                            @can('create academic sites')
+                                                <button class="btn btn-sm btn-primary createSiteBtn"
+                                                    data-group-id="{{ $group->id }}">
+                                                    <i class="fa fa-plus me-2"></i> Add Site in {{ $group->title }}
+                                                </button>
+                                            @endcan
+                                        </div>
 
-    {{-- ---------------------------------------------------------
-         CREATE PAGE MODAL  (unchanged)
-    ---------------------------------------------------------- --}}
-    @if ($selectedSite)
-        @include('admin.pages.academic.partials.page_create', ['selectedSite' => $selectedSite])
-    @endif
+                                        <ul class="list-group site-sortable" data-group-id="{{ $group->id }}">
+                                            @foreach ($group->sites as $site)
+                                                <li class="list-group-item d-flex align-items-center justify-content-between mb-2 site-item"
+                                                    data-id="{{ $site->id }}" style="cursor: grab;">
 
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="me-3">
+                                                            <i class="fa-solid fa-up-down text-muted"></i>
+                                                        </span>
+                                                        <a href="{{ route('admin.academic.sites.index', ['site_id' => $site->id]) }}"
+                                                            class="fw-semibold">
+                                                            {{ $site->name }}
+                                                            <small class="text-muted">({{ $site->short_name }})</small>
+                                                        </a>
+                                                    </div>
 
+                                                    <div class="d-flex align-items-center">
+                                                        @can('edit academic sites')
+                                                            <button class="btn btn-light-success btn-sm me-2 editSiteBtn"
+                                                                data-id="{{ $site->id }}"
+                                                                data-group-id="{{ $group->id }}"
+                                                                data-name="{{ $site->name }}"
+                                                                data-short_name="{{ $site->short_name }}"
+                                                                data-slug="{{ $site->slug }}"
+                                                                data-base_url="{{ $site->base_url }}"
+                                                                data-theme_primary_color="{{ $site->theme_primary_color }}"
+                                                                data-theme_secondary_color="{{ $site->theme_secondary_color }}"
+                                                                data-status="{{ $site->status }}">
+                                                                <i class="fa-solid fa-pen fs-6"></i>
+                                                            </button>
+                                                        @endcan
 
-    {{-- ---------------------------------------------------------
-         FULL EDIT PAGE MODAL  (NEW COMPLETE FORM)
-    ---------------------------------------------------------- --}}
-    <div class="modal fade" id="editPageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <form id="editPageForm" method="POST" enctype="multipart/form-data">
-                    @csrf
+                                                        @can('delete academic sites')
+                                                            <a href="{{ route('admin.academic.sites.destroy', $site->id) }}"
+                                                                class="delete">
+                                                                <i class="fa-solid fa-trash text-danger fs-4"></i>
+                                                            </a>
+                                                        @endcan
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        </ul>
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Page</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <input type="hidden" name="_method" value="POST">
-
-                        {{-- BASIC --}}
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Page Key</label>
-                                <input type="text" name="page_key" id="edit_page_key" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Slug</label>
-                                <input type="text" name="slug" id="edit_slug" class="form-control form-control-sm" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Title</label>
-                                <input type="text" name="title" id="edit_title" class="form-control form-control-sm" required>
-                            </div>
-                        </div>
-
-                        {{-- BASIC 2 --}}
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Subtitle</label>
-                                <input type="text" name="subtitle" id="edit_subtitle" class="form-control form-control-sm">
-                            </div>
-
-                            <div class="col-md-4 d-flex align-items-center">
-                                <div class="form-check mt-4">
-                                    <input class="form-check-input" type="checkbox" name="is_home" value="1" id="edit_is_home">
-                                    <label class="form-check-label">Is Home Page?</label>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Active</label>
-                                <select name="is_active" id="edit_is_active" class="form-select form-select-sm">
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- HOME EXTRAS --}}
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <label class="col-form-label fw-bold fs-6">Banner Title</label>
-                                <input type="text" name="banner_title" id="edit_banner_title" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="col-form-label fw-bold fs-6">Banner Subtitle</label>
-                                <input type="text" name="banner_subtitle" id="edit_banner_subtitle" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="col-form-label fw-bold fs-6">Banner Button Text</label>
-                                <input type="text" name="banner_button" id="edit_banner_button" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="col-form-label fw-bold fs-6">Banner Button URL</label>
-                                <input type="text" name="banner_button_url" id="edit_banner_button_url" class="form-control form-control-sm">
-                            </div>
-                        </div>
-
-                        {{-- IMAGES --}}
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="col-form-label fw-bold fs-6">Banner Image</label>
-                                <x-metronic.image-input name="banner_image" id="edit_banner_image" :source="''" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="col-form-label fw-bold fs-6">OG Image</label>
-                                <x-metronic.image-input name="og_image" id="edit_og_image" :source="''" />
-                            </div>
-                        </div>
-
-                        {{-- CONTENT --}}
-                        <x-metronic.editor name="content" label="Page Content" :value="''" id="edit_content" rows="12" />
-
-                        {{-- SEO --}}
-                        <div class="row mt-4">
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Meta Title</label>
-                                <input type="text" name="meta_title" id="edit_meta_title" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Meta Tags</label>
-                                <input type="text" name="meta_tags" id="edit_meta_tags" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="col-form-label fw-bold fs-6">Meta Description</label>
-                                <textarea name="meta_description" id="edit_meta_description" class="form-control form-control-sm" rows="3"></textarea>
-                            </div>
-                        </div>
-
+                        @endforeach
                     </div>
+                </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
-                    </div>
+                {{-- RIGHT: Navigation for selected site --}}
+                <div class="col-md-6">
+                    @if ($selectedSite)
+                        <h5 class="fw-bold mb-3">
+                            Menus for: {{ $selectedSite->name }}
+                        </h5>
 
-                </form>
+                        @can('edit academic nav')
+                            <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal"
+                                data-bs-target="#createNavItemModal">
+                                <i class="fa fa-plus me-2"></i> Add Menu Item
+                            </button>
+                        @endcan
+
+                        <div class="border rounded p-3">
+                            <ul class="list-group nav-sortable" id="navSortable"
+                                data-site-id="{{ $selectedSite->id }}">
+                                @foreach ($navItemsTree as $node)
+                                    @include('admin.pages.academic.partials.nav_item', [
+                                        'node' => $node,
+                                        'level' => 0,
+                                    ])
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <p class="text-muted">Select a site to manage its menu.</p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
+    {{-- Create Group Modal --}}
+    @include('admin.pages.academic.modals.group_modals')
 
+    {{-- Create / Edit Site Modal --}}
+    @include('admin.pages.academic.modals.site_modals', ['groups' => $groups])
+
+    {{-- Create Nav Item Modal --}}
+    @if ($selectedSite)
+        @include('admin.pages.academic.modals.nav_modals', ['site' => $selectedSite])
+    @endif
 
     @push('scripts')
         <script>
-            $(document).on('click', '.editPageBtn', function () {
-                const page = $(this).data('json');
-                const banner = $(this).data('banner');
-                const og = $(this).data('og');
+            
+            const groupSortUrl = "{{ route('admin.academic.groups.sort') }}";
+            const siteSortUrl = "{{ route('admin.academic.sites.sort') }}";
+            const navSortUrl = "{{ $selectedSite ? route('admin.academic.nav.sort', $selectedSite->id) : '' }}";
+            const csrfToken = "{{ csrf_token() }}";
 
-                const form = $('#editPageForm');
-                form.attr('action', "{{ url('admin/academic/pages') }}/" + page.id);
+            // GROUP SORT
+            $('.accordion').on('mouseenter', function() {
+                $('.group-item').closest('#academicGroupsAccordion')
+                    .sortable({
+                        handle: '.group-sort',
+                        update: function() {
+                            const order = [];
+                            $('#academicGroupsAccordion .group-item').each(function() {
+                                order.push($(this).data('id'));
+                            });
 
-                $('#edit_page_key').val(page.page_key ?? '');
-                $('#edit_slug').val(page.slug);
-                $('#edit_title').val(page.title);
-                $('#edit_subtitle').val(page.subtitle ?? '');
+                            $.post(groupSortUrl, {
+                                order,
+                                _token: csrfToken
+                            }, function(res) {
+                                Swal.fire('Updated', res.message, 'success');
+                            });
+                        }
+                    });
+            });
 
-                $('#edit_is_home').prop('checked', page.is_home);
-                $('#edit_is_active').val(page.is_active ? '1' : '0');
+            // SITE SORT
+            $('.site-sortable').each(function() {
+                const $list = $(this);
+                $list.sortable({
+                    handle: '.site-item',
+                    update: function() {
+                        const order = [];
+                        $list.find('.site-item').each(function() {
+                            order.push($(this).data('id'));
+                        });
 
-                $('#edit_banner_title').val(page.banner_title ?? '');
-                $('#edit_banner_subtitle').val(page.banner_subtitle ?? '');
-                $('#edit_banner_button').val(page.banner_button ?? '');
-                $('#edit_banner_button_url').val(page.banner_button_url ?? '');
+                        $.post(siteSortUrl, {
+                            order,
+                            _token: csrfToken
+                        }, function(res) {
+                            Swal.fire('Updated', res.message, 'success');
+                        });
+                    }
+                });
+            });
 
-                $('#edit_content').val(page.content ?? '');
+            // NAV SORT (flat)
+            @if ($selectedSite)
+                $('#navSortable').sortable({
+                    handle: '.nav-handle',
+                    update: function() {
+                        const order = [];
+                        $('#navSortable').find('.nav-item-row').each(function() {
+                            order.push($(this).data('id'));
+                        });
 
-                $('#edit_meta_title').val(page.meta_title ?? '');
-                $('#edit_meta_tags').val(page.meta_tags ?? '');
-                $('#edit_meta_description').val(page.meta_description ?? '');
+                        $.post(navSortUrl, {
+                            order,
+                            _token: csrfToken
+                        }, function(res) {
+                            Swal.fire('Updated', res.message, 'success');
+                        });
+                    }
+                });
+            @endif
 
-                // image preview init
-                if (banner) {
-                    $('#edit_banner_image').attr('data-kt-image-input-src', "{{ asset('storage') }}/" + banner);
-                }
-                if (og) {
-                    $('#edit_og_image').attr('data-kt-image-input-src', "{{ asset('storage') }}/" + og);
-                }
+            // Global delete handler using your pattern
+            $(document).on('click', 'a.delete', function(e) {
+                e.preventDefault();
+                const url = $(this).attr('href');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    fetch(url, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(json => {
+                            if (json.success) {
+                                Swal.fire('Deleted!', 'Item removed successfully.', 'success').then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error', json.message || 'Delete failed', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Delete failed', 'error'));
+                });
             });
         </script>
     @endpush
-
-
 </x-admin-app-layout>
