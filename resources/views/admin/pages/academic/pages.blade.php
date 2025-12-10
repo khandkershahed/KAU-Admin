@@ -49,12 +49,12 @@
                             @foreach ($pages as $page)
                                 <tr>
                                     <td>{{ $page->title }}</td>
-                                    <td><span class="badge bg-light">{{ $page->page_key }}</span></td>
+                                    <td><span class="badge badge-light">{{ $page->page_key }}</span></td>
                                     <td><code>{{ $page->slug }}</code></td>
-                                    <td>{!! $page->is_home ? '<span class="badge bg-success">Yes</span>' : '' !!}</td>
+                                    <td>{!! $page->is_home ? '<span class="badge badge-success">Yes</span>' : '' !!}</td>
                                     <td>{!! $page->is_active
-                                        ? '<span class="badge bg-success">Active</span>'
-                                        : '<span class="badge bg-secondary">Inactive</span>' !!}</td>
+                                        ? '<span class="badge badge-success">Active</span>'
+                                        : '<span class="badge badge-secondary">Inactive</span>' !!}</td>
                                     <td>{{ $page->position }}</td>
                                     <td class="text-end">
                                         @can('edit academic pages')
