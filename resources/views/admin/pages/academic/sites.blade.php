@@ -163,17 +163,18 @@
                             data-bs-target="#createNavModal" data-site-id="{{ $selectedSite->id }}">
                             <i class="fa fa-plus me-2"></i> Add Root Nav Item
                         </button>
-
+                        {{-- @php
+                            $rootItems = $navItemsTree; // already root nodes
+                        @endphp --}}
                         <div id="navRootWrapper">
-                            @php $rootItems = $navItemsTree->get(null, collect()); @endphp
-
-                            @foreach ($rootItems as $item)
+                            @foreach ($navItemsTree as $item)
                                 @include('admin.pages.academic.partials.nav_item', [
                                     'item' => $item,
                                     'site' => $selectedSite,
                                 ])
                             @endforeach
                         </div>
+
                     @endif
 
                 </div>

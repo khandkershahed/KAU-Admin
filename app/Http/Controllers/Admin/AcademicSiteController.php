@@ -33,7 +33,7 @@ class AcademicSiteController extends Controller
         $selectedSiteId = $request->get('site_id', $firstSiteId);
 
         $selectedSite = null;
-        $navItemsTree = [];
+        $navItemsTree = collect(); // FIXED
 
         if ($selectedSiteId) {
             $selectedSite = AcademicSite::find($selectedSiteId);
@@ -43,10 +43,10 @@ class AcademicSiteController extends Controller
                     ->orderBy('position')
                     ->get();
 
-                // Build hierarchical tree
-                $navItemsTree = $this->buildTree($navItems);
+                $navItemsTree = $this->buildTree($navItems); // returns root nodes
             }
         }
+
 
         return view('admin.pages.academic.sites', [
             'groups'       => $groups,
@@ -58,19 +58,47 @@ class AcademicSiteController extends Controller
     /**
      * Build tree structure from flat nav list
      */
+    // private function buildTree($items)
+    // {
+    //     $grouped = $items->groupBy('parent_id');
+    //     $build = function ($parentId) use (&$build, $grouped) {
+    //         return ($grouped[$parentId] ?? collect())->map(function ($item) use (&$build) {
+    //             return [
+    //                 'model'    => $item,
+    //                 'children' => $build($item->id)
+    //             ];
+    //         });
+    //     };
+    //     return $build(null);
+    // }
+
     private function buildTree($items)
     {
+        if (!$items instanceof \Illuminate\Support\Collection) {
+            return collect();
+        }
+
         $grouped = $items->groupBy('parent_id');
+
         $build = function ($parentId) use (&$build, $grouped) {
-            return ($grouped[$parentId] ?? collect())->map(function ($item) use (&$build) {
-                return [
-                    'model'    => $item,
-                    'children' => $build($item->id)
-                ];
-            });
+            $children = $grouped->get($parentId, collect());
+
+            return $children->filter(function ($item) {
+                return $item instanceof AcademicNavItem;
+            })
+                ->map(function ($item) use (&$build) {
+
+                    // recursively attach children
+                    $item->children = $build($item->id);
+
+                    return $item;
+                });
         };
+
         return $build(null);
     }
+
+
 
 
 

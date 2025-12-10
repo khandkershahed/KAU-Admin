@@ -1,8 +1,5 @@
 @php
-    /** @var \App\Models\AcademicNavItem $item */
-    /** @var \App\Models\AcademicSite $site */
-    /** @var \Illuminate\Support\Collection $navItemsTree */
-    $children = isset($navItemsTree) ? $navItemsTree->get($item->id, collect()) : collect();
+    $children = $item->children ?? collect();
 @endphp
 
 <li class="list-group-item nav-item-row mb-2 d-flex align-items-center justify-content-between"
@@ -35,10 +32,15 @@
     </div>
 
     <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-light-success btn-sm me-2 editNavItemBtn" data-id="{{ $item->id }}"
-            data-label="{{ $item->label }}" data-slug="{{ $item->slug }}" data-menu_key="{{ $item->menu_key }}"
-            data-type="{{ $item->type }}" data-external_url="{{ $item->external_url }}"
-            data-icon="{{ $item->icon }}" data-status="{{ $item->status }}"
+        <button type="button" class="btn btn-light-success btn-sm me-2 editNavItemBtn"
+            data-id="{{ $item->id }}"
+            data-label="{{ $item->label }}"
+            data-slug="{{ $item->slug }}"
+            data-menu_key="{{ $item->menu_key }}"
+            data-type="{{ $item->type }}"
+            data-external_url="{{ $item->external_url }}"
+            data-icon="{{ $item->icon }}"
+            data-status="{{ $item->status }}"
             data-parent_id="{{ $item->parent_id }}">
             <i class="fa-solid fa-pen-to-square fs-6"></i>
         </button>

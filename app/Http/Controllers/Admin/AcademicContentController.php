@@ -29,6 +29,9 @@ class AcademicContentController extends Controller
         $sites = AcademicSite::orderBy('name')->get();
         $siteId = $request->get('site_id', optional($sites->first())->id);
 
+        $mode = $request->get('mode', null); // create | edit | null
+        $editingPage = null;
+
         $selectedSite = null;
         $pages = collect();
         $navItems = collect();
@@ -37,6 +40,7 @@ class AcademicContentController extends Controller
             $selectedSite = AcademicSite::find($siteId);
 
             if ($selectedSite) {
+
                 $pages = AcademicPage::where('academic_site_id', $siteId)
                     ->orderByDesc('is_home')
                     ->orderBy('position')
@@ -48,6 +52,13 @@ class AcademicContentController extends Controller
                     ->orderBy('position')
                     ->orderBy('id')
                     ->get();
+
+                // When editing, load the page
+                if ($mode === 'edit' && $request->filled('page_id')) {
+                    $editingPage = AcademicPage::where('academic_site_id', $siteId)
+                        ->where('id', $request->page_id)
+                        ->first();
+                }
             }
         }
 
@@ -56,8 +67,12 @@ class AcademicContentController extends Controller
             'selectedSite' => $selectedSite,
             'pages'        => $pages,
             'navItems'     => $navItems,
+
+            'mode'         => $mode,          // <-- FIXED
+            'editingPage'  => $editingPage,   // <-- FIXED
         ]);
     }
+
 
     /* ==========================================================================
         IMAGE HANDLER (reusable)

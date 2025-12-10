@@ -165,7 +165,7 @@ class AcademicApiController extends Controller
                      * EXPAND NAV ITEM IF PAGE HAS is_faculty_members = true
                      * ---------------------------------------------------- */
                     if ($item->page && $item->page->is_faculty_members) {
-
+                            
                         $deptChildren = $departments->map(function ($dept) {
                             return [
                                 'label'        => $dept->title,
