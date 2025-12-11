@@ -196,50 +196,6 @@
     });
 
 
-    /* ======================================================
-       SWEETALERT DELETE — EXACT USER REQUESTED CODE
-    ===================================================== */
-    // $(document).on('click', '.delete', function(e) {
-    //     e.preventDefault();
-
-    //     var deleteUrl = $(this).attr('href');
-
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You won't be able to revert this!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Yes, delete it!',
-    //         cancelButtonText: 'No, cancel!',
-    //         buttonsStyling: false,
-    //         customClass: {
-    //             confirmButton: 'btn btn-danger',
-    //             cancelButton: 'btn btn-success'
-    //         }
-    //     }).then(function(result) {
-    //         if (result.isConfirmed) {
-
-    //             $.ajax({
-    //                 url: deleteUrl,
-    //                 type: 'DELETE',
-    //                 headers: {
-    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //                 },
-
-    //                 success: function(data) {
-    //                     Swal.fire('Deleted!', 'Your file has been deleted.', 'success')
-    //                         .then(() => location.reload());
-    //                 },
-
-    //                 error: function(xhr, status, error) {
-    //                     Swal.fire('Error Occurred!', error, 'error');
-    //                 }
-    //             });
-    //         } else if (result.dismiss === swal.DismissReason.cancel) {
-    //             Swal.fire('Cancelled', 'Your imaginary file is safe :)', 'error');
-    //         }
-    //     });
-    // });
 
 
     /* =====================================================
@@ -359,4 +315,54 @@
         $(".accordion-collapse").removeClass("show");
         $(".accordion-item:first .accordion-collapse").addClass("show");
     });
+</script>
+
+
+
+<script>
+     /* ======================================================
+       SWEETALERT DELETE — EXACT USER REQUESTED CODE
+    ===================================================== */
+    // $(document).on('click', '.delete', function(e) {
+    //     e.preventDefault();
+
+    //     var deleteUrl = $(this).attr('href');
+
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You won't be able to revert this!",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Yes, delete it!',
+    //         cancelButtonText: 'No, cancel!',
+    //         buttonsStyling: false,
+    //         customClass: {
+    //             confirmButton: 'btn btn-danger',
+    //             cancelButton: 'btn btn-success'
+    //         }
+    //     }).then(function(result) {
+    //         if (result.isConfirmed) {
+
+    //             $.ajax({
+    //                 url: deleteUrl,
+    //                 type: 'DELETE',
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //                 },
+
+    //                 success: function(data) {
+    //                     Swal.fire('Deleted!', 'Your file has been deleted.', 'success')
+    //                         .then(() => location.reload());
+    //                 },
+
+    //                 error: function(xhr, status, error) {
+    //                     Swal.fire('Error Occurred!', error, 'error');
+    //                 }
+    //             });
+    //         } else if (result.dismiss === swal.DismissReason.cancel) {
+    //             Swal.fire('Cancelled', 'Your imaginary file is safe :)', 'error');
+    //         }
+    //     });
+    // });
+
 </script>
