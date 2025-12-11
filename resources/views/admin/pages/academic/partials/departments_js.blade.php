@@ -1,322 +1,399 @@
 <script>
-    /* ------------------------------------------------------------
-    UTILITIES
------------------------------------------------------------- */
-    function slugify(text) {
-        return text.toString().toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '')
-            .substring(0, 180);
-    }
+    (function ($) {
+        "use strict";
 
-    function showToast(type, message) {
-        toastr[type](message);
-    }
+        // ---------------------------------------------
+        // Helpers
+        // ---------------------------------------------
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .substring(0, 180);
+        }
 
-    const CSRF = "{{ csrf_token() }}";
+        function showToast(type, message) {
+            if (window.toastr) {
+                toastr[type](message);
+            } else {
+                alert(message);
+            }
+        }
 
-    /* ------------------------------------------------------------
-        1) AUTO SLUG LOGIC
-    ------------------------------------------------------------ */
+        var CSRF = "{{ csrf_token() }}";
 
-    // CREATE Department
-    $(document).on("keyup", ".slug-source", function() {
-        const target = $(this).closest(".modal-body").find(".slug-target");
-        target.val(slugify($(this).val()));
-    });
+        // ---------------------------------------------
+        // 1) Auto slug
+        // ---------------------------------------------
+        $(document).on("keyup", ".slug-source", function () {
+            var target = $(this).closest(".modal-body").find(".slug-target");
+            target.val(slugify($(this).val()));
+        });
 
-    // EDIT Department
-    $(document).on("keyup", ".slug-source-edit", function() {
-        const target = $(this).closest(".modal-body").find(".slug-target-edit");
-        target.val(slugify($(this).val()));
-    });
+        $(document).on("keyup", ".slug-source-edit", function () {
+            var target = $(this).closest(".modal-body").find(".slug-target-edit");
+            target.val(slugify($(this).val()));
+        });
 
+        // ---------------------------------------------
+        // 2) Load right panel via AJAX
+        // ---------------------------------------------
+        function loadDepartmentPanel(deptId, push) {
+            if (!deptId) return;
 
-    /* ------------------------------------------------------------
-        2) LOAD RIGHT PANEL VIA AJAX
-    ------------------------------------------------------------ */
-    function loadDepartmentPanel(deptId, push = true) {
-        $("#rightPanelLoader").removeClass("d-none");
-        $("#rightPanelContent").addClass("d-none");
+            if (typeof push === "undefined") {
+                push = true;
+            }
 
-        $.get("{{ route('admin.academic.staff.index') }}", {
-            site_id: $("#activeSiteId").val(),
-            department_id: deptId,
-            ajax: 1
-        }, function(response) {
+            $("#currentDepartmentId").val(deptId);
+            $("#rightPanelLoader").removeClass("d-none");
+            $("#rightPanelContent").addClass("d-none");
 
-            $("#rightPanelContent").html(response.html);
-            $("#rightPanelLoader").addClass("d-none");
-            $("#rightPanelContent").removeClass("d-none");
+            $.get("{{ route('admin.academic.staff.index') }}", {
+                site_id: $("#activeSiteId").val(),
+                department_id: deptId,
+                ajax: 1
+            }, function (response) {
+                $("#rightPanelContent").html(response.html);
+                $("#rightPanelLoader").addClass("d-none");
+                $("#rightPanelContent").removeClass("d-none");
 
-            initSortables(); // reinitialize after AJAX load
+                initSortables();
+                initDynamicButtons();
 
-            if (push) {
-                const url = new URL(window.location.href);
-                url.searchParams.set("department_id", deptId);
-                history.pushState({
-                    dept_id: deptId
-                }, "", url);
+                if (push) {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set("department_id", deptId);
+                    history.pushState({ dept_id: deptId }, "", url);
+                }
+            });
+        }
+
+        window.addEventListener("popstate", function (event) {
+            if (event.state && event.state.dept_id) {
+                loadDepartmentPanel(event.state.dept_id, false);
             }
         });
-    }
 
-    // Handle browser back/forward
-    window.addEventListener("popstate", function(event) {
-        if (event.state?.dept_id) {
-            loadDepartmentPanel(event.state.dept_id, false);
-        }
-    });
+        // ---------------------------------------------
+        // 3) Left column — click department
+        // ---------------------------------------------
+        $(document).on("click", ".dept-click-area", function () {
+            var li = $(this).closest(".department-item");
+            var deptId = li.data("id");
 
+            $(".department-item").removeClass("active");
+            li.addClass("active");
 
-    /* ------------------------------------------------------------
-        3) LEFT COLUMN — CLICK DEPARTMENT
-    ------------------------------------------------------------ */
-    $(document).on("click", ".dept-row", function() {
-        const deptId = $(this).data("id");
+            loadDepartmentPanel(deptId, true);
+        });
 
-        $(".dept-row").removeClass("active");
-        $(this).addClass("active");
+        // ---------------------------------------------
+        // 4) SweetAlert delete (unified)
+        // ---------------------------------------------
+        $(document).on("click", ".delete", function (e) {
+            e.preventDefault();
+            var url = $(this).attr("href");
 
-        loadDepartmentPanel(deptId, true);
-    });
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it",
+                cancelButtonText: "Cancel",
+                reverseButtons: true
+            }).then(function (result) {
+                if (!result.isConfirmed) return;
 
-
-    /* ------------------------------------------------------------
-        4) SWEETALERT DELETE (unified)
-    ------------------------------------------------------------ */
-    $(document).on("click", ".delete", function(e) {
-        e.preventDefault();
-        const url = $(this).attr("href");
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "This action cannot be undone.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it",
-            cancelButtonText: "Cancel",
-            reverseButtons: true
-        }).then((result) => {
-            if (!result.isConfirmed) return;
-
-            fetch(url, {
+                fetch(url, {
                     method: "DELETE",
                     headers: {
                         "X-CSRF-TOKEN": CSRF,
                         "Accept": "application/json"
                     }
                 })
-                .then(res => res.json())
-                .then(json => {
+                    .then(function (res) { return res.json(); })
+                    .then(function (json) {
+                        if (json.success) {
+                            Swal.fire("Deleted!", json.message, "success").then(function () {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire("Error", json.message || "Delete failed", "error");
+                        }
+                    })
+                    .catch(function () {
+                        Swal.fire("Error", "Delete failed", "error");
+                    });
+            });
+        });
+
+        // ---------------------------------------------
+        // 5) Edit department modal population
+        // ---------------------------------------------
+        $(document).on("click", ".editDepartmentBtn", function () {
+            var id          = $(this).data("id");
+            var title       = $(this).data("title");
+            var shortCode   = $(this).data("short-code");
+            var slug        = $(this).data("slug");
+            var status      = $(this).data("status");
+            var position    = $(this).data("position") || 0;
+            var description = $(this).data("description") || "";
+
+            var form = $("#editDepartmentForm");
+            form.attr("action", "/admin/academic/departments/" + id);
+
+            $("#deptEditTitle").val(title);
+            $("#deptEditShortCode").val(shortCode);
+            $("#deptEditSlug").val(slug);
+            $("#deptEditStatus").val(status);
+            $("#deptEditPosition").val(position);
+            $("#deptEditDescription").val(description);
+
+            $("#editDepartmentModal").modal("show");
+        });
+
+        // ---------------------------------------------
+        // 6) Toggle department status
+        // ---------------------------------------------
+        $(document).on("change", ".toggleDepartmentStatus", function () {
+            var id = $(this).data("id");
+
+            fetch("/admin/academic/departments/" + id + "/toggle-status", {
+                method: "PATCH",
+                headers: {
+                    "X-CSRF-TOKEN": CSRF,
+                    "Accept": "application/json"
+                }
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (json) {
                     if (json.success) {
-                        Swal.fire("Deleted!", json.message, "success").then(() => {
-                            location.reload(); // safe for now; can also re-AJAX
-                        });
+                        showToast("success", json.message);
                     } else {
-                        Swal.fire("Error", json.message || "Delete failed", "error");
+                        showToast("error", json.message || "Status update failed");
                     }
                 })
-                .catch(() => Swal.fire("Error", "Delete failed", "error"));
+                .catch(function () {
+                    showToast("error", "Status update failed");
+                });
         });
-    });
 
+        // ---------------------------------------------
+        // 7) Staff group & member modals (buttons)
+        // ---------------------------------------------
+        function initDynamicButtons() {
+            // Create group
+            $(document).off("click.createStaffGroup").on("click.createStaffGroup", ".createStaffGroupBtn", function () {
+                var deptId = $(this).data("department-id");
+                $("#createStaffGroupDepartmentId").val(deptId);
+                $("#createStaffGroupForm").attr("action", "/admin/academic/departments/" + deptId + "/groups");
+                $("#createStaffGroupModal").modal("show");
+            });
 
-    /* ------------------------------------------------------------
-        5) MODAL POPULATION — EDIT DEPARTMENT
-    ------------------------------------------------------------ */
-    $(document).on("click", ".editDeptBtn", function() {
-        const id = $(this).data("id");
-        const title = $(this).data("title");
-        const slug = $(this).data("slug");
-        const status = $(this).data("status");
-        const position = $(this).data("position");
-        const description = $(this).data("description");
+            // Create member
+            $(document).off("click.createStaffMember").on("click.createStaffMember", ".createStaffMemberBtn", function () {
+                var groupId = $(this).data("group-id");
+                $("#createMemberGroupId").val(groupId);
+                $("#createStaffMemberForm").attr("action", "/admin/academic/staff-groups/" + groupId + "/members");
+                $("#createStaffMemberModal").modal("show");
+            });
 
-        const form = $("#editDepartmentForm");
-        form.attr("action", "/admin/academic/departments/" + id);
+            // Edit group
+            $(document).off("click.editStaffGroup").on("click.editStaffGroup", ".editStaffGroupBtn", function () {
+                var id     = $(this).data("id");
+                var title  = $(this).data("title");
+                var status = $(this).data("status");
 
-        $("#deptEditTitle").val(title);
-        $("#deptEditSlug").val(slug);
-        $("#deptEditStatus").val(status);
-        $("#deptEditPosition").val(position ?? 0);
-        $("#deptEditDescription").val(description ?? "");
+                var form = $("#editStaffGroupForm");
+                form.attr("action", "/admin/academic/staff-groups/" + id);
 
-        $("#editDepartmentModal").modal("show");
-    });
+                $("#editStaffGroupTitle").val(title);
+                $("#editStaffGroupStatus").val(status);
 
+                $("#editStaffGroupModal").modal("show");
+            });
 
-    /* ------------------------------------------------------------
-        6) MODAL POPULATION — EDIT STAFF GROUP
-    ------------------------------------------------------------ */
-    $(document).on("click", ".editStaffGroupBtn", function() {
-        const id = $(this).data("id");
-        const title = $(this).data("title");
-        const status = $(this).data("status");
+            // Edit member
+            $(document).off("click.editStaffMember").on("click.editStaffMember", ".editStaffMemberBtn", function () {
+                var member = $(this).data("member"); 
 
-        const form = $("#editStaffGroupForm");
-        form.attr("action", "/admin/academic/staff-groups/" + id);
+                var form = $("#editStaffMemberForm");
+                form.attr("action", "/admin/academic/staff-members/" + member.id);
 
-        $("#editStaffGroupTitle").val(title);
-        $("#editStaffGroupStatus").val(status);
+                $("#editMemberName").val(member.name);
+                $("#editMemberDesignation").val(member.designation);
+                $("#editMemberEmail").val(member.email);
+                $("#editMemberPhone").val(member.phone);
+                $("#editMemberStatus").val(member.status);
 
-        $("#editStaffGroupModal").modal("show");
-    });
+                // Image preview (image-input component)
+                if (member.image_url) {
+                    var preview = document.getElementById("editMemberImagePicker-preview");
+                    if (preview) {
+                        preview.style.backgroundImage = "url('" + member.image_url + "')";
+                    }
+                }
 
+                // Clear links in EDIT repeater
+                $("#editStaffLinksRepeater").html("");
+                editLinkIndex = 0;
 
-    /* ------------------------------------------------------------
-        7) MODAL POPULATION — EDIT STAFF MEMBER
-    ------------------------------------------------------------ */
-    $(document).on("click", ".editStaffMemberBtn", function() {
+                if (member.links && member.links.length) {
+                    for (var i = 0; i < member.links.length; i++) {
+                        addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, member.links[i]);
+                    }
+                }
 
-        const member = $(this).data("json");
-        const form = $("#editStaffMemberForm");
-        form.attr("action", "/admin/academic/staff-members/" + member.id);
-
-        $("#editMemberName").val(member.name);
-        $("#editMemberDesignation").val(member.designation);
-        $("#editMemberEmail").val(member.email);
-        $("#editMemberPhone").val(member.phone);
-        $("#editMemberStatus").val(member.status);
-
-        // Load existing image
-        if (member.image_url) {
-            $("#editMemberImagePicker").attr("data-image", member.image_url);
-        }
-
-        // Load dynamic links
-        $("#editStaffLinksRepeater").html("");
-        if (member.links?.length) {
-            member.links.forEach((lnk, index) => {
-                $("#editStaffLinksRepeater").append(`
-                <div class="row g-3 link-row mb-2">
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Icon</label>
-                        <x-icon-picker name="links[${index}][icon]" :value="${lnk.icon}" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">URL</label>
-                        <input type="text" class="form-control" name="links[${index}][url]"
-                               value="${lnk.url}">
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-danger btn-sm removeLinkBtn w-100">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `);
+                $("#editStaffMemberModal").modal("show");
             });
         }
 
-        $("#editStaffMemberModal").modal("show");
-    });
+        // ---------------------------------------------
+        // 8) Staff links repeater (create + edit)
+        // ---------------------------------------------
+        var linkIndex     = 1;
+        var editLinkIndex = 0;
 
+        function addStaffLinkRow(containerSelector, templateSelector, isEdit, linkData) {
+            if (typeof isEdit === "undefined") isEdit = false;
+            if (typeof linkData === "undefined") linkData = null;
 
-    /* ------------------------------------------------------------
-        8) STAFF LINKS REPEATER (CREATE + EDIT)
-    ------------------------------------------------------------ */
+            var index = isEdit ? editLinkIndex : linkIndex;
+            var html  = $(templateSelector).html().replace(/__INDEX__/g, index);
+            var $row  = $(html);
 
-    let linkIndex = 1;
+            $(containerSelector).append($row);
 
-    // ADD link (create modal)
-    $("#addStaffLinkBtn").on("click", function() {
-        $("#staffLinksRepeater").append(`
-        <div class="row g-3 link-row mb-2">
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Icon</label>
-                <x-icon-picker name="links[${linkIndex}][icon]" />
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">URL</label>
-                <input type="text" name="links[${linkIndex}][url]" class="form-control"
-                       placeholder="https://example.com">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-danger btn-sm removeLinkBtn w-100">
-                    <i class="fa fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `);
-        linkIndex++;
-    });
+            // Re-init icon picker for new row
+            if (typeof window.initIconPicker === "function") {
+                window.initIconPicker($row[0]);
+            }
 
-    // REMOVE link row
-    $(document).on("click", ".removeLinkBtn", function() {
-        $(this).closest(".link-row").remove();
-    });
+            if (linkData) {
+                $row.find("input[name='links[" + index + "][url]']").val(linkData.url || "");
+                var iconInput = $row.find(".icon-picker-input");
+                var iconBtn   = $row.find(".icon-picker-toggle i");
 
+                if (iconInput.length) {
+                    iconInput.val(linkData.icon || "");
+                }
+                if (iconBtn.length) {
+                    iconBtn.attr("class", linkData.icon || "fa fa-icons");
+                }
+            }
 
-    /* ------------------------------------------------------------
-        9) SORTABLE (Departments, Groups, Members)
-    ------------------------------------------------------------ */
+            if (isEdit) {
+                editLinkIndex++;
+            } else {
+                linkIndex++;
+            }
+        }
 
-    function initSortables() {
+        $("#addStaffLinkBtn").on("click", function () {
+            addStaffLinkRow("#staffLinksRepeater", "#staffLinkTemplate", false, null);
+        });
 
-        // DEPARTMENTS
-        $(".departments-sortable").sortable({
-            handle: ".dept-sort-handle",
-            update: function() {
-                const order = [];
-                $(".dept-row").each(function() {
-                    order.push($(this).data("id"));
+        $("#addStaffLinkBtnEdit").on("click", function () {
+            addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, null);
+        });
+
+        $(document).on("click", ".removeLinkBtn", function () {
+            $(this).closest(".link-row").remove();
+        });
+
+        // ---------------------------------------------
+        // 9) Sortables
+        // ---------------------------------------------
+        function initSortables() {
+            // Departments (left)
+            if ($.fn.sortable) {
+                $("#departmentsSortable").sortable({
+                    handle: ".dept-sort-handle",
+                    update: function () {
+                        var order = [];
+                        $("#departmentsSortable .department-item").each(function () {
+                            order.push($(this).data("id"));
+                        });
+
+                        var siteId = $("#activeSiteId").val();
+                        $.post("/admin/academic/sites/" + siteId + "/departments/sort", {
+                            order: order,
+                            _token: CSRF
+                        }, function (res) {
+                            showToast("success", res.message);
+                        });
+                    }
                 });
 
-                $.post("{{ route('admin.academic.departments.sort', ':site') }}"
-                    .replace(":site", $("#activeSiteId").val()), {
-                        order,
-                        _token: CSRF
-                    },
-                    function(res) {
-                        showToast("success", res.message);
+                // Staff groups
+                $("#staffGroupsSortable").sortable({
+                    handle: ".group-sort-handle",
+                    update: function () {
+                        var deptId = $("#currentDepartmentId").val();
+                        var order  = [];
+                        $("#staffGroupsSortable .staff-group-row").each(function () {
+                            order.push($(this).data("id"));
+                        });
+
+                        $.post("/admin/academic/departments/" + deptId + "/groups/sort", {
+                            order: order,
+                            _token: CSRF
+                        }, function (res) {
+                            showToast("success", res.message);
+                        });
+                    }
+                });
+
+                // Staff members
+                $(".staff-members-sortable").each(function () {
+                    var $list   = $(this);
+                    var groupId = $list.data("group-id");
+
+                    $list.sortable({
+                        handle: ".member-sort-handle",
+                        update: function () {
+                            var order = [];
+                            $list.find(".member-row").each(function () {
+                                order.push($(this).data("id"));
+                            });
+
+                            $.post("/admin/academic/staff-groups/" + groupId + "/members/sort", {
+                                order: order,
+                                _token: CSRF
+                            }, function (res) {
+                                showToast("success", res.message);
+                            });
+                        }
                     });
-            }
-        });
-
-        // STAFF GROUPS
-        $(".staff-groups-sortable").sortable({
-            handle: ".group-sort-handle",
-            update: function() {
-                const deptId = $("#currentDepartmentId").val();
-                const order = [];
-                $(".staff-group-row").each(function() {
-                    order.push($(this).data("id"));
-                });
-
-                $.post(`/admin/academic/departments/${deptId}/groups/sort`, {
-                    order,
-                    _token: CSRF
-                }, function(res) {
-                    showToast("success", res.message);
                 });
             }
-        });
+        }
 
-        // STAFF MEMBERS
-        $(".staff-members-sortable").sortable({
-            handle: ".member-sort-handle",
-            update: function() {
-                const groupId = $("#currentStaffGroupId").val();
-                const order = [];
-                $(".member-row").each(function() {
-                    order.push($(this).data("id"));
-                });
+        // ---------------------------------------------
+        // 10) Initial boot
+        // ---------------------------------------------
+        $(document).ready(function () {
+            initSortables();
+            initDynamicButtons();
 
-                $.post(`/admin/academic/staff-groups/${groupId}/members/sort`, {
-                    order,
-                    _token: CSRF
-                }, function(res) {
-                    showToast("success", res.message);
-                });
+            // Preselect department from URL if available
+            var params = new URLSearchParams(window.location.search);
+            var deptIdFromUrl = params.get("department_id");
+            if (deptIdFromUrl) {
+                var li = $(".department-item[data-id='" + deptIdFromUrl + "']");
+                if (li.length) {
+                    li.addClass("active");
+                    loadDepartmentPanel(deptIdFromUrl, false);
+                }
             }
+
+            // Fill site id when opening "Add Department"
+            $("#openCreateDepartmentModalBtn").on("click", function () {
+                $("#createDeptSiteId").val($("#activeSiteId").val());
+            });
         });
-    }
 
-    initSortables();
-
-
-    /* ------------------------------------------------------------
-        END OF SCRIPT
-    ------------------------------------------------------------ */
+    })(jQuery);
 </script>

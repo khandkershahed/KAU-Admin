@@ -275,46 +275,26 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         */
 
         // Main page (Department + Groups + Members)
-        Route::get('/departments-staff', [AcademicDepartmentStaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff', [AcademicDepartmentStaffController::class, 'index'])->name('staff.index');
 
-        // -------- Departments --------
-        Route::post('/sites/{site}/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])
-            ->name('departments.store');
+        // Departments
+        Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');
+        Route::put('/departments/{department}', [AcademicDepartmentStaffController::class, 'updateDepartment'])->name('departments.update');
+        Route::delete('/departments/{department}', [AcademicDepartmentStaffController::class, 'destroyDepartment'])->name('departments.destroy');
+        Route::post('/sites/{site}/departments/sort', [AcademicDepartmentStaffController::class, 'sortDepartments'])->name('departments.sort');
+        Route::patch('/departments/{department}/toggle-status', [AcademicDepartmentStaffController::class, 'toggleDepartmentStatus'])->name('departments.toggle-status');
 
-        Route::post('/departments/{department}', [AcademicDepartmentStaffController::class, 'updateDepartment'])
-            ->name('departments.update');
+        // Staff groups
+        Route::post('/departments/{department}/groups', [AcademicDepartmentStaffController::class, 'storeGroup'])->name('staff-groups.store');
+        Route::put('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'updateGroup'])->name('staff-groups.update');
+        Route::delete('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'destroyGroup'])->name('staff-groups.destroy');
+        Route::post('/departments/{department}/groups/sort', [AcademicDepartmentStaffController::class, 'sortGroups'])->name('staff-groups.sort');
 
-        Route::delete('/departments/{department}', [AcademicDepartmentStaffController::class, 'destroyDepartment'])
-            ->name('departments.destroy');
-
-        Route::post('/sites/{site}/departments/sort', [AcademicDepartmentStaffController::class, 'sortDepartments'])
-            ->name('departments.sort');
-
-        // -------- Staff Groups (Sections) --------
-        Route::post('/departments/{department}/groups', [AcademicDepartmentStaffController::class, 'storeGroup'])
-            ->name('groups.staff.store');
-
-        Route::post('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'updateGroup'])
-            ->name('groups.staff.update');
-
-        Route::delete('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'destroyGroup'])
-            ->name('groups.staff.destroy');
-
-        Route::post('/departments/{department}/groups/sort', [AcademicDepartmentStaffController::class, 'sortGroups'])
-            ->name('groups.staff.sort');
-
-        // -------- Staff Members --------
-        Route::post('/staff-groups/{group}/members', [AcademicDepartmentStaffController::class, 'storeMember'])
-            ->name('members.store');
-
-        Route::post('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'updateMember'])
-            ->name('members.update');
-
-        Route::delete('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'destroyMember'])
-            ->name('members.destroy');
-
-        Route::post('/staff-groups/{group}/members/sort', [AcademicDepartmentStaffController::class, 'sortMembers'])
-            ->name('members.sort');
+        // Staff members
+        Route::post('/staff-groups/{group}/members', [AcademicDepartmentStaffController::class, 'storeMember'])->name('staff-members.store');
+        Route::put('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'updateMember'])->name('staff-members.update');
+        Route::delete('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'destroyMember'])->name('staff-members.destroy');
+        Route::post('/staff-groups/{group}/members/sort', [AcademicDepartmentStaffController::class, 'sortMembers'])->name('staff-members.sort');
     });
 
 

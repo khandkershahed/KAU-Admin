@@ -48,22 +48,22 @@
                                             {{ $page->title }}
 
                                             @if($page->is_home)
-                                                <span class="badge bg-success ms-2">Home</span>
+                                                <span class="badge badge-success ms-2">Home</span>
                                             @endif
                                             @if($page->is_department_boxes)
-                                                <span class="badge bg-info ms-2">Departments</span>
+                                                <span class="badge badge-info ms-2">Departments</span>
                                             @endif
                                             @if($page->is_faculty_members)
-                                                <span class="badge bg-warning ms-2">Faculty</span>
+                                                <span class="badge badge-warning ms-2">Faculty</span>
                                             @endif
                                         </div>
 
-                                        <div class="small text-muted">
+                                        {{-- <div class="small text-muted">
                                             slug: <code>{{ $page->slug }}</code>
                                             @if($page->page_key)
                                                 | key: <code>{{ $page->page_key }}</code>
                                             @endif
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <div class="d-flex align-items-center">

@@ -8,56 +8,76 @@ use App\Models\AcademicDepartment;
 use App\Models\AcademicStaffSection;
 use App\Models\AcademicStaffMember;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AcademicDepartmentStaffController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view academic staff')->only(['index']);
-    //     $this->middleware('permission:manage academic staff')->only([
-    //         'storeDepartment','updateDepartment','destroyDepartment','sortDepartments',
-    //         'storeGroup','updateGroup','destroyGroup','sortGroups',
-    //         'storeMember','updateMember','destroyMember','sortMembers',
-    //     ]);
-    // }
-
     public function __construct()
     {
+        // Departments
         $this->middleware('permission:view academic departments')->only(['index']);
         $this->middleware('permission:create academic departments')->only(['storeDepartment']);
-        $this->middleware('permission:edit academic departments')->only(['updateDepartment', 'sortDepartments']);
+        $this->middleware('permission:edit academic departments')->only([
+            'updateDepartment',
+            'sortDepartments',
+            'toggleDepartmentStatus',
+        ]);
         $this->middleware('permission:delete academic departments')->only(['destroyDepartment']);
 
+        // Staff (groups + members)
         $this->middleware('permission:view academic staff')->only(['index']);
-        $this->middleware('permission:create academic staff')->only(['storeGroup', 'storeMember']);
-        $this->middleware('permission:edit academic staff')->only(['updateGroup', 'updateMember', 'sortGroups', 'sortMembers']);
-        $this->middleware('permission:delete academic staff')->only(['destroyGroup', 'destroyMember']);
+        $this->middleware('permission:create academic staff')->only([
+            'storeGroup',
+            'storeMember',
+        ]);
+        $this->middleware('permission:edit academic staff')->only([
+            'updateGroup',
+            'updateMember',
+            'sortGroups',
+            'sortMembers',
+        ]);
+        $this->middleware('permission:delete academic staff')->only([
+            'destroyGroup',
+            'destroyMember',
+        ]);
     }
-    /* ==========================================================================
+
+    /* =========================================================================
         INDEX
-       ========================================================================== */
+       ========================================================================= */
 
     public function index(Request $request)
     {
-        $sites = AcademicSite::orderBy('name')->get();
+        $sites  = AcademicSite::orderBy('name')->get();
         $siteId = $request->get('site_id', optional($sites->first())->id);
 
         $selectedSite = null;
-        $departments = collect();
+        $departments  = collect();
 
         if ($siteId) {
             $selectedSite = AcademicSite::find($siteId);
 
             if ($selectedSite) {
-                $departments = AcademicDepartment::with(['staffSections.members'])
-                    ->where('academic_site_id', $siteId)
+                $departments = AcademicDepartment::where('academic_site_id', $siteId)
                     ->orderBy('position')
                     ->get();
             }
         }
 
+        // AJAX: load right panel for a specific department
+        if ($request->ajax() && $request->filled('department_id')) {
+            $department = AcademicDepartment::with([
+                'staffSections.members',
+            ])->findOrFail($request->department_id);
+
+            $html = view('admin.pages.academic.partials.department_details', [
+                'department' => $department,
+            ])->render();
+
+            return response()->json(['html' => $html]);
+        }
+
+        // Normal full page
         return view('admin.pages.academic.departments_staff', [
             'sites'        => $sites,
             'selectedSite' => $selectedSite,
@@ -65,23 +85,24 @@ class AcademicDepartmentStaffController extends Controller
         ]);
     }
 
-    /* ==========================================================================
+    /* =========================================================================
         DEPARTMENTS
-       ========================================================================== */
+       ========================================================================= */
 
-    public function storeDepartment(AcademicSite $site, Request $request)
+    public function storeDepartment(Request $request)
     {
         $data = $request->validate([
-            'title'       => 'required|string|max:255',
-            'short_code'  => 'nullable|string|max:50',
-            'slug'        => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'status'      => 'nullable|in:published,draft,archived',
-            'position'    => 'nullable|integer',
+            'academic_site_id' => 'required|exists:academic_sites,id',
+            'title'            => 'required|string|max:255',
+            'short_code'       => 'nullable|string|max:50',
+            'slug'             => 'nullable|string|max:255',
+            'description'      => 'nullable|string',
+            'status'           => 'nullable|in:published,draft,archived',
+            'position'         => 'nullable|integer',
         ]);
 
         AcademicDepartment::create([
-            'academic_site_id' => $site->id,
+            'academic_site_id' => $data['academic_site_id'],
             'title'            => $data['title'],
             'short_code'       => $data['short_code'] ?? null,
             'slug'             => $data['slug'] ?? null,
@@ -101,6 +122,7 @@ class AcademicDepartmentStaffController extends Controller
             'slug'        => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'status'      => 'nullable|in:published,draft,archived',
+            'position'    => 'nullable|integer',
         ]);
 
         $department->update([
@@ -109,6 +131,7 @@ class AcademicDepartmentStaffController extends Controller
             'slug'        => $data['slug'] ?? null,
             'description' => $data['description'] ?? null,
             'status'      => $data['status'] ?? $department->status,
+            'position'    => $data['position'] ?? $department->position,
         ]);
 
         return back()->with('success', 'Department updated.');
@@ -118,7 +141,10 @@ class AcademicDepartmentStaffController extends Controller
     {
         $department->delete();
 
-        return response()->json(['success' => true, 'message' => 'Department deleted.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Department deleted.',
+        ]);
     }
 
     public function sortDepartments(AcademicSite $site, Request $request)
@@ -131,12 +157,27 @@ class AcademicDepartmentStaffController extends Controller
                 ->update(['position' => $index + 1]);
         }
 
-        return response()->json(['success' => true, 'message' => 'Department order updated.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Department order updated.',
+        ]);
     }
 
-    /* ==========================================================================
-        STAFF SECTIONS (Groups)
-       ========================================================================== */
+    public function toggleDepartmentStatus(AcademicDepartment $department)
+    {
+        $department->status = $department->status === 'published' ? 'draft' : 'published';
+        $department->save();
+
+        return response()->json([
+            'success' => true,
+            'status'  => $department->status,
+            'message' => 'Department status updated.',
+        ]);
+    }
+
+    /* =========================================================================
+        STAFF SECTIONS (GROUPS)
+       ========================================================================= */
 
     public function storeGroup(AcademicDepartment $department, Request $request)
     {
@@ -176,7 +217,10 @@ class AcademicDepartmentStaffController extends Controller
     {
         $group->delete();
 
-        return response()->json(['success' => true, 'message' => 'Staff group deleted.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff group deleted.',
+        ]);
     }
 
     public function sortGroups(AcademicDepartment $department, Request $request)
@@ -189,12 +233,15 @@ class AcademicDepartmentStaffController extends Controller
                 ->update(['position' => $index + 1]);
         }
 
-        return response()->json(['success' => true, 'message' => 'Staff group order updated.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff group order updated.',
+        ]);
     }
 
-    /* ==========================================================================
+    /* =========================================================================
         STAFF MEMBERS
-       ========================================================================== */
+       ========================================================================= */
 
     public function storeMember(AcademicStaffSection $group, Request $request)
     {
@@ -212,7 +259,6 @@ class AcademicDepartmentStaffController extends Controller
             'links.*.url'  => 'nullable|string|max:1000',
         ]);
 
-        // image upload
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('academic/staff', 'public');
@@ -251,6 +297,12 @@ class AcademicDepartmentStaffController extends Controller
 
         $imagePath = $member->image_path;
 
+        // Remove existing image if requested
+        if ((int) $request->input('image_remove', 0) === 1 && $imagePath) {
+            Storage::disk('public')->delete($imagePath);
+            $imagePath = null;
+        }
+
         // Replace image
         if ($request->hasFile('image')) {
             if ($imagePath) {
@@ -281,7 +333,10 @@ class AcademicDepartmentStaffController extends Controller
 
         $member->delete();
 
-        return response()->json(['success' => true, 'message' => 'Staff member deleted.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff member deleted.',
+        ]);
     }
 
     public function sortMembers(AcademicStaffSection $group, Request $request)
@@ -294,6 +349,9 @@ class AcademicDepartmentStaffController extends Controller
                 ->update(['position' => $index + 1]);
         }
 
-        return response()->json(['success' => true, 'message' => 'Staff member order updated.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff member order updated.',
+        ]);
     }
 }
