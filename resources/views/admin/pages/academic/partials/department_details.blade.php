@@ -142,7 +142,7 @@
                                             'status'      => $member->status,
                                             'position'    => $member->position,
                                             'image_url'   => $member->image_path
-                                                ? Storage::disk('public')->url($member->image_path)
+                                                ? asset('storage/' . $member->image_path)
                                                 : asset('images/no_image.png'),
                                             'links'       => $member->links ?? [],
                                         ];
