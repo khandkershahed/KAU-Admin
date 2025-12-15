@@ -450,7 +450,7 @@ class AcademicApiController extends Controller
             ->where('status', 'published')
             ->firstOrFail();
 
-        $member = AcademicStaffMember::whereHas('staffSection', function ($q) use ($department) {
+        $member = AcademicStaffMember::whereHas('section', function ($q) use ($department) {
             $q->where('academic_department_id', $department->id);
         })
             ->where('uuid', $uid)
