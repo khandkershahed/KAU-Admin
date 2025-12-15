@@ -18,6 +18,73 @@ class AcademicSeeder extends Seeder
     public function run(): void
     {
         /* -----------------------------------------------------------
+         | UUID GENERATOR (6-8 chars, unique)
+         | - Uses name + mobile(if exists) + phone(if exists) + counter
+         | - Produces 8 chars by default; if collision, varies with counter
+         |------------------------------------------------------------ */
+        $makeUuid = function (string $name, ?string $mobile = null, ?string $phone = null): string {
+            $base = trim($name);
+
+            if (!empty($mobile)) {
+                $base .= '|' . preg_replace('/\D+/', '', $mobile);
+            } elseif (!empty($phone)) {
+                $base .= '|' . preg_replace('/\D+/', '', $phone);
+            } else {
+                $base .= '|0';
+            }
+
+            // Try different lengths and counters to guarantee uniqueness
+            $counter = 0;
+
+            while (true) {
+                $payload = $base . '|' . $counter;
+                $hash = strtoupper(substr(sha1($payload), 0, 8)); // 8 chars
+
+                // If you want sometimes 6-8 chars, you can vary by counter:
+                // first attempt 8, then 7, then 6, then back to 8 with counter
+                $len = 8;
+                if ($counter === 1) $len = 7;
+                if ($counter === 2) $len = 6;
+                if ($counter >= 3) $len = 8;
+
+                $uuid = substr($hash, 0, $len);
+
+                if (!AcademicStaffMember::where('uuid', $uuid)->exists()) {
+                    return $uuid;
+                }
+
+                $counter++;
+            }
+        };
+
+        /* -----------------------------------------------------------
+         | Publications helper (upsert by member_id + title)
+         |------------------------------------------------------------ */
+        $upsertPub = function (
+            AcademicStaffMember $member,
+            int $position,
+            string $title,
+            ?string $journal = null,
+            ?int $year = null
+        ) {
+            AcademicMemberPublication::updateOrCreate(
+                [
+                    'academic_staff_member_id' => $member->id,
+                    'title' => $title,
+                ],
+                [
+                    'type' => null,
+                    'journal_or_conference_name' => $journal,
+                    'publisher' => null,
+                    'year' => $year,
+                    'doi' => null,
+                    'url' => null,
+                    'position' => $position,
+                ]
+            );
+        };
+
+        /* -----------------------------------------------------------
          | 1. MENU GROUPS
          |------------------------------------------------------------ */
         $facultyGroup = AcademicMenuGroup::updateOrCreate(
@@ -34,7 +101,6 @@ class AcademicSeeder extends Seeder
          | Helper: Create Site + Nav + Pages
          |------------------------------------------------------------ */
         $createSite = function (AcademicMenuGroup $group, array $siteData) {
-
             $site = AcademicSite::updateOrCreate(
                 ['slug' => $siteData['slug']],
                 [
@@ -60,7 +126,9 @@ class AcademicSeeder extends Seeder
             $navItems = [];
             $position = 1;
 
-            foreach ($rootNavs as $key => [$label, $type]) {
+            foreach ($rootNavs as $key => $item) {
+                [$label, $type] = $item;
+
                 $navItems[$key] = AcademicNavItem::updateOrCreate(
                     [
                         'academic_site_id' => $site->id,
@@ -117,23 +185,6 @@ class AcademicSeeder extends Seeder
         $fos  = $createSite($facultyGroup, ['slug' => 'fos',  'name' => 'Fisheries & Ocean Sciences', 'short_name' => 'FOS', 'position' => 3]);
         $aeas = $createSite($facultyGroup, ['slug' => 'aeas', 'name' => 'Agricultural Economics & Agribusiness Studies', 'short_name' => 'AEAS', 'position' => 4]);
         $aet  = $createSite($facultyGroup, ['slug' => 'aet',  'name' => 'Agricultural Engineering & Technology', 'short_name' => 'AET', 'position' => 5]);
-
-        /* ===========================================================
-         | Publications helper (upsert by member_id + title)
-         =========================================================== */
-        $upsertPub = function (AcademicStaffMember $member, int $position, string $title, ?string $journal = null, ?int $year = null) {
-            AcademicMemberPublication::updateOrCreate(
-                [
-                    'academic_staff_member_id' => $member->id,
-                    'title' => $title,
-                ],
-                [
-                    'journal_or_conference_name' => $journal,
-                    'year' => $year,
-                    'position' => $position,
-                ]
-            );
-        };
 
         /* ===========================================================
          | VABS — DEPARTMENTS
@@ -193,18 +244,21 @@ class AcademicSeeder extends Seeder
             ['academic_site_id' => $vabs->id, 'position' => 3, 'status' => 'published']
         );
 
+        // Dr. Subarna Rani Kundu (Head)
+        $subarnaPhone = '+8801756553339';
         $subarna = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $anatomyHead->id, 'name' => 'Dr. Subarna Rani Kundu'],
             [
+                'uuid' => $makeUuid('Dr. Subarna Rani Kundu', null, $subarnaPhone),
                 'designation' => 'Assistant Professor (Head)',
                 'email' => 'srkundu@kau.edu.bd',
-                'phone' => '+8801756553339',
+                'phone' => $subarnaPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
         );
 
-        // Publications (Dr. Subarna Rani Kundu) - all you listed
+        // Publications (Dr. Subarna Rani Kundu)
         $p = 1;
         $upsertPub($subarna, $p++, 'A comprehensive assessment of poultry husbandry practices at DK poultry farm, Chattogram, Bangladesh', 'International Journal of Natural and Social Sciences 12 (1), 44-51', 2025);
         $upsertPub($subarna, $p++, 'Hematological profile of indigenous sheep in Rajshahi Metropolitan area of Bangladesh', 'Bangladesh Journal of Agriculture and Life Science 2 (2), 55-62', 2024);
@@ -215,18 +269,21 @@ class AcademicSeeder extends Seeder
         $upsertPub($subarna, $p++, 'Pathological changes of liver and lung of slaughtered goats in Rajshahi Metropolitan area of Bangladesh', 'International Journal of Natural and Social Sciences 9 (01), 38-47', 2022);
         $upsertPub($subarna, $p++, 'Isolation, identification and antibiogram of bacterial flora from rectum of horses', 'GSC Biological and Pharmaceutical Sciences 21 (02), 116-126', 2022);
 
+        // Papia Khatun
+        $papiaPhone = '+8801756877950';
         $papia = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $anatomyAsst->id, 'name' => 'Papia Khatun'],
             [
+                'uuid' => $makeUuid('Papia Khatun', null, $papiaPhone),
                 'designation' => 'Assistant Professor',
                 'email' => 'papiakhatun@kau.edu.bd',
-                'phone' => '+8801756877950',
+                'phone' => $papiaPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
         );
 
-        // Publications (Papia Khatun) - all you listed
+        // Publications (Papia Khatun)
         $p = 1;
         $upsertPub($papia, $p++, 'Medicinal and versatile uses of an amazing, obtainable and valuable grass: Cynodon dactylon', 'International Journal of Pharmaceutical and Medicinal Research 8 (5), 1-11', 2020);
         $upsertPub($papia, $p++, 'Gross Anatomy of epididymis and ductus deferens of adult Khaki Campbell duck (Anas platyrhynchos domesticus) in Bangladesh', 'Journal of Bioscience and Agriculture Research 22 (01), 1805-1809', 2019);
@@ -239,18 +296,21 @@ class AcademicSeeder extends Seeder
         $upsertPub($papia, $p++, 'Comparative Effects of Vitamin D3 and Sunlight on Ameliorating High‐Fat Diet–Induced Obesity in Mice', 'Journal of Food Biochemistry 2025 (1), 4930890', 2025);
         $upsertPub($papia, $p++, 'Ukrainian Journal of Veterinary and Agricultural Sciences', 'Ukrainian Journal of Veterinary and Agricultural Sciences', 2022);
 
+        // Dr. Swarup Kumar Kundu
+        $swarupPhone = '+8801714871808';
         $swarup = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $anatomyAsst->id, 'name' => 'Dr. Swarup Kumar Kundu'],
             [
+                'uuid' => $makeUuid('Dr. Swarup Kumar Kundu', null, $swarupPhone),
                 'designation' => 'Assistant Professor',
                 'email' => 'swarupkundu@kau.edu.bd',
-                'phone' => '+8801714871808',
+                'phone' => $swarupPhone,
                 'status' => 'published',
                 'position' => 2,
             ]
         );
 
-        // Publications (Dr. Swarup Kumar Kundu) - all you listed
+        // Publications (Dr. Swarup Kumar Kundu)
         $p = 1;
         $upsertPub($swarup, $p++, 'Prevalence of some common bacterial diseases in commercial poultry farm', 'Ukrainian journal of veterinary and agricultural sciences 4 (2), 44-51', 2021);
         $upsertPub($swarup, $p++, 'Preparation of Quail (Coturnix coturnix) Skeleton to Promote the Teaching Facilities of Avian Anatomy Laboratory', 'International Journal of Veterinary and Animal Research (IJVAR) 6 (3), 91-95', 2023);
@@ -282,18 +342,21 @@ class AcademicSeeder extends Seeder
             ['academic_site_id' => $vabs->id, 'position' => 2, 'status' => 'published']
         );
 
+        // Dr. Sabuj Kanti Nath
+        $sabujPhone = '+8801851955071';
         $sabuj = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $nutritionHead->id, 'name' => 'Dr. Sabuj Kanti Nath'],
             [
+                'uuid' => $makeUuid('Dr. Sabuj Kanti Nath', null, $sabujPhone),
                 'designation' => 'Assistant Professor',
                 'email' => 'sabuj.vet@kau.edu.bd',
-                'phone' => '+8801851955071',
+                'phone' => $sabujPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
         );
 
-        // Publications (Dr. Sabuj Kanti Nath) - all you listed
+        // Publications (Dr. Sabuj Kanti Nath)
         $p = 1;
         $upsertPub($sabuj, $p++, 'Topographical and biometrical anatomy of the digestive tract of White New Zealand Rabbit (Oryctolagus cuniculus)', 'Journal of Advanced Veterinary and Animal Research 3 (2), 145-151', 2016);
         $upsertPub($sabuj, $p++, 'Isolation and identification of Escherichia coli and Salmonella sp. from apparently healthy Turkey', 'Int. J. Adv. Res. Biol. Sci 4 (6), 72-78', 2017);
@@ -316,18 +379,21 @@ class AcademicSeeder extends Seeder
         $upsertPub($sabuj, $p++, 'Trained immunity: a revolutionary immunotherapeutic approach', 'Animal Diseases 4 (1), 31', 2024);
         $upsertPub($sabuj, $p++, 'Prevalence and Antimicrobial Resistance Profile of E. coli and Salmonella spp. from Liver and Heart of Chickens', 'Turkish Journal of Agriculture-Food Science and Technology 10 (6), 1191-1196', 2022);
 
+        // Dr. Md. Taslim Hossain
+        $taslimPhone = '+8801711275811';
         $taslim = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $nutritionAsst->id, 'name' => 'Dr. Md. Taslim Hossain'],
             [
+                'uuid' => $makeUuid('Dr. Md. Taslim Hossain', null, $taslimPhone),
                 'designation' => 'Assistant Professor',
                 'email' => 'drtaslim2178@gmail.com',
-                'phone' => '+8801711275811',
+                'phone' => $taslimPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
         );
 
-        // Publications (Dr. Md. Taslim Hossain) - all you listed
+        // Publications (Dr. Md. Taslim Hossain)
         $p = 1;
         $upsertPub($taslim, $p++, 'Isolation, identification, toxin profile and antibiogram of Escherichia coli isolated from broilers and layers in Mymensingh district of Bangladesh', 'Bangladesh Journal of Veterinary Medicine 6 (1), 1-5', 2008);
         $upsertPub($taslim, $p++, 'Prevalence and economic significance of caprine fascioliasis at Sylhet District of Bangladesh.', null, 2011);
@@ -345,18 +411,21 @@ class AcademicSeeder extends Seeder
         $upsertPub($taslim, $p++, 'Effect of Saponin and L-carnitine on the Performance of Female Broiler Chicken.', 'Bangladesh Journal of Environmental Science 11 (2), 419-424', 2005);
         $upsertPub($taslim, $p++, 'Global Journal of Medical and Public Health', 'Global Journal of Medical and Public Health', null);
 
+        // Dr. Shahabuddin Ahmed
+        $shahabPhone = '+8801742975056';
         $shahab = AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $nutritionAsst->id, 'name' => 'Dr. Shahabuddin Ahmed'],
             [
+                'uuid' => $makeUuid('Dr. Shahabuddin Ahmed', null, $shahabPhone),
                 'designation' => 'Assistant Professor',
                 'email' => 'drshahab@kau.edu.bd',
-                'phone' => '+8801742975056',
+                'phone' => $shahabPhone,
                 'status' => 'published',
                 'position' => 2,
             ]
         );
 
-        // Publications (Dr. Shahabuddin Ahmed) - all you listed
+        // Publications (Dr. Shahabuddin Ahmed)
         $p = 1;
         $upsertPub($shahab, $p++, 'Productive and Reproductive Performance of Different Crossbred Dairy Cattle at Kishoreganj, Bangladesh', 'Veterinary Sciences: Research and Reviews 7 (1), 69-76', 2021);
         $upsertPub($shahab, $p++, 'A report on problems and prospects of duck rearing system at Jaintiapur Upazila, Sylhet, Bangladesh', 'Journal of Global Agriculture and Ecology 11 (2), 25-35', 2021);
@@ -381,12 +450,15 @@ class AcademicSeeder extends Seeder
             ['academic_department_id' => $medicine->id, 'title' => 'Lecturers'],
             ['academic_site_id' => $vabs->id, 'position' => 1, 'status' => 'published']
         );
+
+        $solamaPhone = '+8801729625389';
         AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $medicineLect->id, 'name' => 'Dr. Solama Akter Shanta'],
             [
+                'uuid' => $makeUuid('Dr. Solama Akter Shanta', null, $solamaPhone),
                 'designation' => 'Lecturer',
                 'email' => 'shanta.dvm@gmail.com',
-                'phone' => '+8801729625389',
+                'phone' => $solamaPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
@@ -394,21 +466,25 @@ class AcademicSeeder extends Seeder
 
         // Department of Livestock Production and Management
         $lpm = $deptMap['Livestock Production and Management'];
+
         $lpmHead = AcademicStaffSection::updateOrCreate(
             ['academic_department_id' => $lpm->id, 'title' => 'Head'],
             ['academic_site_id' => $vabs->id, 'position' => 1, 'status' => 'published']
         );
+
         $lpmLect = AcademicStaffSection::updateOrCreate(
             ['academic_department_id' => $lpm->id, 'title' => 'Lecturers'],
             ['academic_site_id' => $vabs->id, 'position' => 2, 'status' => 'published']
         );
 
+        $uzzalPhone = '+8801737345773';
         AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $lpmHead->id, 'name' => 'Md. Uzzal Hossain'],
             [
+                'uuid' => $makeUuid('Md. Uzzal Hossain', null, $uzzalPhone),
                 'designation' => 'Lecturer (Head)',
                 'email' => 'uzzallpm@kau.edu.bd',
-                'phone' => '+8801737345773',
+                'phone' => $uzzalPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
@@ -426,6 +502,7 @@ class AcademicSeeder extends Seeder
             AcademicStaffMember::updateOrCreate(
                 ['staff_section_id' => $lpmLect->id, 'name' => $m['name']],
                 [
+                    'uuid' => $makeUuid($m['name'], null, $m['phone'] ?? null),
                     'designation' => $m['designation'],
                     'email' => $m['email'],
                     'phone' => $m['phone'],
@@ -437,21 +514,25 @@ class AcademicSeeder extends Seeder
 
         // Department of Microbiology and Public Health
         $mph = $deptMap['Microbiology and Public Health'];
+
         $mphHead = AcademicStaffSection::updateOrCreate(
             ['academic_department_id' => $mph->id, 'title' => 'Head'],
             ['academic_site_id' => $vabs->id, 'position' => 1, 'status' => 'published']
         );
+
         $mphAsst = AcademicStaffSection::updateOrCreate(
             ['academic_department_id' => $mph->id, 'title' => 'Assistant Professors'],
             ['academic_site_id' => $vabs->id, 'position' => 2, 'status' => 'published']
         );
 
+        $salauddinPhone = '+8801767178610';
         AcademicStaffMember::updateOrCreate(
             ['staff_section_id' => $mphHead->id, 'name' => 'Dr. Md. Salauddin'],
             [
+                'uuid' => $makeUuid('Dr. Md. Salauddin', null, $salauddinPhone),
                 'designation' => 'Assistant Professor (Head)',
                 'email' => 'salauddin.dvm@gmail.com',
-                'phone' => '+8801767178610',
+                'phone' => $salauddinPhone,
                 'status' => 'published',
                 'position' => 1,
             ]
@@ -470,9 +551,10 @@ class AcademicSeeder extends Seeder
             AcademicStaffMember::updateOrCreate(
                 ['staff_section_id' => $mphAsst->id, 'name' => $m['name']],
                 [
+                    'uuid' => $makeUuid($m['name'], null, $m['phone'] ?? null),
                     'designation' => $m['designation'],
                     'email' => $m['email'],
-                    'phone' => $m['phone'],
+                    'phone' => $m['phone'] ?? null,
                     'status' => 'published',
                     'position' => $pos++,
                 ]
@@ -480,7 +562,7 @@ class AcademicSeeder extends Seeder
         }
 
         /* ===========================================================
-         | OTHER FACULTIES — DEPARTMENTS ONLY (FIXED LOOP)
+         | OTHER FACULTIES — DEPARTMENTS ONLY (NO OBJECT KEYS)
          =========================================================== */
         $otherFaculties = [
             [
