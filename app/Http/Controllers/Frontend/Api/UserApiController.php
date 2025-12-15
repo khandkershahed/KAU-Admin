@@ -577,32 +577,5 @@ class UserApiController extends Controller
     }
 
     // User tickets
-    public function tickets(Request $request)
-    {
-        $user = $request->user();
 
-        $bookings = Booking::with([
-                'user:id,name,email',
-                'event:id,name,start_date,start_time,venue,end_date,end_time'
-            ])
-            ->where('user_id', $user->id)
-            ->get();
-        // Attach seat details to each booking
-        $bookings->transform(function ($booking) {
-            $eventSeats = json_decode($booking->event_seats, true);
-            $seatIds = $eventSeats['seat_ids'] ?? [];
-            // Fetch seat details
-            $seats = EventSeat::whereIn('id', $seatIds)
-                ->get(['name', 'code', 'price', 'row', 'column', 'status']);
-
-            $booking->seats = $seats;
-            return $booking;
-        });
-
-        return response()->json([
-            'status' => 'success',
-            'bookings' => $bookings,
-            'message' => 'User tickets retrieved successfully.'
-        ]);
-    }
 }

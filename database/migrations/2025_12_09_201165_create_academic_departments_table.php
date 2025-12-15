@@ -15,11 +15,8 @@ return new class extends Migration {
             $table->string('short_code')->nullable();
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
-
             $table->unsignedInteger('position')->default(0);
             $table->enum('status',['published','draft','archived'])->default('published');
-
-
             $table->timestamps();
         });
     }

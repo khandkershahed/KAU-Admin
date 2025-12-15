@@ -1,10 +1,11 @@
 <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data">
     @csrf
 
-    <div class="row mb-4">
+    <div class="row mb-4 mx-aut0">
         <div class="col-md-6">
             <label class="form-label fw-bold">Navigation Item</label>
-            <select name="nav_item_id" id="pageNavItemId" class="form-select form-select-sm">
+            <select name="nav_item_id" id="pageNavItemId" class="form-select form-select-sm" data-control="select2"
+                data-allow-clear="true">
                 <option value="">-- Select Navigation --</option>
                 @foreach ($navItems as $item)
                     <option value="{{ $item->id }}" @if ($page && $page->nav_item_id == $item->id) selected @endif>
@@ -15,17 +16,7 @@
             <small class="text-muted">Selecting a nav item auto-syncs slug + page_key.</small>
         </div>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">Slug</label>
-            <input type="text" name="slug" id="pageSlug" class="form-control form-control-sm"
-                value="{{ old('slug', $page->slug ?? '') }}" required>
-        </div>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">Page Key</label>
-            <input type="text" name="page_key" id="pageKey" class="form-control form-control-sm"
-                value="{{ old('page_key', $page->page_key ?? '') }}">
-        </div>
     </div>
 
     <div class="mb-4">
@@ -62,38 +53,35 @@
     </div>
 
     {{-- BANNER --}}
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <label class="form-label fw-bold">Banner Title</label>
-            <input type="text" name="banner_title" class="form-control form-control-sm"
-                value="{{ old('banner_title', $page->banner_title ?? '') }}">
-        </div>
-
-        <div class="col-md-6">
-            <label class="form-label fw-bold">Banner Subtitle</label>
-            <input type="text" name="banner_subtitle" class="form-control form-control-sm"
-                value="{{ old('banner_subtitle', $page->banner_subtitle ?? '') }}">
-        </div>
-    </div>
-
-    <div class="row mb-4">
+    <div class="row mb-4 gx-3">
         <div class="col-md-4">
-            <label class="form-label fw-bold">Banner Button Label</label>
-            <input type="text" name="banner_button" class="form-control form-control-sm"
-                value="{{ old('banner_button', $page->banner_button ?? '') }}">
+            <div class="mb-4">
+                <label class="form-label fw-bold">Banner Image</label>
+                <x-metronic.image-input name="banner_image" id="bannerImageInput" :source="!empty($page?->banner_image) ? asset('storage/' . $page->banner_image) : ''" />
+            </div>
         </div>
-
         <div class="col-md-8">
-            <label class="form-label fw-bold">Banner Button URL</label>
-            <input type="text" name="banner_button_url" class="form-control form-control-sm"
-                value="{{ old('banner_button_url', $page->banner_button_url ?? '') }}">
+            <div class="row">
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Banner Title</label>
+                    <input type="text" name="banner_title" class="form-control form-control-sm"
+                        value="{{ old('banner_title', $page->banner_title ?? '') }}">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Banner Button Label</label>
+                    <input type="text" name="banner_button" class="form-control form-control-sm"
+                        value="{{ old('banner_button', $page->banner_button ?? '') }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Banner Button URL</label>
+                    <input type="text" name="banner_button_url" class="form-control form-control-sm"
+                        value="{{ old('banner_button_url', $page->banner_button_url ?? '') }}">
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="mb-4">
-        <label class="form-label fw-bold">Banner Image</label>
-        <x-metronic.image-input name="banner_image" id="bannerImageInput" :source="!empty($page?->banner_image) ? asset('storage/' . $page->banner_image) : ''" />
-    </div>
 
     {{-- EDITOR --}}
     <div class="mb-4">
@@ -132,3 +120,17 @@
         </button>
     </div>
 </form>
+
+
+
+{{-- <div class="col-md-3">
+            <label class="form-label fw-bold">Slug</label>
+            <input type="text" name="slug" id="pageSlug" class="form-control form-control-sm"
+                value="{{ old('slug', $page->slug ?? '') }}" required>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Page Key</label>
+            <input type="text" name="page_key" id="pageKey" class="form-control form-control-sm"
+                value="{{ old('page_key', $page->page_key ?? '') }}">
+        </div> --}}

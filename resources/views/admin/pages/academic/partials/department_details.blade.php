@@ -1,26 +1,15 @@
-@php
-    use Illuminate\Support\Facades\Storage;
-@endphp
-
-<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
     <h4 class="fw-semibold mb-0">{{ $department->title }}</h4>
 
     @can('create academic staff')
-        <button
-            type="button"
-            class="btn btn-light-primary btn-sm createStaffGroupBtn"
-            data-department-id="{{ $department->id }}"
-        >
+        <button type="button" class="btn btn-light-primary btn-sm createStaffGroupBtn"
+            data-department-id="{{ $department->id }}">
             <i class="fa fa-plus me-2"></i> Add Staff Group
         </button>
     @endcan
 </div>
 
-@if($department->description)
-    <div class="mb-4">
-        {!! $department->description !!}
-    </div>
-@endif
+
 
 {{-- ACCORDION OF STAFF GROUPS --}}
 <div class="accordion staff-groups-sortable" id="departmentStaffAccordion">
@@ -28,12 +17,8 @@
     @forelse($department->staffSections as $section)
         <div class="accordion-item mb-3 staff-group-row" data-id="{{ $section->id }}">
 
-            {{-- =======================
-                 GROUP HEADER
-            ======================== --}}
             <div class="accordion-header d-flex align-items-center justify-content-between px-3 py-2"
-                 style="background: aliceblue;"
-                 id="staffSectionHeading{{ $section->id }}">
+                style="background: aliceblue;" id="staffSectionHeading{{ $section->id }}">
 
                 {{-- LEFT SIDE: sort handle + accordion toggle --}}
                 <div class="d-flex align-items-center flex-grow-1 me-2">
@@ -43,22 +28,18 @@
                         <i class="fa-solid fa-up-down text-muted"></i>
                     </span>
 
-                    <button
-                        class="accordion-button collapsed py-2 px-2 shadow-none bg-transparent flex-grow-1"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#staffSectionCollapse{{ $section->id }}"
-                        aria-expanded="false"
-                        aria-controls="staffSectionCollapse{{ $section->id }}"
-                    >
+                    <button class="accordion-button collapsed py-2 px-2 shadow-none bg-transparent flex-grow-1"
+                        type="button" data-bs-toggle="collapse"
+                        data-bs-target="#staffSectionCollapse{{ $section->id }}" aria-expanded="false"
+                        aria-controls="staffSectionCollapse{{ $section->id }}">
                         <span class="fw-semibold d-flex align-items-center">
                             {{ $section->title }}
 
-                            <span class="badge bg-info ms-2">
+                            <span class="badge badge-info ms-2">
                                 Members: {{ $section->members->count() }}
                             </span>
 
-                            <span class="badge bg-light text-muted ms-2">
+                            <span class="badge badge-light text-muted ms-2">
                                 {{ ucfirst($section->status) }}
                             </span>
                         </span>
@@ -69,21 +50,18 @@
                 <div class="d-flex align-items-center ms-3">
 
                     @can('edit academic staff')
-                        <button
-                            type="button"
-                            class="btn btn-light-success btn-sm me-2 editStaffGroupBtn"
-                            data-id="{{ $section->id }}"
-                            data-title="{{ $section->title }}"
-                            data-status="{{ $section->status }}"
-                        >
-                            <i class="fa-solid fa-pen-to-square fs-6"></i>
+                        <button type="button"
+                            class="btn btn-outline btn-outline-primary text-hover-white btn-sm me-2 editStaffGroupBtn"
+                            data-id="{{ $section->id }}" data-title="{{ $section->title }}"
+                            data-status="{{ $section->status }}">
+                            <i class="fa-solid fa-pen-to-square fs-6 text-primary"></i>
                         </button>
                     @endcan
 
                     @can('delete academic staff')
                         <a href="{{ route('admin.academic.staff-groups.destroy', $section->id) }}"
-                           class="btn btn-light-danger btn-sm delete">
-                            <i class="fa-solid fa-trash fs-6"></i>
+                            class="btn btn-outline btn-outline-danger text-hover-white btn-sm delete">
+                            <i class="fa-solid fa-trash fs-6 text-danger"></i>
                         </a>
                     @endcan
 
@@ -93,19 +71,16 @@
             {{-- =======================
                  GROUP BODY (COLLAPSE)
             ======================== --}}
-            <div id="staffSectionCollapse{{ $section->id }}"
-                 class="accordion-collapse collapse"
-                 data-bs-parent="#departmentStaffAccordion">
+            <div id="staffSectionCollapse{{ $section->id }}" class="accordion-collapse collapse"
+                data-bs-parent="#departmentStaffAccordion">
 
                 <div class="accordion-body">
 
                     {{-- ADD MEMBER BUTTON --}}
                     @can('create academic staff')
-                        <button
-                            type="button"
+                        <button type="button"
                             class="btn btn-outline btn-outline-info btn-active-info float-end btn-sm mb-3 createStaffMemberBtn"
-                            data-group-id="{{ $section->id }}"
-                        >
+                            data-group-id="{{ $section->id }}">
                             <i class="fas fa-plus me-2"></i> Add Member
                         </button>
                     @endcan
@@ -128,23 +103,32 @@
                             </thead>
 
                             {{-- tbody MUST keep these classes/attrs for JS sortable --}}
-                            <tbody class="staff-members-sortable"
-                                   data-group-id="{{ $section->id }}">
+                            <tbody class="staff-members-sortable" data-group-id="{{ $section->id }}">
 
                                 @forelse($section->members as $member)
                                     @php
                                         $memberData = [
-                                            'id'          => $member->id,
-                                            'name'        => $member->name,
+                                            'id' => $member->id,
+                                            'name' => $member->name,
                                             'designation' => $member->designation,
-                                            'email'       => $member->email,
-                                            'phone'       => $member->phone,
-                                            'status'      => $member->status,
-                                            'position'    => $member->position,
-                                            'image_url'   => $member->image_path
+                                            'email' => $member->email,
+                                            'phone' => $member->phone,
+                                            'status' => $member->status,
+                                            'position' => $member->position,
+                                            'mobile' => $member->mobile,
+                                            'address' => $member->address,
+                                            'research_interest' => $member->research_interest,
+                                            'bio' => $member->bio,
+                                            'education' => $member->education,
+                                            'experience' => $member->experience,
+                                            'scholarship' => $member->scholarship,
+                                            'research' => $member->research,
+                                            'teaching' => $member->teaching,
+
+                                            'image_url' => $member->image_path
                                                 ? asset('storage/' . $member->image_path)
                                                 : asset('images/no_image.png'),
-                                            'links'       => $member->links ?? [],
+                                            'links' => $member->links ?? [],
                                         ];
                                     @endphp
 
@@ -153,15 +137,13 @@
                                         {{-- SORT HANDLE --}}
                                         <td class="member-sort">
                                             <i class="fas fa-up-down-left-right text-gray-600 fs-6 member-sort-handle"
-                                               style="cursor: grab;"></i>
+                                                style="cursor: grab;"></i>
                                         </td>
 
                                         {{-- PHOTO --}}
                                         <td class="member-sort">
-                                            <img src="{{ $memberData['image_url'] }}"
-                                                 class="rounded-circle"
-                                                 width="45" height="45"
-                                                 alt="{{ $member->name }}">
+                                            <img src="{{ $memberData['image_url'] }}" class="rounded-circle"
+                                                width="45" height="45" alt="{{ $member->name }}">
                                         </td>
 
                                         {{-- NAME --}}
@@ -187,21 +169,24 @@
                                         {{-- ACTIONS --}}
                                         <td>
                                             @can('edit academic staff')
-                                                <button
-                                                    type="button"
+                                                <button type="button"
                                                     class="btn btn-light-success btn-sm me-2 editStaffMemberBtn"
-                                                    data-member='@json($memberData)'
-                                                >
+                                                    data-member='@json($memberData)'>
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                             @endcan
 
                                             @can('delete academic staff')
                                                 <a href="{{ route('admin.academic.staff-members.destroy', $member->id) }}"
-                                                   class="btn btn-light-danger btn-sm delete">
+                                                    class="btn btn-light-danger btn-sm delete">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
                                             @endcan
+                                            <button type="button" class="btn btn-sm btn-light-primary"
+                                                onclick="openPublicationsModal({{ $member->id }})">
+                                                <i class="fa fa-book me-2"></i>Publications
+                                            </button>
+
                                         </td>
                                     </tr>
                                 @empty

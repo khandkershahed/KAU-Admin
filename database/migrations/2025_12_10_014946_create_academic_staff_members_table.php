@@ -11,19 +11,15 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('staff_section_id')->constrained('academic_staff_sections')->onDelete('cascade');
-
             $table->string('name');
             $table->string('designation')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('image_path')->nullable();
-
             $table->unsignedInteger('position')->default(0);
             $table->enum('status',['published','draft','archived'])->default('published');
-
             // JSON: [ { "icon": "fa-solid fa-google-scholar", "url": "..." }, ...]
             $table->json('links')->nullable();
-
             $table->timestamps();
         });
     }

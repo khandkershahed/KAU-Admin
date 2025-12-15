@@ -295,6 +295,18 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::put('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'updateMember'])->name('staff-members.update');
         Route::delete('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'destroyMember'])->name('staff-members.destroy');
         Route::post('/staff-groups/{group}/members/sort', [AcademicDepartmentStaffController::class, 'sortMembers'])->name('staff-members.sort');
+
+        // Publications
+        Route::post('/staff-members/{member}/publications', [AcademicDepartmentStaffController::class, 'storePublication'])
+            ->name('publications.store');
+        Route::put('/publications/{publication}', [AcademicDepartmentStaffController::class, 'updatePublication'])
+            ->name('publications.update');
+        Route::delete('/publications/{publication}', [AcademicDepartmentStaffController::class, 'destroyPublication'])
+            ->name('publications.destroy');
+        Route::post('/staff-members/{member}/publications/sort', [AcademicDepartmentStaffController::class, 'sortPublications'])
+            ->name('publications.sort');
+        Route::get('/staff-members/{member}/publications/list', [AcademicDepartmentStaffController::class, 'publicationsList'])
+            ->name('publications.list');
     });
 
 

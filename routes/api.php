@@ -13,20 +13,51 @@ Route::prefix('api/v1')->group(function () {
     // 🚪 Public routes
     Route::post('/register', [UserApiController::class, 'register']);
     Route::post('/login', [UserApiController::class, 'login']);
-    // 🔒 Protected routes (requires auth:sanctum)
+    Route::post('/reset-password/{token}', [UserApiController::class, 'reset']);
+    Route::post('/forgot-password', [UserApiController::class, 'forgotPassword']);
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [UserApiController::class, 'logout']);
-        // 👤 User profile
+        Route::get('/email-verification', [UserApiController::class, 'sendemailVerification']);
+        Route::post('/email-verification', [UserApiController::class, 'emailVerification']);
+        Route::post('/change-password', [UserApiController::class, 'updatePassword']);
         Route::get('/profile', [UserApiController::class, 'profile']);
-        Route::put('/profile', [UserApiController::class, 'updateProfile']);
-        // 🔑 Change password
+        Route::put('/profile', [UserApiController::class, 'editProfile']);
         Route::post('/change-password', [UserApiController::class, 'changePassword']);
-        // 🗑️ Optional: delete account
         Route::delete('/delete-account', [UserApiController::class, 'deleteAccount']);
     });
+
 });
 
 Route::prefix('api/v1')->group(function () {
+
+
+
+    Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
+    Route::get('/footer', [HomeApiController::class, 'footer']);
+    Route::post('/contact/add', [HomeApiController::class, 'contactStore']);
+
+
+
+    // Home
+
+
+    // Contact
+    Route::post('/contact', [HomeApiController::class, 'contactStore']);
+    // Route::post('/contact', [ContactApiController::class, 'store']);
+
+
+    // Product Search
+    // Route::post('/search', [HomeApiController::class, 'productSearch']);
+    // Route::post('/search/suggestions', [HomeApiController::class, 'searchSuggestions']);
+
+    // Terms and Privacy
+    Route::get('/terms-and-conditions', [HomeApiController::class, 'termsCondition']);
+    Route::get('/privacy', [HomeApiController::class, 'privacyPolicy']);
+
+    // Wallet & FAQ
+    Route::get('/wallet', [HomeApiController::class, 'wallet']);
+    Route::get('/faq', [HomeApiController::class, 'frequentlyAsked']);
 
     Route::get('/homepage', [HomeApiController::class, 'homepageShow']);
     Route::get('/about-pages', [HomeApiController::class, 'allAboutPages']);
@@ -48,48 +79,10 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/sites/{site_slug}/departments-and-staff', [AcademicApiController::class, 'siteDepartmentsStaff']);
     });
 
-    // Route::get('/sites/{site_slug}/page/{pageSlug}', [AcademicApiController::class, 'sitePageDetails']);
+    Route::get('/{site_slug}/{department_slug}/{uuid}', [AcademicApiController::class, 'departmentStaffDetails']);
 
 
     Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);
 
-
-    Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
-    Route::get('/footer', [HomeApiController::class, 'footer']);
-    Route::post('/contact/add', [HomeApiController::class, 'contactStore']);
-
-    Route::post('/register', [UserApiController::class, 'register']);
-    Route::post('/login', [UserApiController::class, 'login']);
-    Route::post('/reset-password/{token}', [UserApiController::class, 'reset']);
-    Route::post('/forgot-password', [UserApiController::class, 'forgotPassword']);
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [UserApiController::class, 'logout']);
-        Route::get('/email-verification', [UserApiController::class, 'sendemailVerification']);
-        Route::post('/email-verification', [UserApiController::class, 'emailVerification']);
-        Route::post('/change-password', [UserApiController::class, 'updatePassword']);
-        Route::get('/profile', [UserApiController::class, 'profile']);
-        Route::put('/profile', [UserApiController::class, 'editProfile']);
-    });
-
-    // Home
-
-
-    // Contact
-    Route::post('/contact', [HomeApiController::class, 'contactStore']);
-    // Route::post('/contact', [ContactApiController::class, 'store']);
-
-
-    // Product Search
-    // Route::post('/search', [HomeApiController::class, 'productSearch']);
-    // Route::post('/search/suggestions', [HomeApiController::class, 'searchSuggestions']);
-
-    // Terms and Privacy
-    Route::get('/terms-and-conditions', [HomeApiController::class, 'termsCondition']);
-    Route::get('/privacy', [HomeApiController::class, 'privacyPolicy']);
-
-    // Wallet & FAQ
-    Route::get('/wallet', [HomeApiController::class, 'wallet']);
-    Route::get('/faq', [HomeApiController::class, 'frequentlyAsked']);
 });

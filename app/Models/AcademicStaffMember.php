@@ -20,6 +20,16 @@ class AcademicStaffMember extends Model
         'position',
         'status',
         'links',
+        'uuid',
+        'mobile',
+        'address',
+        'research_interest',
+        'bio',
+        'education',
+        'experience',
+        'scholarship',
+        'research',
+        'teaching',
     ];
 
     protected $casts = [
@@ -31,4 +41,12 @@ class AcademicStaffMember extends Model
     {
         return $this->belongsTo(AcademicStaffSection::class, 'staff_section_id');
     }
+    public function publications()
+    {
+        return $this->hasMany(AcademicMemberPublication::class, 'academic_staff_member_id')
+            ->orderBy('position')
+            ->orderBy('id');
+    }
+
+    
 }

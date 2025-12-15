@@ -7,12 +7,10 @@ use App\Models\AcademicSite;
 use App\Models\AcademicDepartment;
 use App\Models\AcademicStaffSection;
 use App\Models\AcademicStaffMember;
-use App\Models\AcademicMemberPublication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
-class AcademicDepartmentStaffController extends Controller
+class OldAcademicDepartmentStaffController extends Controller
 {
     public function __construct()
     {
@@ -31,20 +29,16 @@ class AcademicDepartmentStaffController extends Controller
         $this->middleware('permission:create academic staff')->only([
             'storeGroup',
             'storeMember',
-            'storePublication',
         ]);
         $this->middleware('permission:edit academic staff')->only([
             'updateGroup',
             'updateMember',
             'sortGroups',
             'sortMembers',
-            'updatePublication',
-            'sortPublications',
         ]);
         $this->middleware('permission:delete academic staff')->only([
             'destroyGroup',
             'destroyMember',
-            'destroyPublication',
         ]);
     }
 
@@ -83,6 +77,7 @@ class AcademicDepartmentStaffController extends Controller
             return response()->json(['html' => $html]);
         }
 
+        // Normal full page
         return view('admin.pages.academic.departments_staff', [
             'sites'        => $sites,
             'selectedSite' => $selectedSite,
@@ -245,48 +240,6 @@ class AcademicDepartmentStaffController extends Controller
     }
 
     /* =========================================================================
-        UUID GENERATOR (6–8 chars, based on name + mobile/phone/random)
-       ========================================================================= */
-
-    private function generateMemberUuid(string $name, ?string $mobile, ?string $phone): string
-    {
-        $namePart = Str::of($name)->lower()->ascii()->replaceMatches('/[^a-z0-9]/', '')->toString();
-        $namePart = $namePart !== '' ? $namePart : 'member';
-
-        $num = $mobile ?: $phone ?: (string) random_int(1000000, 999999999);
-
-        $base = $namePart . '|' . preg_replace('/\D+/', '', $num);
-
-        // Deterministic-ish short hash: crc32 -> base36 -> 6–8 chars
-        $crc = sprintf('%u', crc32($base)); // unsigned
-        $b36 = strtolower(base_convert($crc, 10, 36));
-        $short = substr($b36, 0, 8);
-        if (strlen($short) < 6) {
-            $short = str_pad($short, 6, '0');
-        }
-
-        // Ensure uniqueness in DB
-        $uuid = $short;
-        $tries = 0;
-        while (AcademicStaffMember::where('uuid', $uuid)->exists()) {
-            $tries++;
-            $salt = (string) random_int(1000, 999999);
-            $crc2 = sprintf('%u', crc32($base . '|' . $salt));
-            $b362 = strtolower(base_convert($crc2, 10, 36));
-            $uuid = substr($b362, 0, 8);
-            if (strlen($uuid) < 6) {
-                $uuid = str_pad($uuid, 6, '0');
-            }
-            if ($tries > 20) {
-                $uuid = strtolower(Str::random(8));
-                break;
-            }
-        }
-
-        return $uuid;
-    }
-
-    /* =========================================================================
         STAFF MEMBERS
        ========================================================================= */
 
@@ -297,16 +250,6 @@ class AcademicDepartmentStaffController extends Controller
             'designation' => 'nullable|string|max:255',
             'email'       => 'nullable|string|max:255',
             'phone'       => 'nullable|string|max:50',
-            'mobile'      => 'nullable|string|max:20',
-            'address'     => 'nullable|string',
-            'research_interest' => 'nullable|string',
-            'bio'         => 'nullable|string',
-            'education'   => 'nullable|string',
-            'experience'  => 'nullable|string',
-            'scholarship' => 'nullable|string',
-            'research'    => 'nullable|string',
-            'teaching'    => 'nullable|string',
-
             'status'      => 'nullable|in:published,draft,archived',
             'position'    => 'nullable|integer',
             'image'       => 'nullable|image|max:4096',
@@ -321,30 +264,12 @@ class AcademicDepartmentStaffController extends Controller
             $imagePath = $request->file('image')->store('academic/staff', 'public');
         }
 
-        $uuid = $this->generateMemberUuid(
-            $data['name'],
-            $data['mobile'] ?? null,
-            $data['phone'] ?? null
-        );
-
         AcademicStaffMember::create([
             'staff_section_id' => $group->id,
-            'uuid'             => $uuid,
-
             'name'             => $data['name'],
             'designation'      => $data['designation'] ?? null,
             'email'            => $data['email'] ?? null,
             'phone'            => $data['phone'] ?? null,
-            'mobile'           => $data['mobile'] ?? null,
-            'address'          => $data['address'] ?? null,
-            'research_interest'=> $data['research_interest'] ?? null,
-            'bio'              => $data['bio'] ?? null,
-            'education'        => $data['education'] ?? null,
-            'experience'       => $data['experience'] ?? null,
-            'scholarship'      => $data['scholarship'] ?? null,
-            'research'         => $data['research'] ?? null,
-            'teaching'         => $data['teaching'] ?? null,
-
             'image_path'       => $imagePath,
             'status'           => $data['status'] ?? 'published',
             'position'         => $data['position'] ?? 0,
@@ -361,16 +286,6 @@ class AcademicDepartmentStaffController extends Controller
             'designation' => 'nullable|string|max:255',
             'email'       => 'nullable|string|max:255',
             'phone'       => 'nullable|string|max:50',
-            'mobile'      => 'nullable|string|max:20',
-            'address'     => 'nullable|string',
-            'research_interest' => 'nullable|string',
-            'bio'         => 'nullable|string',
-            'education'   => 'nullable|string',
-            'experience'  => 'nullable|string',
-            'scholarship' => 'nullable|string',
-            'research'    => 'nullable|string',
-            'teaching'    => 'nullable|string',
-
             'status'      => 'nullable|in:published,draft,archived',
             'position'    => 'nullable|integer',
             'image'       => 'nullable|image|max:4096',
@@ -382,11 +297,13 @@ class AcademicDepartmentStaffController extends Controller
 
         $imagePath = $member->image_path;
 
+        // Remove existing image if requested
         if ((int) $request->input('image_remove', 0) === 1 && $imagePath) {
             Storage::disk('public')->delete($imagePath);
             $imagePath = null;
         }
 
+        // Replace image
         if ($request->hasFile('image')) {
             if ($imagePath) {
                 Storage::disk('public')->delete($imagePath);
@@ -394,37 +311,15 @@ class AcademicDepartmentStaffController extends Controller
             $imagePath = $request->file('image')->store('academic/staff', 'public');
         }
 
-        // Generate uuid if missing
-        $uuid = $member->uuid;
-        if (!$uuid) {
-            $uuid = $this->generateMemberUuid(
-                $data['name'],
-                $data['mobile'] ?? null,
-                $data['phone'] ?? null
-            );
-        }
-
         $member->update([
-            'uuid'             => $uuid,
-
-            'name'             => $data['name'],
-            'designation'      => $data['designation'] ?? null,
-            'email'            => $data['email'] ?? null,
-            'phone'            => $data['phone'] ?? null,
-            'mobile'           => $data['mobile'] ?? null,
-            'address'          => $data['address'] ?? null,
-            'research_interest'=> $data['research_interest'] ?? null,
-            'bio'              => $data['bio'] ?? null,
-            'education'        => $data['education'] ?? null,
-            'experience'       => $data['experience'] ?? null,
-            'scholarship'      => $data['scholarship'] ?? null,
-            'research'         => $data['research'] ?? null,
-            'teaching'         => $data['teaching'] ?? null,
-
-            'image_path'       => $imagePath,
-            'status'           => $data['status'] ?? $member->status,
-            'position'         => $data['position'] ?? $member->position,
-            'links'            => $data['links'] ?? null,
+            'name'        => $data['name'],
+            'designation' => $data['designation'] ?? null,
+            'email'       => $data['email'] ?? null,
+            'phone'       => $data['phone'] ?? null,
+            'image_path'  => $imagePath,
+            'status'      => $data['status'] ?? $member->status,
+            'position'    => $data['position'] ?? $member->position,
+            'links'       => $data['links'] ?? null,
         ]);
 
         return back()->with('success', 'Staff member updated.');
@@ -457,101 +352,6 @@ class AcademicDepartmentStaffController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Staff member order updated.',
-        ]);
-    }
-
-    /* =========================================================================
-        PUBLICATIONS (MODAL CRUD)
-       ========================================================================= */
-
-    public function publicationsList(AcademicStaffMember $member)
-    {
-        $member->load(['publications']);
-
-        $html = view('admin.pages.academic.partials.publications_list', [
-            'member' => $member,
-        ])->render();
-
-        return response()->json(['html' => $html]);
-    }
-
-    public function storePublication(AcademicStaffMember $member, Request $request)
-    {
-        $data = $request->validate([
-            'title'  => 'required|string|max:500',
-            'type'   => 'nullable|in:journal,conference',
-            'journal_or_conference_name' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'year'   => 'nullable|integer|min:1900|max:2100',
-            'doi'    => 'nullable|string|max:255',
-            'url'    => 'nullable|string|max:1000',
-            'position' => 'nullable|integer',
-        ]);
-
-        $member->publications()->create([
-            'title'  => $data['title'],
-            'type'   => $data['type'] ?? null,
-            'journal_or_conference_name' => $data['journal_or_conference_name'] ?? null,
-            'publisher' => $data['publisher'] ?? null,
-            'year'   => $data['year'] ?? null,
-            'doi'    => $data['doi'] ?? null,
-            'url'    => $data['url'] ?? null,
-            'position' => $data['position'] ?? 0,
-        ]);
-
-        return back()->with('success', 'Publication added.');
-    }
-
-    public function updatePublication(AcademicMemberPublication $publication, Request $request)
-    {
-        $data = $request->validate([
-            'title'  => 'required|string|max:500',
-            'type'   => 'nullable|in:journal,conference',
-            'journal_or_conference_name' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'year'   => 'nullable|integer|min:1900|max:2100',
-            'doi'    => 'nullable|string|max:255',
-            'url'    => 'nullable|string|max:1000',
-            'position' => 'nullable|integer',
-        ]);
-
-        $publication->update([
-            'title'  => $data['title'],
-            'type'   => $data['type'] ?? null,
-            'journal_or_conference_name' => $data['journal_or_conference_name'] ?? null,
-            'publisher' => $data['publisher'] ?? null,
-            'year'   => $data['year'] ?? null,
-            'doi'    => $data['doi'] ?? null,
-            'url'    => $data['url'] ?? null,
-            'position' => $data['position'] ?? $publication->position,
-        ]);
-
-        return back()->with('success', 'Publication updated.');
-    }
-
-    public function destroyPublication(AcademicMemberPublication $publication)
-    {
-        $publication->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Publication deleted.',
-        ]);
-    }
-
-    public function sortPublications(AcademicStaffMember $member, Request $request)
-    {
-        $order = $request->get('order', []);
-
-        foreach ($order as $index => $id) {
-            AcademicMemberPublication::where('id', $id)
-                ->where('academic_staff_member_id', $member->id)
-                ->update(['position' => $index + 1]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Publication order updated.',
         ]);
     }
 }

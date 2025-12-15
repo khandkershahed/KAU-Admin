@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Frontend\Api;
 
 use App\Models\AcademicPage;
 use App\Models\AcademicSite;
-use App\Models\AcademicMenuGroup;
-use App\Models\AcademicDepartment;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\AcademicMenuGroup;
+use Illuminate\Http\JsonResponse;
+use App\Models\AcademicDepartment;
+use App\Models\AcademicStaffMember;
+use App\Http\Controllers\Controller;
 
 class AcademicApiController extends Controller
 {
@@ -256,7 +257,7 @@ class AcademicApiController extends Controller
             ->orderBy('id')
             ->get();
 
-            
+
 
         // Raw nav items collection
         $navItems = $site->navItems->sortBy('position')->values();
@@ -374,7 +375,7 @@ class AcademicApiController extends Controller
         $sectionsByDept = $site->staffSections->groupBy('academic_department_id');
 
         $staffStructure = $sectionsByDept
-            ->map(function ($sections, $deptId) use ($deptById) {
+            ->map(function ($sections, $deptId) use ($deptById, $site) {
 
                 $dept = $deptById->get($deptId);
                 if (!$dept) return null;
@@ -386,23 +387,26 @@ class AcademicApiController extends Controller
                     'slug'             => $dept->slug,
                     'groups'           => $sections->sortBy('position')
                         ->values()
-                        ->map(function ($section) {
+                        ->map(function ($section) use ($site, $dept) {
                             return [
                                 'id'       => $section->id,
                                 'title'    => $section->title,
-                                'position' => (int)$section->position,
+                                'position' => (int) $section->position,
                                 'members'  => $section->members
                                     ->sortBy('position')
                                     ->values()
-                                    ->map(function ($m) {
+                                    ->map(function ($m) use ($site, $dept) {
                                         return [
-                                            'id'          => $m->id,
+                                            'uuid'        => $m->uuid,
+                                            'url'         => "/" . $site->slug . "/" . $dept->slug . "/" . $m->uuid,
                                             'name'        => $m->name,
                                             'designation' => $m->designation,
                                             'email'       => $m->email,
                                             'phone'       => $m->phone,
-                                            'image'       => $m->image_path ? asset('storage/' . $m->image_path) : null,
-                                            'position'    => (int)$m->position,
+                                            'image'       => $m->image_path
+                                                ? asset('storage/' . $m->image_path)
+                                                : null,
+                                            'position'    => (int) $m->position,
                                             'links'       => $m->links ?? [],
                                         ];
                                     }),
@@ -427,10 +431,93 @@ class AcademicApiController extends Controller
                     'short_code'  => $d->short_code,
                     'slug'        => $d->slug,
                     'description' => $d->description,
-                    'position'    => (int)$d->position,
+                    'position'    => (int) $d->position,
                 ];
             })->values(),
             'staff' => $staffStructure,
+        ]);
+    }
+
+
+    public function departmentStaffDetails(string $site_slug, string $department_slug, string $uid)
+    {
+        $site = AcademicSite::where('slug', $site_slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        $department = AcademicDepartment::where('academic_site_id', $site->id)
+            ->where('slug', $department_slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        $member = AcademicStaffMember::whereHas('staffSection', function ($q) use ($department) {
+            $q->where('academic_department_id', $department->id);
+        })
+            ->where('uuid', $uid)
+            ->where('status', 'published')
+            ->with(['publications' => function ($q) {
+                $q->orderBy('position')->orderBy('id');
+            }])
+            ->firstOrFail();
+
+        $publications = $member->publications->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'title' => $p->title,
+                'type' => $p->type, // journal | conference | null
+                'journal_or_conference_name' => $p->journal_or_conference_name,
+                'publisher' => $p->publisher,
+                'year' => $p->year,
+                'doi' => $p->doi,
+                'url' => $p->url,
+                'position' => (int) $p->position,
+            ];
+        })->values();
+
+        $groupedPublications = $publications
+            ->groupBy(function ($p) {
+                return $p['type'] ?: 'other';
+            })
+            ->map(function ($items) {
+                return $items->values();
+            });
+
+        return response()->json([
+            'site' => [
+                'slug' => $site->slug,
+                'name' => $site->name,
+                'short_name' => $site->short_name,
+            ],
+            'department' => [
+                'title' => $department->title,
+                'slug' => $department->slug,
+                'short_code' => $department->short_code,
+            ],
+            'member' => [
+                'uuid' => $member->uuid,
+                'name' => $member->name,
+                'designation' => $member->designation,
+                'email' => $member->email,
+                'phone' => $member->phone,
+                'mobile' => $member->mobile,
+                'address' => $member->address,
+                'research_interest' => $member->research_interest,
+                'bio' => $member->bio,
+                'education' => $member->education,
+                'experience' => $member->experience,
+                'scholarship' => $member->scholarship,
+                'research' => $member->research,
+                'teaching' => $member->teaching,
+                'image' => $member->image_path ? asset('storage/' . $member->image_path) : null,
+                'links' => $member->links ?? [],
+
+                // grouped by type (journal / conference / other)
+                'publications' => [
+                    'journal' => $groupedPublications->get('journal', collect())->values(),
+                    'conference' => $groupedPublications->get('conference', collect())->values(),
+                    'other' => $groupedPublications->get('other', collect())->values(),
+                ],
+            ],
         ]);
     }
 }
