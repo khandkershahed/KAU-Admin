@@ -398,7 +398,7 @@ class AcademicApiController extends Controller
                                     ->map(function ($m) use ($site, $dept) {
                                         return [
                                             'uuid'        => $m->uuid,
-                                            'url'         => "/" . $site->slug . "/" . $dept->slug . "/" . $m->uuid,
+                                            'url'         => "/api/v1/" . $site->slug . "/" . $dept->slug . "/" . $m->uuid,
                                             'name'        => $m->name,
                                             'designation' => $m->designation,
                                             'email'       => $m->email,
