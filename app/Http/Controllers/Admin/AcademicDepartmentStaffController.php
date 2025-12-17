@@ -54,7 +54,7 @@ class AcademicDepartmentStaffController extends Controller
 
     public function index(Request $request)
     {
-        $sites  = AcademicSite::orderBy('name')->get();
+        $sites  = AcademicSite::orderBy('position')->get();
         $siteId = $request->get('site_id', optional($sites->first())->id);
 
         $selectedSite = null;
