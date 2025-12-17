@@ -1039,8 +1039,8 @@
 @verbatim
     <script>
         /* =====================================================
-           TOASTR OPTIONS (if not already set globally)
-        ===================================================== */
+                       TOASTR OPTIONS (if not already set globally)
+                    ===================================================== */
         if (window.toastr) {
             toastr.options = {
                 positionClass: "toast-top-right",
@@ -1276,6 +1276,26 @@
         /* =====================================================
            7) STAFF GROUP & MEMBER MODALS (ACTIONS)
         ===================================================== */
+        function setDragImagePickerPreview(uid, imageUrl) {
+            const preview = document.getElementById(uid + "-preview");
+            const removeFlag = document.getElementById(uid + "-remove-flag");
+            const fileInput = document.getElementById(uid);
+
+            if (preview && imageUrl) {
+                preview.style.backgroundImage = "url('" + imageUrl + "')";
+            }
+
+            // clear file input (so old file not stuck)
+            if (fileInput) {
+                fileInput.value = "";
+            }
+
+            // ensure remove flag is 0 (meaning keep existing image unless user clicks remove)
+            if (removeFlag) {
+                removeFlag.value = 0;
+            }
+        }
+
         function initDynamicButtons() {
 
             $(document).off("click", ".createStaffGroupBtn").on("click", ".createStaffGroupBtn", function() {
@@ -1327,6 +1347,7 @@
                 if (document.getElementById('editMemberResearchInterest')) document.getElementById(
                     'editMemberResearchInterest').value = (member.research_interest || '');
 
+                setDragImagePickerPreview('editMemberImagePicker', member.image_url || '');
                 $("#editStaffLinksRepeater").html("");
                 editLinkIndex = 0;
 

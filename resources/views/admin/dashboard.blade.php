@@ -1,19 +1,18 @@
-<x-admin-app-layout :title="'Admin Dashboard'">
-
+{{-- <x-admin-app-layout :title="'Admin Dashboard'">
     <div class="row gy-5 g-xl-8">
-        
-        <div class="col-xl-4">
-            
+
+        <div class="col-lg-4">
+
             <div class="card card-xl-stretch">
-                
+
                 <div class="card-header border-0 bg-danger py-5">
                     <h3 class="card-title fw-bolder text-white">Sales Statistics</h3>
                     <div class="card-toolbar">
-                        
+
                         <button type="button"
                             class="btn btn-sm btn-icon btn-color-white btn-active-white btn-active-color- border-0 me-n3"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                            
+
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px"
                                     viewBox="0 0 24 24">
@@ -29,104 +28,104 @@
                                     </g>
                                 </svg>
                             </span>
-                            
+
                         </button>
-                        
+
                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold w-200px py-3"
                             data-kt-menu="true">
-                            
+
                             <div class="menu-item px-3">
                                 <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Payments</div>
                             </div>
-                            
-                            
+
+
                             <div class="menu-item px-3">
                                 <a href="#" class="menu-link px-3">Create Invoice</a>
                             </div>
-                            
-                            
+
+
                             <div class="menu-item px-3">
                                 <a href="#" class="menu-link flex-stack px-3">Create Payment
                                     <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
                                         title="Specify a target name for future usage and reference"></i></a>
                             </div>
-                            
-                            
+
+
                             <div class="menu-item px-3">
                                 <a href="#" class="menu-link px-3">Generate Bill</a>
                             </div>
-                            
-                            
+
+
                             <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
                                 <a href="#" class="menu-link px-3">
                                     <span class="menu-title">Subscription</span>
                                     <span class="menu-arrow"></span>
                                 </a>
-                                
+
                                 <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                    
+
                                     <div class="menu-item px-3">
                                         <a href="#" class="menu-link px-3">Plans</a>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="menu-item px-3">
                                         <a href="#" class="menu-link px-3">Billing</a>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="menu-item px-3">
                                         <a href="#" class="menu-link px-3">Statements</a>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="separator my-2"></div>
-                                    
-                                    
+
+
                                     <div class="menu-item px-3">
                                         <div class="menu-content px-3">
-                                            
+
                                             <label class="form-check form-switch form-check-custom form-check-solid">
-                                                
+
                                                 <input class="form-check-input w-30px h-20px" type="checkbox"
                                                     value="1" checked="checked" name="notifications" />
-                                                
-                                                
+
+
                                                 <span class="form-check-label text-muted fs-6">Recuring</span>
-                                                
+
                                             </label>
-                                            
+
                                         </div>
                                     </div>
-                                    
+
                                 </div>
-                                
+
                             </div>
-                            
-                            
+
+
                             <div class="menu-item px-3 my-1">
                                 <a href="#" class="menu-link px-3">Settings</a>
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                     </div>
                 </div>
-                
-                
+
+
                 <div class="card-body p-0">
-                    
+
                     <div class="mixed-widget-2-chart card-rounded-bottom bg-danger" data-kt-color="danger"
                         style="height: 200px"></div>
-                    
-                    
+
+
                     <div class="card-p mt-n20 position-relative">
-                        
+
                         <div class="row g-0">
-                            
+
                             <div class="col bg-light-warning px-6 py-8 rounded-2 me-7 mb-7">
-                                
+
                                 <span class="svg-icon svg-icon-3x svg-icon-warning d-block my-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -140,13 +139,13 @@
                                             fill="currentColor" />
                                     </svg>
                                 </span>
-                                
+
                                 <a href="#" class="text-warning fw-bold fs-6">Weekly Sales</a>
                             </div>
-                            
-                            
+
+
                             <div class="col bg-light-primary px-6 py-8 rounded-2 mb-7">
-                                
+
                                 <span class="svg-icon svg-icon-3x svg-icon-primary d-block my-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -158,17 +157,17 @@
                                             fill="currentColor" />
                                     </svg>
                                 </span>
-                                
+
                                 <a href="#" class="text-primary fw-bold fs-6">New Projects</a>
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="row g-0">
-                            
+
                             <div class="col bg-light-danger px-6 py-8 rounded-2 me-7">
-                                
+
                                 <span class="svg-icon svg-icon-3x svg-icon-danger d-block my-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -180,13 +179,13 @@
                                             fill="currentColor" />
                                     </svg>
                                 </span>
-                                
+
                                 <a href="#" class="text-danger fw-bold fs-6 mt-2">Item Orders</a>
                             </div>
-                            
-                            
+
+
                             <div class="col bg-light-success px-6 py-8 rounded-2">
-                                
+
                                 <span class="svg-icon svg-icon-3x svg-icon-success d-block my-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none">
@@ -198,35 +197,35 @@
                                             fill="currentColor" />
                                     </svg>
                                 </span>
-                                
+
                                 <a href="#" class="text-success fw-bold fs-6 mt-2">Bug Reports</a>
                             </div>
-                            
+
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
-                
+
             </div>
-            
+
         </div>
-        
-        
-        <div class="col-xl-4">
-            
+
+
+        <div class="col-lg-4">
+
             <div class="card card-xl-stretch">
-                
+
                 <div class="card-header align-items-center border-0 mt-4">
                     <h3 class="card-title align-items-start flex-column">
                         <span class="fw-bolder mb-2 text-dark">Activities</span>
                         <span class="text-muted fw-bold fs-7">890,344 Sales</span>
                     </h3>
                     <div class="card-toolbar">
-                        
+
                         <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                            
+
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px"
                                     viewBox="0 0 24 24">
@@ -242,27 +241,27 @@
                                     </g>
                                 </svg>
                             </span>
-                            
+
                         </button>
-                        
+
                         <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true"
                             id="kt_menu_6244767c88d27">
-                            
+
                             <div class="px-7 py-5">
                                 <div class="fs-5 text-dark fw-bolder">Filter Options</div>
                             </div>
-                            
-                            
+
+
                             <div class="separator border-gray-200"></div>
-                            
-                            
+
+
                             <div class="px-7 py-5">
-                                
+
                                 <div class="mb-10">
-                                    
+
                                     <label class="form-label fw-bold">Status:</label>
-                                    
-                                    
+
+
                                     <div>
                                         <select class="form-select form-select-solid" data-kt-select2="true"
                                             data-placeholder="Select option"
@@ -274,216 +273,216 @@
                                             <option value="2">Rejected</option>
                                         </select>
                                     </div>
-                                    
+
                                 </div>
-                                
-                                
+
+
                                 <div class="mb-10">
-                                    
+
                                     <label class="form-label fw-bold">Member Type:</label>
-                                    
-                                    
+
+
                                     <div class="d-flex">
-                                        
+
                                         <label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5">
                                             <input class="form-check-input" type="checkbox" value="1" />
                                             <span class="form-check-label">Author</span>
                                         </label>
-                                        
-                                        
+
+
                                         <label class="form-check form-check-sm form-check-custom form-check-solid">
                                             <input class="form-check-input" type="checkbox" value="2"
                                                 checked="checked" />
                                             <span class="form-check-label">Customer</span>
                                         </label>
-                                        
+
                                     </div>
-                                    
+
                                 </div>
-                                
-                                
+
+
                                 <div class="mb-10">
-                                    
+
                                     <label class="form-label fw-bold">Notifications:</label>
-                                    
-                                    
+
+
                                     <div
                                         class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
                                         <input class="form-check-input" type="checkbox" value=""
                                             name="notifications" checked="checked" />
                                         <label class="form-check-label">Enabled</label>
                                     </div>
-                                    
+
                                 </div>
-                                
-                                
+
+
                                 <div class="d-flex justify-content-end">
                                     <button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2"
                                         data-kt-menu-dismiss="true">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-primary"
                                         data-kt-menu-dismiss="true">Apply</button>
                                 </div>
-                                
+
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                     </div>
                 </div>
-                
-                
+
+
                 <div class="card-body pt-5">
-                    
+
                     <div class="timeline-label">
-                        
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">08:42</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-warning fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="fw-mormal timeline-content text-muted ps-3">Outlines keep you honest. And keep
                                 structure</div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">10:00</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-success fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content d-flex">
                                 <span class="fw-bolder text-gray-800 ps-3">AEOL meeting</span>
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">14:37</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-danger fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-bolder text-gray-800 ps-3">Make deposit
                                 <a href="#" class="text-primary">USD 700</a>. to ESL
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">16:50</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-primary fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-mormal text-muted ps-3">Indulging in poorly driving and
                                 keep structure keep great</div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">21:03</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-danger fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-bold text-gray-800 ps-3">New order placed
                                 <a href="#" class="text-primary">#XF-2356</a>.
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">16:50</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-primary fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-mormal text-muted ps-3">Indulging in poorly driving and
                                 keep structure keep great</div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">21:03</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-danger fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-bold text-gray-800 ps-3">New order placed
                                 <a href="#" class="text-primary">#XF-2356</a>.
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="timeline-item mb-9">
-                            
+
                             <div class="timeline-label fw-bolder text-gray-800 fs-6">10:30</div>
-                            
-                            
+
+
                             <div class="timeline-badge">
                                 <i class="fa fa-genderless text-success fs-1"></i>
                             </div>
-                            
-                            
+
+
                             <div class="timeline-content fw-mormal text-muted ps-3">Finance KPI Mobile app launch
                                 preparion meeting</div>
-                            
+
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
-                
+
             </div>
-            
+
         </div>
-        
-        
-        <div class="col-xl-4">
-            
+
+
+        <div class="col-lg-4">
+
             <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                
+
                 <div class="card-body d-flex flex-column p-0">
-                    
+
                     <div class="flex-grow-1 card-p pb-0">
                         <div class="d-flex flex-stack flex-wrap">
                             <div class="me-2">
@@ -494,20 +493,20 @@
                             <div class="fw-bolder fs-3 text-primary">$24,500</div>
                         </div>
                     </div>
-                    
-                    
+
+
                     <div class="mixed-widget-7-chart card-rounded-bottom" data-kt-chart-color="primary"
                         style="height: 150px"></div>
-                    
+
                 </div>
-                
+
             </div>
-            
-            
+
+
             <div class="card card-xl-stretch-50 mb-5 mb-xl-8">
-                
+
                 <div class="card-body p-0 d-flex justify-content-between flex-column overflow-hidden">
-                    
+
                     <div class="d-flex flex-stack flex-wrap flex-grow-1 px-9 pt-9 pb-3">
                         <div class="me-2">
                             <span class="fw-bolder text-gray-800 d-block fs-3">Sales</span>
@@ -515,16 +514,146 @@
                         </div>
                         <div class="fw-bolder fs-3 text-primary">$15,300</div>
                     </div>
-                    
-                    
+
+
                     <div class="mixed-widget-10-chart" data-kt-color="primary" style="height: 175px"></div>
-                    
+
                 </div>
             </div>
-            
-        </div>
-        
-    </div>
 
+        </div>
+
+    </div>
+</x-admin-app-layout> --}}
+
+
+<x-admin-app-layout :title="'Admin Dashboard'">
+
+    <div class="row">
+        {{-- LEFT: KPI WIDGETS --}}
+        <div class="col-lg-8">
+
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <div class="card-header align-items-center">
+                    <h3 class="card-title fw-bold">Quick Overview</h3>
+                </div>
+
+                <div class="card-body">
+                    @if ($widgets->count() == 0)
+                        <div class="text-muted">No dashboard widgets available for your permissions.</div>
+                    @else
+                        <div class="row g-5">
+                            @foreach ($widgets as $w)
+                                <div class="col-md-6 col-lg-4">
+                                    <a href="{{ $w['route'] ?? '#' }}"
+                                        class="card {{ $w['bg'] ?? 'bg-light' }} hoverable card-xl-stretch">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i
+                                                    class="{{ $w['icon'] ?? 'fa-solid fa-chart-simple fs-2' }} {{ $w['text'] ?? '' }} me-3"></i>
+                                                <div class="fw-bold fs-4 text-gray-800">{{ $w['title'] }}</div>
+                                            </div>
+
+                                            <div class="fw-bolder fs-1 {{ $w['text'] ?? '' }}">{{ $w['value'] }}</div>
+                                            <div class="text-muted fw-semibold mt-1">{{ $w['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+
+            {{-- OPTIONAL: Quick Links --}}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title fw-bold">Quick Actions</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3">
+
+                        @can('manage homepage')
+                            <a href="{{ route('admin.homepage.builder.edit') }}" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-house me-2"></i> Manage Homepage
+                            </a>
+                        @endcan
+
+                        @can('manage academic sites')
+                            <a href="{{ route('admin.academic.sites.index') }}" class="btn btn-sm btn-info">
+                                <i class="fa-solid fa-sitemap me-2"></i> Academic Sites & Nav
+                            </a>
+                        @endcan
+
+                        @can('view academic pages')
+                            <a href="{{ route('admin.academic.pages.index') }}" class="btn btn-sm btn-success">
+                                <i class="fa-solid fa-file-lines me-2"></i> Academic Pages
+                            </a>
+                        @endcan
+
+                        @can('view academic staff')
+                            <a href="{{ route('admin.academic.staff.index') }}" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-users me-2"></i> Departments & Staff
+                            </a>
+                        @endcan
+
+                        @can('view notice')
+                            <a href="{{ route('admin.notice.index') }}" class="btn btn-sm btn-danger">
+                                <i class="fa-solid fa-bullhorn me-2"></i> Notices
+                            </a>
+                        @endcan
+
+                        @can('view news')
+                            <a href="{{ route('admin.news.index') }}" class="btn btn-sm btn-secondary">
+                                <i class="fa-solid fa-newspaper me-2"></i> News
+                            </a>
+                        @endcan
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- RIGHT: ACTIVITIES TIMELINE --}}
+        <div class="col-lg-4">
+
+            <div class="card card-xl-stretch">
+                <div class="card-header align-items-center">
+                    <h3 class="card-title fw-bold">Recent Activities</h3>
+                </div>
+
+                <div class="card-body pt-4">
+                    @if ($activities->count() == 0)
+                        <div class="text-muted">No recent activities found.</div>
+                    @else
+                        <div class="timeline-label">
+                            @foreach ($activities as $a)
+                                <div class="timeline-item">
+                                    <div class="timeline-label fw-bold text-gray-800 fs-6">{{ $a['time'] ?? '--:--' }}
+                                    </div>
+
+                                    <div class="timeline-badge">
+                                        @php
+                                            $color = $a['type'] ?? 'primary';
+                                        @endphp
+                                        <i class="fa fa-genderless text-{{ $color }} fs-1"></i>
+                                    </div>
+
+                                    <div class="timeline-content text-muted ps-3">
+                                        {{ $a['text'] ?? '' }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 
 </x-admin-app-layout>
