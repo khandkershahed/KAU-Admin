@@ -102,9 +102,9 @@
                                                                 <span
                                                                     class="badge bg-secondary ms-2">{{ ucfirst($site->status) }}</span>
                                                             @endif
-                                                            <div class="small text-muted">
+                                                            {{-- <div class="small text-muted">
                                                                 Slug: <code>{{ $site->slug }}</code>
-                                                            </div>
+                                                            </div> --}}
                                                         </div>
                                                     </div>
 

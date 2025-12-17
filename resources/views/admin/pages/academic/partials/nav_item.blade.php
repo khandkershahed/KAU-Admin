@@ -18,7 +18,7 @@
                 @endif
             </span>
 
-            <div class="small text-muted">
+            {{-- <div class="small text-muted">
                 slug: <code>{{ $item->slug }}</code>
                 @if ($item->menu_key)
                     &nbsp; | key: <code>{{ $item->menu_key }}</code>
@@ -27,7 +27,7 @@
                 @if ($item->type === 'external' && $item->external_url)
                     &nbsp; → <span>{{ $item->external_url }}</span>
                 @endif
-            </div>
+            </div> --}}
         </div>
     </div>
 

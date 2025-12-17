@@ -80,36 +80,7 @@ class RolePermissionSeeder extends Seeder
                     'delete academic staff',
                 ],
             ],
-            // [
-            //     'group_name' => 'Banner',
-            //     'permissions' => [
-            //         'view banner',
-            //         'create banner',
-            //         'edit banner',
-            //         'delete banner',
-            //         'toggle banner status',
-            //     ],
-            // ],
-
-            // [
-            //     'group_name' => 'Blog Category',
-            //     'permissions' => [
-            //         'view blog category',
-            //         'create blog category',
-            //         'edit blog category',
-            //         'delete blog category',
-            //     ],
-            // ],
-
-            // [
-            //     'group_name' => 'Blog',
-            //     'permissions' => [
-            //         'view blog',
-            //         'create blog',
-            //         'edit blog',
-            //         'delete blog',
-            //     ],
-            // ],
+            
 
             [
                 'group_name' => 'FAQ',
