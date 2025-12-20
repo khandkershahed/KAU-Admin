@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Terms extends Model
 {
-    use HasFactory, HasSlug;
-    protected $slugSourceColumn = 'name';
+    use HasFactory;
+    // protected $slugSourceColumn = 'name';
     /**
      * The attributes that aren't mass assignable.
      *

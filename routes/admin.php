@@ -95,13 +95,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::resources(
         [
             'banner'         => PageBannerController::class,
-            'blog-category'  => BlogCategoryController::class,
-            'blog-post'      => BlogPostController::class,
             'contact'        => ContactController::class,
             'subscription'   => SubscriptionController::class,
-            'faq'            => FaqController::class,
-            'terms'          => TermsController::class,
-            'privacy'        => PrivacyController::class,
             'staff'          => StaffController::class,
             'user'           => UserManagementController::class,
             'roles'          => RoleController::class,
@@ -320,6 +315,25 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
         // status toggle (active/inactive) without reload
         Route::post('/{popup}/toggle-status', [HomePopupController::class, 'toggleStatus'])->name('toggle_status');
+    });
+
+    Route::prefix('terms')->name('terms.')->group(function () {
+        Route::get('/', [TermsController::class, 'index'])->name('index');
+        Route::post('/store', [TermsController::class, 'store'])->name('store');
+        Route::put('/{term}/update', [TermsController::class, 'update'])->name('update');
+        Route::delete('/{term}/delete', [TermsController::class, 'destroy'])->name('destroy');
+
+        // status toggle (active/inactive) without reload
+        Route::post('/{term}/toggle-status', [TermsController::class, 'toggleStatus'])->name('toggle-status');
+    });
+    Route::prefix('privacy')->name('privacy.')->group(function () {
+        Route::get('/', [PrivacyController::class, 'index'])->name('index');
+        Route::post('/store', [PrivacyController::class, 'store'])->name('store');
+        Route::put('/{privacy}/update', [PrivacyController::class, 'update'])->name('update');
+        Route::delete('/{privacy}/delete', [PrivacyController::class, 'destroy'])->name('destroy');
+
+        // status toggle (active/inactive) without reload
+        Route::post('/{privacy}/toggle-status', [PrivacyController::class, 'toggleStatus'])->name('toggle-status');
     });
 
 

@@ -86,4 +86,7 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);
 
     Route::get('/home-popup', [HomeApiController::class, 'homePopup']);
+    Route::get('/faqs', [HomeApiController::class, 'faqs']);
+    Route::get('/policy', [HomeApiController::class, 'policy']);
+    Route::get('/terms', [HomeApiController::class, 'terms']);
 });

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Frontend\Api;
 
 
+use App\Models\Faq;
 use App\Models\News;
 use App\Models\Event;
+use App\Models\Terms;
 use App\Models\Notice;
 use App\Models\Contact;
+use App\Models\Privacy;
 use App\Models\Setting;
 use App\Models\Category;
 use App\Models\Homepage;
@@ -1025,6 +1028,64 @@ class HomeApiController extends Controller
             'content'      => $popup->content,
             'button_name'  => $popup->button_name,
             'button_link'  => $popup->button_link,
+        ]);
+    }
+
+    // faqs grouped by category
+    public function faqs()
+    {
+        $faqs = Faq::where('status', 'published')
+            ->orderBy('category')
+            ->orderBy('position')
+            ->get()
+            ->groupBy('category')
+            ->map(function ($items, $category) {
+                return [
+                    'category' => $category,
+                    'faqs'     => $items->map(function ($item) {
+                        return [
+                            'question' => $item->question,
+                            'answer'   => $item->answer,
+                            'position' => (int) $item->position,
+                        ];
+                    })->values(),
+                ];
+            })->values();
+        return response()->json([
+            'success' => true,
+            'data'    => $faqs,
+        ]);
+    }
+
+    public function policy()
+    {
+        $privacy = Privacy::where('status', 'active')->first();
+
+        if (!$privacy) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'title'       => $privacy->title,
+            'content'     => $privacy->content,
+            'effective_date' => $privacy->effective_date,
+            'expiration_date' => $privacy->expiration_date,
+        ]);
+    }
+
+    public function terms()
+    {
+        $terms = Terms::where('status', 'active')->first();
+
+        if (!$terms) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'title'       => $terms->title,
+            'content'     => $terms->content,
+            'effective_date' => $terms->effective_date,
+            'expiration_date' => $terms->expiration_date,
         ]);
     }
 }

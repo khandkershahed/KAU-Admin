@@ -3,71 +3,131 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Privacy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PrivacyController extends Controller
 {
     public function __construct()
-{
-    $this->middleware('permission:view privacy')->only(['index']);
-    $this->middleware('permission:create privacy')->only(['create', 'store']);
-    $this->middleware('permission:edit privacy')->only(['edit', 'update']);
-    $this->middleware('permission:delete privacy')->only(['destroy']);
-}
+    {
+        $this->middleware('permission:view privacy')->only(['index']);
+        $this->middleware('permission:create privacy')->only(['store']);
+        $this->middleware('permission:edit privacy')->only(['update', 'toggleStatus']);
+        $this->middleware('permission:delete privacy')->only(['destroy']);
+    }
 
     /**
-     * Display a listing of the resource.
+     * Show privacy list (modal-based CRUD)
      */
     public function index()
     {
-        //
+        $privacies = Privacy::latest()->get(); // modal UI → no pagination
+        return view('admin.pages.privacies.index', compact('privacies'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store new privacy policy
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title'            => 'nullable|string|max:255',
+            'content'          => 'nullable|string',
+            'version'          => 'nullable|string|max:50',
+            'effective_date'   => 'nullable|date',
+            'expiration_date'  => 'nullable|date|after_or_equal:effective_date',
+            'status'           => 'required|in:active,inactive',
+        ]);
+
+        // Only one active privacy at a time
+        if ($request->status === 'active') {
+            Privacy::where('status', 'active')->update(['status' => 'inactive']);
+        }
+
+        Privacy::create([
+            'title'           => $request->title,
+            'content'         => $request->content,
+            'version'         => $request->version,
+            'effective_date'  => $request->effective_date,
+            'expiration_date' => $request->expiration_date,
+            'status'          => $request->status,
+            'created_by'      => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('admin.privacies.index')
+            ->with('success', 'Privacy policy created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Update privacy policy
      */
-    public function show(string $id)
+    public function update(Request $request, Privacy $privacy)
     {
-        //
+        $request->validate([
+            'title'            => 'nullable|string|max:255',
+            'content'          => 'nullable|string',
+            'version'          => 'nullable|string|max:50',
+            'effective_date'   => 'nullable|date',
+            'expiration_date'  => 'nullable|date|after_or_equal:effective_date',
+            'status'           => 'required|in:active,inactive',
+        ]);
+
+        // Only one active privacy at a time
+        if ($request->status === 'active') {
+            Privacy::where('id', '!=', $privacy->id)
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
+        }
+
+        $privacy->update([
+            'title'           => $request->title,
+            'content'         => $request->content,
+            'version'         => $request->version,
+            'effective_date'  => $request->effective_date,
+            'expiration_date' => $request->expiration_date,
+            'status'          => $request->status,
+            'updated_by'      => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('admin.privacies.index')
+            ->with('success', 'Privacy policy updated successfully.');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Delete privacy policy
      */
-    public function edit(string $id)
+    public function destroy(Privacy $privacy)
     {
-        //
+        $privacy->delete();
+
+        return redirect()
+            ->route('admin.privacies.index')
+            ->with('success', 'Privacy policy deleted successfully.');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Toggle status (AJAX – index blade)
      */
-    public function update(Request $request, string $id)
+    public function toggleStatus(Privacy $privacy)
     {
-        //
-    }
+        $privacy->status = $privacy->status === 'active' ? 'inactive' : 'active';
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Only one active privacy at a time
+        if ($privacy->status === 'active') {
+            Privacy::where('id', '!=', $privacy->id)
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
+        }
+
+        $privacy->save();
+
+        return response()->json([
+            'status'     => true,
+            'message'    => 'Status updated successfully.',
+            'new_status' => $privacy->status,
+        ]);
     }
 }
