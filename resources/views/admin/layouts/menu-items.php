@@ -18,6 +18,7 @@ return [
         'icon' => 'fa-solid fa-house fs-3',
         'routes' => [
             'admin.homepage.builder.edit',
+            'admin.home_popups.index',
         ],
         'subMenu' => [
             [
