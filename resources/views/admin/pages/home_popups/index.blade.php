@@ -55,7 +55,7 @@
                     <tbody>
                         @forelse ($popups as $popup)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $loop->iteration }}.</td>
 
                                 <td>{{ $popup->title }}</td>
 
