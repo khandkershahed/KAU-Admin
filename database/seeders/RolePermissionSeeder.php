@@ -29,6 +29,12 @@ class RolePermissionSeeder extends Seeder
                 ],
             ],
             [
+                'group_name' => 'Manage Home Popup',
+                'permissions' => [
+                    'manage home popup'
+                ],
+            ],
+            [
                 'group_name' => 'Manage About Page',
                 'permissions' => [
                     'view about page',
@@ -80,7 +86,7 @@ class RolePermissionSeeder extends Seeder
                     'delete academic staff',
                 ],
             ],
-            
+
 
             [
                 'group_name' => 'FAQ',

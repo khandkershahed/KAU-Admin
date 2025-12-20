@@ -30,7 +30,7 @@ return [
             ],
             [
                 'title'      => 'Home Popups',
-                'permission' => 'manage homepage',
+                'permission' => 'manage home popup',
                 'routes'     => [
                     'admin.home_popups.index',
                 ],

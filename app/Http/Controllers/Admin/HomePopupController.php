@@ -12,8 +12,8 @@ class HomePopupController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage homepage')->only(['index']);
-        $this->middleware('permission:manage homepage')->only(['store', 'update', 'destroy', 'toggleStatus']);
+        $this->middleware('permission:manage home popup')->only(['index']);
+        $this->middleware('permission:manage home popup')->only(['store', 'update', 'destroy', 'toggleStatus']);
     }
 
     public function index()
