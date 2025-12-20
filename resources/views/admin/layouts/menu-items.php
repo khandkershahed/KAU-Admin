@@ -19,7 +19,24 @@ return [
         'routes' => [
             'admin.homepage.builder.edit',
         ],
-        'route' => 'admin.homepage.builder.edit'
+        'subMenu' => [
+            [
+                'title'      => 'Home Page',
+                'permission' => 'manage homepage',
+                'routes'     => [
+                    'admin.homepage.builder.edit',
+                ],
+                'route'      => 'admin.homepage.builder.edit',
+            ],
+            [
+                'title'      => 'Home Popups',
+                'permission' => 'manage homepage',
+                'routes'     => [
+                    'admin.home_popups.index',
+                ],
+                'route'      => 'admin.home_popups.index',
+            ],
+        ],
 
     ],
     [

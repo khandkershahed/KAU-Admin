@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HomePopupController;
 use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\Api\HomeApiController;
@@ -26,7 +27,6 @@ Route::prefix('api/v1')->group(function () {
         Route::post('/change-password', [UserApiController::class, 'changePassword']);
         Route::delete('/delete-account', [UserApiController::class, 'deleteAccount']);
     });
-
 });
 
 Route::prefix('api/v1')->group(function () {
@@ -85,4 +85,5 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/admissions', [HomeApiController::class, 'admissionMenu']);
     Route::get('/admissions/{slug}', [HomeApiController::class, 'admissionDetails']);
 
+    Route::get('/home-popup', [HomeApiController::class, 'homePopup']);
 });

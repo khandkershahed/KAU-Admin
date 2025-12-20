@@ -13,6 +13,7 @@ use App\Models\Homepage;
 use App\Models\AboutPage;
 use App\Models\Admission;
 use App\Models\EventType;
+use App\Models\HomePopup;
 use App\Models\AdminGroup;
 use App\Models\AdminOffice;
 use Illuminate\Http\Request;
@@ -1009,5 +1010,25 @@ class HomeApiController extends Controller
         });
 
         return response()->json($result);
+    }
+
+    public function homePopup()
+    {
+        $popup = HomePopup::where('status', 'active')->first();
+
+        if (!$popup) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'title'        => $popup->title,
+            'slug'         => $popup->slug,
+            'content'      => $popup->content,
+            'badge'        => $popup->badge,
+            'button_name'  => $popup->button_name,
+            'button_link'  => $popup->button_link,
+            'image'        => $popup->image ? asset('storage/' . $popup->image) : null,
+            'image_url'    => $popup->image_url,
+        ]);
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\HomepageController;
 use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Admin\AdmissionController;
+use App\Http\Controllers\Admin\HomePopupController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\AcademicNavController;
@@ -311,7 +312,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
 
+    Route::prefix('home-popups')->name('home_popups.')->group(function () {
+        Route::get('/', [HomePopupController::class, 'index'])->name('index');
+        Route::post('/store', [HomePopupController::class, 'store'])->name('store');
+        Route::put('/{popup}/update', [HomePopupController::class, 'update'])->name('update');
+        Route::delete('/{popup}/delete', [HomePopupController::class, 'destroy'])->name('destroy');
 
+        // status toggle (active/inactive) without reload
+        Route::post('/{popup}/toggle-status', [HomePopupController::class, 'toggleStatus'])->name('toggle_status');
+    });
 
 
 

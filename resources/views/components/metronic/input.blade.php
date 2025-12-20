@@ -12,7 +12,7 @@
 
 
 @php
-    $inputClasses = 'form-control rounded-1';
+    $inputClasses = 'form-control form-control-sm';
     if ($error) {
         $inputClasses .= ' is-invalid';
     }
