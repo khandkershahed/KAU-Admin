@@ -23,7 +23,7 @@ class PrivacyController extends Controller
     public function index()
     {
         $privacies = Privacy::latest()->get(); // modal UI → no pagination
-        return view('admin.pages.privacy.index', compact('privacies'));
+        return view('admin.pages.privacies.index', compact('privacies'));
     }
 
     /**
