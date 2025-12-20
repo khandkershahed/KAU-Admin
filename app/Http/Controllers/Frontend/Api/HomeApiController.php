@@ -1022,13 +1022,9 @@ class HomeApiController extends Controller
 
         return response()->json([
             'title'        => $popup->title,
-            'slug'         => $popup->slug,
             'content'      => $popup->content,
-            'badge'        => $popup->badge,
             'button_name'  => $popup->button_name,
             'button_link'  => $popup->button_link,
-            'image'        => $popup->image ? asset('storage/' . $popup->image) : null,
-            'image_url'    => $popup->image_url,
         ]);
     }
 }
