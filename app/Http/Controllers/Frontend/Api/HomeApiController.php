@@ -1034,7 +1034,7 @@ class HomeApiController extends Controller
     // faqs grouped by category
     public function faqs()
     {
-        $faqs = Faq::where('status', 'published')
+        $faqs = Faq::where('status', 'active')
             ->orderBy('category')
             ->orderBy('order')
             ->get()
