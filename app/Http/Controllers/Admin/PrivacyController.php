@@ -23,7 +23,7 @@ class PrivacyController extends Controller
     public function index()
     {
         $privacies = Privacy::latest()->get(); // modal UI → no pagination
-        return view('admin.pages.privacies.index', compact('privacies'));
+        return view('admin.pages.privacy.index', compact('privacies'));
     }
 
     /**
@@ -56,7 +56,7 @@ class PrivacyController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.privacies.index')
+            ->route('admin.privacy.index')
             ->with('success', 'Privacy policy created successfully.');
     }
 
@@ -92,7 +92,7 @@ class PrivacyController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.privacies.index')
+            ->route('admin.privacy.index')
             ->with('success', 'Privacy policy updated successfully.');
     }
 
@@ -104,7 +104,7 @@ class PrivacyController extends Controller
         $privacy->delete();
 
         return redirect()
-            ->route('admin.privacies.index')
+            ->route('admin.privacy.index')
             ->with('success', 'Privacy policy deleted successfully.');
     }
 
