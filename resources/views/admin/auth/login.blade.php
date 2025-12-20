@@ -1,4 +1,17 @@
 <x-admin-guest-layout>
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: @json($errors->first()),
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>
+    @endif
+
     <div class="d-flex flex-column flex-lg-row flex-column-fluid">
 
         <div class="d-flex flex-column flex-lg-row-auto w-xl-600px positon-xl-relative" style="background-color: #d5d0c8">
@@ -35,7 +48,8 @@
                         @csrf
 
                         <div class="text-center mb-10">
-                            <h1 class="text-dark mb-3">Sign In to {{ optional($setting)->website_name ?? config('app.name') }}</h1>
+                            <h1 class="text-dark mb-3">Sign In to
+                                {{ optional($setting)->website_name ?? config('app.name') }}</h1>
                             {{-- <div class="text-gray-400 fw-bold fs-4">New Here?
                                 <a href="{{ route('register') }}" class="link-primary fw-bolder">Create an Account</a>
                             </div> --}}
@@ -45,9 +59,8 @@
                             <x-metronic.label
                                 class="form-label fs-6 fw-bolder text-dark">{{ __('Email') }}</x-metronic.label>
 
-                            <x-metronic.input type="email" name="email"
-                                class="form-control form-control-sm" :value="old('email')"
-                                autocomplete="off" required autofocus />
+                            <x-metronic.input type="email" name="email" class="form-control form-control-sm"
+                                :value="old('email')" autocomplete="off" required autofocus />
                         </div>
 
                         <div class="fv-row mb-10">
@@ -64,8 +77,7 @@
 
                             <div class="position-relative">
                                 <x-metronic.input type="password" name="password" id="passwordField"
-                                    class="form-control  form-control-sm" autocomplete="off"
-                                    required />
+                                    class="form-control  form-control-sm" autocomplete="off" required />
 
                                 <button type="button"
                                     class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"

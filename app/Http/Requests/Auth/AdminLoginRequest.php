@@ -39,39 +39,84 @@ class AdminLoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+    // public function authenticate(): void
+    // {
+    //     // $this->ensureIsNotRateLimited();
+
+    //     // if (! Auth::guard('admin')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+    //     //     RateLimiter::hit($this->throttleKey());
+
+    //     //     throw ValidationException::withMessages([
+    //     //         'email' => trans('auth.failed'),
+    //     //     ]);
+    //     // }
+
+    //     // RateLimiter::clear($this->throttleKey());
+    //     $this->ensureIsNotRateLimited();
+    //     $email = $this->string('email');
+    //     $password = $this->string('password');
+    //     $hash_password = Hash::make($password);
+    //     $remember = $this->boolean('remember');
+    //     if (!Auth::guard('admin')->attempt(['email' => $email, 'password' => $password], $remember)) {
+    //         RateLimiter::hit($this->throttleKey());
+
+    //         if (!Admin::where('email', $email)->exists()) {
+    //             $error['email'] = trans('Email ID is not correct');
+    //         } else if (!Admin::where('password', $hash_password)->exists()) {
+    //             $error['password'] = trans('Password is not correct');
+    //         }
+
+    //         throw ValidationException::withMessages($error);
+    //     }
+
+    //     RateLimiter::clear($this->throttleKey());
+
+    // }
+
     public function authenticate(): void
     {
-        // $this->ensureIsNotRateLimited();
-
-        // if (! Auth::guard('admin')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-        //     RateLimiter::hit($this->throttleKey());
-
-        //     throw ValidationException::withMessages([
-        //         'email' => trans('auth.failed'),
-        //     ]);
-        // }
-
-        // RateLimiter::clear($this->throttleKey());
         $this->ensureIsNotRateLimited();
+
         $email = $this->string('email');
         $password = $this->string('password');
-        $hash_password = Hash::make($password);
         $remember = $this->boolean('remember');
-        if (!Auth::guard('admin')->attempt(['email' => $email, 'password' => $password], $remember)) {
+
+        // 🔍 Find admin first
+        $admin = Admin::where('email', $email)->first();
+
+        // ❌ Email not found
+        if (! $admin) {
             RateLimiter::hit($this->throttleKey());
 
-            if (!Admin::where('email', $email)->exists()) {
-                $error['email'] = trans('Email ID is not correct');
-            } else if (!Admin::where('password', $hash_password)->exists()) {
-                $error['password'] = trans('Password is not correct');
-            }
-
-            throw ValidationException::withMessages($error);
+            throw ValidationException::withMessages([
+                'email' => __('These credentials do not match our records.'),
+            ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // ❌ Admin inactive
+        if ($admin->status !== 'active') {
+            RateLimiter::hit($this->throttleKey());
 
+            throw ValidationException::withMessages([
+                'email' => __('Your account is inactive. Please contact the administrator.'),
+            ]);
+        }
+
+        // ❌ Password incorrect
+        if (! Hash::check($password, $admin->password)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => __('The provided password is incorrect.'),
+            ]);
+        }
+
+        // ✅ Attempt login
+        Auth::guard('admin')->login($admin, $remember);
+
+        RateLimiter::clear($this->throttleKey());
     }
+
 
     /**
      * Ensure the login request is not rate limited.
