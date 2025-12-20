@@ -6,6 +6,7 @@
     <div class="card shadow-sm mb-7">
         <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-4">
             <div>
+                {{-- <h3 class="fw-bold mb-1">Staffs ({{ $staffs->count() }})</h3> --}}
                 <h3 class="fw-bold mb-1">Staffs ({{ $staffs->count() }})</h3>
                 <div class="text-muted">Overview of all staffs and assigned roles.</div>
             </div>
