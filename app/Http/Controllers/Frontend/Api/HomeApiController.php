@@ -1036,7 +1036,7 @@ class HomeApiController extends Controller
     {
         $faqs = Faq::where('status', 'published')
             ->orderBy('category')
-            ->orderBy('position')
+            ->orderBy('order')
             ->get()
             ->groupBy('category')
             ->map(function ($items, $category) {
@@ -1046,7 +1046,7 @@ class HomeApiController extends Controller
                         return [
                             'question' => $item->question,
                             'answer'   => $item->answer,
-                            'position' => (int) $item->position,
+                            'order'    => (int) $item->order,
                         ];
                     })->values(),
                 ];
