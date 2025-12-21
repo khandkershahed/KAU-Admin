@@ -1,108 +1,194 @@
-@props(['name', 'id' => null, 'label' => null, 'value' => null, 'rows' => 10])
+@props([
+    'name',
+    'id' => null,
+    'label' => null,
+    'value' => null,
+    'rows' => 10,
+])
+
+@php
+    $editorId = $id ?? $name;
+@endphp
 
 <div class="mb-7">
     @if ($label)
-        <x-metronic.label for="{{ $id ?? $name }}" class="col-form-label fw-bold fs-6">
+        <x-metronic.label for="{{ $editorId }}" class="col-form-label fw-bold fs-6">
             {{ $label }}
         </x-metronic.label>
     @endif
 
-    <textarea id="{{ $id ?? $name }}" name="{{ $name }}" rows="{{ $rows }}"
-        {{ $attributes->merge(['class' => 'form-control tinymce-editor']) }}>{!! old($name, $value) !!}</textarea>
+    <textarea
+        id="{{ $editorId }}"
+        name="{{ $name }}"
+        rows="{{ $rows }}"
+        data-tinymce="1"
+        {{ $attributes->merge(['class' => 'form-control tinymce-editor']) }}
+    >{!! old($name, $value) !!}</textarea>
 </div>
 
 @once
+    @push('styles')
+        <style>
+            /* =========================
+               TinyMCE in Modals Fix Pack
+               ========================= */
+
+            /* Make all TinyMCE popups/menus appear above Bootstrap/Metronic modals */
+            .tox-tinymce-aux,
+            .tox .tox-menu,
+            .tox .tox-pop,
+            .tox .tox-dialog,
+            .tox .tox-dialog-wrap {
+                z-index: 20000 !important;
+                pointer-events: auto !important;
+            }
+
+            /* Fix Insert Table grid stuck at 0x0 (hover/click not detected) */
+            .tox .tox-insert-table-grid,
+            .tox .tox-insert-table-grid__table,
+            .tox .tox-insert-table-grid__cell {
+                pointer-events: auto !important;
+            }
+
+            /* In some templates, dropdown/menu wrappers get pointer-events:none */
+            .tox .tox-menu,
+            .tox .tox-pop {
+                pointer-events: auto !important;
+            }
+        </style>
+    @endpush
+
     @push('scripts')
-        {{-- Self-hosted TinyMCE --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0/tinymce.min.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof tinymce !== 'undefined') {
-                    tinymce.init({
-                        selector: '.tinymce-editor',
+            (function() {
+                function initTinyMceFor(selectorRoot) {
+                    if (typeof tinymce === 'undefined') return;
 
-                        // Force TinyMCE to load its assets from cdnjs, not /admin/assets/...
-                        base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
-                        suffix: '.min',
+                    var root = selectorRoot || document;
+                    var textareas = root.querySelectorAll('textarea.tinymce-editor[data-tinymce="1"]');
 
-                        height: 550,
+                    textareas.forEach(function(el) {
+                        var id = el.getAttribute('id');
+                        if (!id) return;
 
-                        plugins: 'image link media table lists code fullscreen',
+                        // Prevent double init
+                        if (tinymce.get(id)) return;
 
-                        // ✅ Add text color (forecolor) + highlight (backcolor)
-                        toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
+                        tinymce.init({
+                            selector: '#' + CSS.escape(id),
 
-                        menubar: 'file edit view insert format tools table help',
+                            // Force TinyMCE to load its assets from cdnjs, not /admin/assets/...
+                            base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
+                            suffix: '.min',
 
-                        // ✅ Make table insert/grid + row/col tools work reliably
-                        table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
-                        contextmenu: 'table',
+                            height: 550,
 
-                        // ✅ Load your Tailwind compiled CSS into the TinyMCE iframe
-                        // Change this path to your actual compiled Tailwind CSS file:
-                        content_css: [
-                            '{{ asset('css/app.css') }}'
-                        ],
+                            plugins: 'image link media table lists code fullscreen',
 
-                        // ✅ Use Tailwind classes on the editor body (works only if Tailwind is loaded via content_css)
-                        body_class: 'font-sans text-sm',
+                            // ✅ Includes text color and highlight
+                            toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
 
-                        // ✅ Prevent TinyMCE from injecting inline table styles/attributes by default
-                        table_default_attributes: {},
-                        table_default_styles: {},
+                            menubar: 'file edit view insert format tools table help',
 
-                        images_upload_url: '{{ route('admin.editor.upload') }}',
-                        automatic_uploads: true,
+                            // ✅ Table features (row/column etc.)
+                            table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+                            contextmenu: 'link image table',
 
-                        // TinyMCE 6: MUST return a Promise
-                        images_upload_handler: function(blobInfo, progress) {
-                            return new Promise(function(resolve, reject) {
-                                let xhr = new XMLHttpRequest();
-                                xhr.withCredentials = false;
-                                xhr.open('POST', '{{ route('admin.editor.upload') }}');
-                                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                            // ✅ Helps inside modals / overflow containers
+                            fixed_toolbar_container: 'body',
 
-                                xhr.upload.onprogress = function(e) {
-                                    if (e.lengthComputable) {
-                                        progress(e.loaded / e.total * 100);
-                                    }
-                                };
+                            content_style: "body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:14px; }",
 
-                                xhr.onload = function() {
-                                    if (xhr.status < 200 || xhr.status >= 300) {
-                                        reject('HTTP Error: ' + xhr.status);
-                                        return;
-                                    }
+                            images_upload_url: '{{ route('admin.editor.upload') }}',
+                            automatic_uploads: true,
 
-                                    let json;
-                                    try {
-                                        json = JSON.parse(xhr.responseText || '{}');
-                                    } catch (e) {
-                                        reject('Invalid JSON: ' + xhr.responseText);
-                                        return;
-                                    }
+                            // TinyMCE 6: MUST return a Promise
+                            images_upload_handler: function(blobInfo, progress) {
+                                return new Promise(function(resolve, reject) {
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.withCredentials = false;
+                                    xhr.open('POST', '{{ route('admin.editor.upload') }}');
+                                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
-                                    if (!json || typeof json.location !== 'string') {
-                                        reject('Invalid JSON: ' + xhr.responseText);
-                                        return;
-                                    }
+                                    xhr.upload.onprogress = function(e) {
+                                        if (e.lengthComputable) {
+                                            progress(e.loaded / e.total * 100);
+                                        }
+                                    };
 
-                                    resolve(json.location);
-                                };
+                                    xhr.onload = function() {
+                                        if (xhr.status < 200 || xhr.status >= 300) {
+                                            reject('HTTP Error: ' + xhr.status);
+                                            return;
+                                        }
 
-                                xhr.onerror = function() {
-                                    reject('Image upload failed due to a XHR Transport error.');
-                                };
+                                        var json;
+                                        try {
+                                            json = JSON.parse(xhr.responseText || '{}');
+                                        } catch (e) {
+                                            reject('Invalid JSON: ' + xhr.responseText);
+                                            return;
+                                        }
 
-                                let formData = new FormData();
-                                formData.append('file', blobInfo.blob(), blobInfo.filename());
-                                xhr.send(formData);
-                            });
-                        }
+                                        if (!json || typeof json.location !== 'string') {
+                                            reject('Invalid JSON: ' + xhr.responseText);
+                                            return;
+                                        }
+
+                                        resolve(json.location);
+                                    };
+
+                                    xhr.onerror = function() {
+                                        reject('Image upload failed due to a XHR Transport error.');
+                                    };
+
+                                    var formData = new FormData();
+                                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+                                    xhr.send(formData);
+                                });
+                            }
+                        });
                     });
                 }
-            });
+
+                // Init on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    initTinyMceFor(document);
+                });
+
+                // Init when Bootstrap/Metronic modal opens (content becomes interactive)
+                document.addEventListener('shown.bs.modal', function(e) {
+                    initTinyMceFor(e.target);
+                });
+
+                // If content is injected later (AJAX, Livewire, etc.), auto-init new editors
+                // (This is safe because we check tinymce.get(id) before init)
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (!m.addedNodes || !m.addedNodes.length) return;
+
+                        m.addedNodes.forEach(function(node) {
+                            if (!(node instanceof HTMLElement)) return;
+
+                            if (node.matches && node.matches('textarea.tinymce-editor[data-tinymce="1"]')) {
+                                initTinyMceFor(document);
+                                return;
+                            }
+
+                            if (node.querySelector && node.querySelector('textarea.tinymce-editor[data-tinymce="1"]')) {
+                                initTinyMceFor(node);
+                                return;
+                            }
+                        });
+                    });
+                });
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                });
+            })();
         </script>
     @endpush
 @endonce
