@@ -26,7 +26,7 @@ class HomePopupController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title'       => ['nullable', 'string', 'max:100'],
+            'title'       => ['required', 'string', 'max:100'],
             // 'slug'        => ['nullable', 'string', 'max:150', Rule::unique('home_popups', 'slug')],
             'content'     => ['nullable', 'string'],
             'image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -51,7 +51,7 @@ class HomePopupController extends Controller
     public function update(Request $request, HomePopup $popup)
     {
         $data = $request->validate([
-            'title'       => ['nullable', 'string', 'max:245'],
+            'title'       => ['required', 'string', 'max:245'],
             // 'slug'        => ['nullable', 'string', 'max:150', Rule::unique('home_popups', 'slug')->ignore($popup->id)],
             'content'     => ['nullable', 'string'],
             'image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

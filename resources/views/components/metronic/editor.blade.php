@@ -7,7 +7,7 @@
 <div class="mb-7">
     @if ($label)
         <x-metronic.label for="{{ $editorId }}" class="col-form-label fw-bold fs-6">
-            {{ $label }}
+            {{ $label }} (<span class="text-danger">Don't Copy from tailwind based styles</span>)
         </x-metronic.label>
     @endif
 
@@ -33,7 +33,7 @@
                 pointer-events: auto !important;
             }
 
-          
+
             /* Neutralize GLOBAL table/td rules ONLY inside the TinyMCE insert grid */
             .tox .tox-insert-table-grid__table,
             .tox .tox-insert-table-grid__table * {
