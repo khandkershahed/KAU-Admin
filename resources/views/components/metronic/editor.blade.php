@@ -1,10 +1,4 @@
-@props([
-    'name',
-    'id' => null,
-    'label' => null,
-    'value' => null,
-    'rows' => 10,
-])
+@props(['name', 'id' => null, 'label' => null, 'value' => null, 'rows' => 10])
 
 @php
     $editorId = $id ?? $name;
@@ -17,43 +11,50 @@
         </x-metronic.label>
     @endif
 
-    <textarea
-        id="{{ $editorId }}"
-        name="{{ $name }}"
-        rows="{{ $rows }}"
-        data-tinymce="1"
-        {{ $attributes->merge(['class' => 'form-control tinymce-editor']) }}
-    >{!! old($name, $value) !!}</textarea>
+    <textarea id="{{ $editorId }}" name="{{ $name }}" rows="{{ $rows }}" data-tinymce="1"
+        {{ $attributes->merge(['class' => 'form-control tinymce-editor']) }}>{!! old($name, $value) !!}</textarea>
 </div>
 
 @once
     @push('styles')
         <style>
-            /* =========================
-               TinyMCE in Modals Fix Pack
-               ========================= */
 
-            /* Make all TinyMCE popups/menus appear above Bootstrap/Metronic modals */
             .tox-tinymce-aux,
             .tox .tox-menu,
             .tox .tox-pop,
             .tox .tox-dialog,
             .tox .tox-dialog-wrap {
                 z-index: 20000 !important;
-                pointer-events: auto !important;
             }
 
-            /* Fix Insert Table grid stuck at 0x0 (hover/click not detected) */
+            /* Fix Insert Table grid stuck at 0x0 / clicks not detected */
             .tox .tox-insert-table-grid,
-            .tox .tox-insert-table-grid__table,
-            .tox .tox-insert-table-grid__cell {
+            .tox .tox-insert-table-grid * {
                 pointer-events: auto !important;
             }
 
-            /* In some templates, dropdown/menu wrappers get pointer-events:none */
-            .tox .tox-menu,
-            .tox .tox-pop {
-                pointer-events: auto !important;
+          
+            /* Neutralize GLOBAL table/td rules ONLY inside the TinyMCE insert grid */
+            .tox .tox-insert-table-grid__table,
+            .tox .tox-insert-table-grid__table * {
+                all: unset;
+            }
+
+            /* Re-apply only the necessary layout so TinyMCE can measure hover */
+            .tox .tox-insert-table-grid__table {
+                display: table !important;
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                table-layout: fixed !important;
+            }
+
+            .tox .tox-insert-table-grid__row {
+                display: table-row !important;
+            }
+
+            .tox .tox-insert-table-grid__cell {
+                display: table-cell !important;
+                box-sizing: border-box !important;
             }
         </style>
     @endpush
@@ -141,11 +142,14 @@
                                     };
 
                                     xhr.onerror = function() {
-                                        reject('Image upload failed due to a XHR Transport error.');
+                                        reject(
+                                            'Image upload failed due to a XHR Transport error.'
+                                            );
                                     };
 
                                     var formData = new FormData();
-                                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+                                    formData.append('file', blobInfo.blob(), blobInfo
+                                        .filename());
                                     xhr.send(formData);
                                 });
                             }
@@ -172,12 +176,14 @@
                         m.addedNodes.forEach(function(node) {
                             if (!(node instanceof HTMLElement)) return;
 
-                            if (node.matches && node.matches('textarea.tinymce-editor[data-tinymce="1"]')) {
+                            if (node.matches && node.matches(
+                                    'textarea.tinymce-editor[data-tinymce="1"]')) {
                                 initTinyMceFor(document);
                                 return;
                             }
 
-                            if (node.querySelector && node.querySelector('textarea.tinymce-editor[data-tinymce="1"]')) {
+                            if (node.querySelector && node.querySelector(
+                                    'textarea.tinymce-editor[data-tinymce="1"]')) {
                                 initTinyMceFor(node);
                                 return;
                             }
@@ -186,7 +192,10 @@
                 });
 
                 document.addEventListener('DOMContentLoaded', function() {
-                    observer.observe(document.body, { childList: true, subtree: true });
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
                 });
             })();
         </script>
