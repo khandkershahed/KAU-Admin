@@ -18,17 +18,17 @@
                             class="form-control form-control-sm" required>
                     </div>
 
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <x-metronic.label>Slug (optional)</x-metronic.label>
                         <input type="text" name="slug" value="{{ old('slug', $page->slug) }}"
                             class="form-control form-control-sm">
                         <small class="text-muted">Leave empty to keep current / auto from title.</small>
-                    </div>
+                    </div> --}}
 
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <x-metronic.label>Excerpt</x-metronic.label>
                         <textarea name="excerpt" class="form-control" rows="3">{{ old('excerpt', $page->excerpt) }}</textarea>
-                    </div>
+                    </div> --}}
 
                     <div class="mb-5">
                         <x-metronic.label>Content</x-metronic.label>
@@ -44,7 +44,7 @@
                             class="form-control form-control-sm">
                     </div>
 
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <x-metronic.label>Banner Title</x-metronic.label>
                         <input type="text" name="banner_title" value="{{ old('banner_title', $page->banner_title) }}"
                             class="form-control form-control-sm">
@@ -62,7 +62,7 @@
                         <input type="text" name="banner_icon"
                             value="{{ old('banner_icon', $page->banner_icon ?: 'fa-solid fa-graduation-cap') }}"
                             class="form-control form-control-sm">
-                    </div>
+                    </div> --}}
 
                     <div class="mb-5">
                         <x-metronic.label>Banner Image</x-metronic.label>
@@ -86,7 +86,7 @@
                         </select>
                     </div>
 
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <div class="form-check form-switch form-check-custom form-check-solid">
                             <input class="form-check-input" type="checkbox" value="1" id="is_featured"
                                 name="is_featured" {{ old('is_featured', $page->is_featured) ? 'checked' : '' }}>
@@ -94,7 +94,7 @@
                                 Featured on About page
                             </label>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="mb-5">
                         <x-metronic.label>Meta Title</x-metronic.label>
@@ -104,7 +104,7 @@
 
                     <div class="mb-5">
                         <x-metronic.label>Meta Tags</x-metronic.label>
-                        <input type="text" name="meta_tags" value="{{ old('meta_tags', $page->meta_tags) }}"
+                        <input type="text" name="meta_tags" placeholder="example1,example2,example3,..." value="{{ old('meta_tags', $page->meta_tags) }}"
                             class="form-control form-control-sm">
                     </div>
 

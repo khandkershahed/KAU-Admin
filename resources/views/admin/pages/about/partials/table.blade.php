@@ -54,15 +54,15 @@
 
                     <td class="text-end">
                         @can('edit about page')
-                            <a href="{{ route('admin.about.edit', $page->id) }}" class="btn btn-light-success btn-sm me-2">
-                                <i class="fa-solid fa-pen fs-6"></i>
+                            <a href="{{ route('admin.about.edit', $page->id) }}" class=" me-5">
+                                <i class="fa-solid fa-pen fs-6 text-primary"></i>
                             </a>
                         @endcan
 
                         @can('delete about page')
                             {{-- DELETE pattern as requested --}}
                             <a href="{{ route('admin.about.destroy', $page->id) }}" class="delete">
-                                <i class="fa-solid fa-trash text-danger fs-4"></i>
+                                <i class="fa-solid fa-trash-alt text-danger fs-4"></i>
                             </a>
                         @endcan
                     </td>
