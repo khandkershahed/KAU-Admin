@@ -214,7 +214,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body pt-4 row">
-                                        <div class="col-lg-4 mb-6">
+                                        <div class="col-lg-5 mb-6">
                                             <x-metronic.label for="meta_title"
                                                 class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Title
@@ -223,16 +223,16 @@
                                                 :value="old('meta_title')" />
                                         </div>
 
-                                        <div class="col-lg-4 mb-6">
+                                        <div class="col-lg-7 mb-6">
                                             <x-metronic.label for="meta_tags"
                                                 class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Tags
                                             </x-metronic.label>
                                             <x-metronic.input id="meta_tags" type="text" name="meta_tags"
-                                                :value="old('meta_tags')" placeholder="notice, admission" />
+                                                :value="old('meta_tags')" placeholder="notice, admission,..." />
                                         </div>
 
-                                        <div class="col-lg-4 mb-6">
+                                        <div class="col-lg-12 mb-6">
                                             <x-metronic.label for="meta_description"
                                                 class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Description

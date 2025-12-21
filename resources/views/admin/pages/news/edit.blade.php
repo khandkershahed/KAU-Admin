@@ -118,14 +118,14 @@
                                                     )" />
                                             </div>
 
-                                            <div class="col-lg-3 mb-6">
+                                            {{-- <div class="col-lg-3 mb-6">
                                                 <x-metronic.label for="read_time"
                                                     class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Read Time (min)
                                                 </x-metronic.label>
                                                 <x-metronic.input id="read_time" type="number" name="read_time"
                                                     :value="old('read_time', $news->read_time)" />
-                                            </div>
+                                            </div> --}}
 
                                             <div class="col-lg-6 mb-6">
                                                 <x-metronic.label for="category"

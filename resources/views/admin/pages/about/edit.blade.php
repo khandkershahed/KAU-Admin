@@ -31,7 +31,6 @@
                     </div> --}}
 
                     <div class="mb-5">
-                        <x-metronic.label>Content</x-metronic.label>
                         <x-metronic.editor name="content" label="About Page Content" :value="old('content', $page->content)" rows="12" />
                     </div>
                 </div>
