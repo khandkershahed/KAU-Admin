@@ -34521,7 +34521,11 @@ a:hover {
 }
 
 .nav-line-tabs .nav-item {
-    margin-bottom: -1px
+    border: 1px solid #eee;
+    margin: 5px 10px;
+    padding: 0px 5px;
+    border-bottom: 0px;
+    margin-bottom: -1px;
 }
 
 .nav-line-tabs .nav-item .nav-link {

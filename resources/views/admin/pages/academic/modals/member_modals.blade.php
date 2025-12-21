@@ -539,42 +539,42 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active fw-semibold text-black" data-bs-toggle="tab"
                             href="#create_tab_basic" role="tab">
-                            Basic Info
+                            | Basic Info |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_bio"
                             role="tab">
-                            Bio
+                            | Bio |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_edu_exp"
                             role="tab">
-                            Education + Experience
+                            | Education + Experience |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab"
                             href="#create_tab_scholarship" role="tab">
-                            Scholarship
+                            | Scholarship |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_research"
                             role="tab">
-                            Research
+                            | Research |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_teaching"
                             role="tab">
-                            Teaching
+                           | Teaching |
                         </a>
                     </li>
                 </ul>
@@ -777,42 +777,42 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_basic"
                             role="tab">
-                            Basic Info
+                            | Basic Info |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_bio"
                             role="tab">
-                            Bio
+                            | Bio |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_edu_exp"
                             role="tab">
-                            Education + Experience
+                            | Education + Experience |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_scholarship"
                             role="tab">
-                            Scholarship
+                            | Scholarship |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_research"
                             role="tab">
-                            Research
+                           | Research |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_teaching"
                             role="tab">
-                            Teaching
+                            | Teaching |
                         </a>
                     </li>
                 </ul>
