@@ -523,7 +523,7 @@
 
 {{-- CREATE STAFF MEMBER (FULL SCREEN + TABS) --}}
 <div class="modal fade" id="createStaffMemberModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
         <form class="modal-content" method="POST" enctype="multipart/form-data" id="createStaffMemberForm">
             @csrf
             <input type="hidden" name="staff_section_id" id="createMemberGroupId">
@@ -749,9 +749,9 @@
                     Tip: Use tabs to fill all profile sections.
                 </div>
                 <div>
-                    <button type="button" class="btn btn-outline btn-outline-danger me-7"
+                    <button type="button" class="btn btn-outline btn-outline-danger me-7 rounded-0"
                         data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-outline btn-outline-primary">Create</button>
+                    <button class="btn btn-outline btn-outline-primary rounded-0">Create</button>
                 </div>
             </div>
         </form>
@@ -761,7 +761,7 @@
 
 {{-- EDIT STAFF MEMBER (FULL SCREEN + TABS) --}}
 <div class="modal fade" id="editStaffMemberModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
         <form class="modal-content" method="POST" enctype="multipart/form-data" id="editStaffMemberForm">
             @csrf
             @method('PUT')
@@ -977,11 +977,11 @@
             </div>
 
             <div class="modal-footer d-flex justify-content-end">
-                <button type="button" class="btn btn-outline btn-outline-danger rounded-1 me-7"
+                <button type="button" class="btn btn-outline btn-outline-danger rounded-0 me-7"
                     data-bs-dismiss="modal">
                     Close
                 </button>
-                <button class="btn btn-outline btn-outline-success rounded-1">
+                <button class="btn btn-outline btn-outline-success rounded-0">
                     Update
                 </button>
             </div>
