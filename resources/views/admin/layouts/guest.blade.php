@@ -5,20 +5,21 @@
 
 <head>
     <base href="../../../">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ optional($setting)->website_name ?? config('app.name', 'Laravel') }}</title>
     <meta charset="utf-8" />
-    <meta name="description"
-        content="." />
-    <meta name="keywords"
-        content="" />
+    <meta name="title" content="{{ optional($setting)->meta_title }}" />
+    <meta name="description" content="{{ optional($setting)->meta_description }}" />
+    <meta name="keywords" content="{{ optional($setting)->meta_keyword }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="" />
-    <meta property="og:url" content="" />
-    <meta property="og:site_name" content="" />
-    <link rel="canonical" href="" />
-    <link rel="shortcut icon" href="{{ asset('admin/assets/media/logos/favicon.ico') }}" />
+    <meta property="og:title" content="{{ optional($setting)->meta_title }}" />
+    <meta property="og:url" content="{{ optional($setting)->site_url }}" />
+    <meta property="og:site_name" content="{{ optional($setting)->website_name }}" />
+    <link rel="canonical" href="{{ optional($setting)->site_url }}" />
+    <link rel="shortcut icon"
+        href="{{ !empty(optional($setting)->site_favicon) && file_exists(public_path('storage/' . optional($setting)->site_favicon)) ? asset('storage/' . optional($setting)->site_favicon) : asset('images/favicon.jpg') }}"
+        type="image/x-icon" />
 
     {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" /> --}}
 

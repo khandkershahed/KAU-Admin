@@ -4,8 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="title" content="{{ optional($setting)->meta_title }}" />
+    <meta name="description" content="{{ optional($setting)->meta_description }}" />
+    <meta name="keywords" content="{{ optional($setting)->meta_keyword }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ optional($setting)->meta_title }}" />
+    <meta property="og:url" content="{{ optional($setting)->site_url }}" />
+    <meta property="og:site_name" content="{{ optional($setting)->website_name }}" />
+    <link rel="canonical" href="{{ optional($setting)->site_url }}" />
     <link rel="shortcut icon"
-        href="{{ !empty($setting->site_favicon) && file_exists(public_path('storage/' . $setting->site_favicon)) ? asset('storage/' . $setting->site_favicon) : asset('images/favicon.jpg') }}"
+        href="{{ !empty(optional($setting)->site_favicon) && file_exists(public_path('storage/' . optional($setting)->site_favicon)) ? asset('storage/' . optional($setting)->site_favicon) : asset('images/favicon.jpg') }}"
         type="image/x-icon" />
     {{-- <link rel="stylesheet" href="{{ asset('admin/assets/css/bootstrap_icons.css') }}"> --}}
     {{-- <link rel="stylesheet" href="{{ asset('admin/assets/css/font_awesome_6.css') }}"> --}}
