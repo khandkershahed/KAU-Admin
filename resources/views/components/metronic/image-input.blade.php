@@ -103,7 +103,7 @@
 <div class="drag-image-input" id="{{ $uid }}-wrapper">
 
     {{-- DROPZONE AREA --}}
-    <div class="drag-drop-zone" id="{{ $uid }}-dropzone"
+    <div class="drag-drop-zone ms-7" id="{{ $uid }}-dropzone"
         onclick="document.getElementById('{{ $uid }}').click()">
 
         <div class="preview-area" id="{{ $uid }}-preview" style="background-image: url('{{ $preview }}');">
