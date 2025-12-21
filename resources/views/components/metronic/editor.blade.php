@@ -27,10 +27,30 @@
                         suffix: '.min',
 
                         height: 550,
+
                         plugins: 'image link media table lists code fullscreen',
-                        toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
+
+                        // ✅ Add text color (forecolor) + highlight (backcolor)
+                        toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
+
                         menubar: 'file edit view insert format tools table help',
-                        content_style: "body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:14px; }",
+
+                        // ✅ Make table insert/grid + row/col tools work reliably
+                        table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+                        contextmenu: 'table',
+
+                        // ✅ Load your Tailwind compiled CSS into the TinyMCE iframe
+                        // Change this path to your actual compiled Tailwind CSS file:
+                        content_css: [
+                            '{{ asset('css/app.css') }}'
+                        ],
+
+                        // ✅ Use Tailwind classes on the editor body (works only if Tailwind is loaded via content_css)
+                        body_class: 'font-sans text-sm',
+
+                        // ✅ Prevent TinyMCE from injecting inline table styles/attributes by default
+                        table_default_attributes: {},
+                        table_default_styles: {},
 
                         images_upload_url: '{{ route('admin.editor.upload') }}',
                         automatic_uploads: true,
