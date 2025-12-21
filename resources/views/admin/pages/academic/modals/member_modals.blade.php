@@ -523,7 +523,7 @@
 
 {{-- CREATE STAFF MEMBER (FULL SCREEN + TABS) --}}
 <div class="modal fade" id="createStaffMemberModal" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen">
+    <div class="modal-dialog modal-xl">
         <form class="modal-content" method="POST" enctype="multipart/form-data" id="createStaffMemberForm">
             @csrf
             <input type="hidden" name="staff_section_id" id="createMemberGroupId">
@@ -761,7 +761,7 @@
 
 {{-- EDIT STAFF MEMBER (FULL SCREEN + TABS) --}}
 <div class="modal fade" id="editStaffMemberModal" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen">
+    <div class="modal-dialog modal-xl">
         <form class="modal-content" method="POST" enctype="multipart/form-data" id="editStaffMemberForm">
             @csrf
             @method('PUT')
