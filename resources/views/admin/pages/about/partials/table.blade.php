@@ -5,7 +5,7 @@
                 <th style="width:50px;">Sort</th>
                 <th>Title</th>
                 <th>Slug</th>
-                <th>Featured</th>
+                {{-- <th>Featured</th> --}}
                 <th>Status</th>
                 <th style="width: 140px;" class="text-end">Actions</th>
             </tr>
@@ -20,7 +20,7 @@
                     <td style="cursor: grab;">{{ $page->title }}</td>
                     <td style="cursor: grab;">{{ $page->slug }}</td>
 
-                    <td>
+                    {{-- <td>
                         @can('edit about page')
                             <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input js-about-feature-toggle" type="checkbox"
@@ -34,7 +34,7 @@
                         @else
                             {{ $page->is_featured ? 'Yes' : 'No' }}
                         @endcan
-                    </td>
+                    </td> --}}
 
                     <td>
                         @can('edit about page')
