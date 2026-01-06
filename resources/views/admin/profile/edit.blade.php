@@ -171,48 +171,44 @@
         </div>
 
 
-        <div class="flex-lg-row-fluid ms-lg-15">
+        <div class="flex-lg-row-fluid ms-lg-5">
 
-            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-8">
+            <div class="card p-0 mb-3">
+                <div class="card-body px-2 h-50px d-flex align-items-center">
+                    <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0 fw-bolder" role="tablist">
+                        <li class="nav-item border-0 mb-0" role="presentation">
+                            <a id="User_overview_tab" class="nav-link px-2 py-1 justify-content-center text-active-gray-800 active"
+                                data-bs-toggle="tab" role="tab" href="#overview" aria-selected="true">Overview</a>
+                        </li>
+                        <li class="nav-item border-0 mb-0" role="presentation">
+                            <a id="User_security_tab" class="nav-link px-2 py-1 justify-content-center text-active-gray-800"
+                                data-bs-toggle="tab" role="tab" href="#security" aria-selected="false">Security</a>
+                        </li>
+                        {{-- <li class="nav-item" role="presentation">
+                    <a id="profile_delete_tab" class="nav-link justify-content-center text-active-gray-800"
+                        data-bs-toggle="tab" role="tab" href="#profile_delete" aria-selected="false">Account Deactivate/Delete</a>
+                </li> --}}
+                    </ul>
+                </div>
+            </div>
 
-                <li class="nav-item">
-                    <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
-                        href="#kt_user_view_overview_tab">Overview</a>
-                </li>
-
-
-                <li class="nav-item">
-                    <a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab"
-                        href="#kt_user_view_overview_security">Security</a>
-                </li>
-
-
-                <li class="nav-item">
-                    <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab"
-                        href="#kt_user_view_overview_events_and_logs_tab">Account Deactivate/Delete</a>
-                </li>
-
-
-
-
-            </ul>
 
 
             <div class="tab-content" id="myTabContent">
 
-                <div class="tab-pane fade show active" id="kt_user_view_overview_tab" role="tabpanel">
+                <div class="tab-pane fade show active" id="overview" role="tabpanel">
                     @include('admin.profile.partials.update-profile-information-form')
                 </div>
 
 
-                <div class="tab-pane fade" id="kt_user_view_overview_security" role="tabpanel">
+                <div class="tab-pane fade" id="security" role="tabpanel">
 
                     @include('admin.profile.partials.update-password-form')
 
                 </div>
 
 
-                {{-- <div class="tab-pane fade" id="kt_user_view_overview_events_and_logs_tab" role="tabpanel">
+                {{-- <div class="tab-pane fade" id="profile_delete" role="tabpanel">
 
                     @include('admin.profile.partials.delete-user-form')
 

@@ -1,13 +1,13 @@
 @props([
-    'id' => null,
-    'type' => 'text',
+    'id'          => null,
+    'type'        => 'text',
     'name',
-    'value' => '',
+    'value'       => '',
     'placeholder' => 'Complete the field',
-    'required' => false,
-    'step' => null,
-    'maxlength' => null, // <== make it dynamic
-    'error' => null,
+    'required'    => false,
+    'step'        => null,
+    'maxlength'   => null, // < == make it dynamic
+    'error'       => null,
 ])
 
 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
@@ -19,11 +20,12 @@ class PasswordController extends Controller
             'current_password' => ['required', 'current_password'],
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
+        // validate fail message
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
         ]);
-
+        Session::flash('success', 'Password updated successfully.');
         return back()->with('status', 'password-updated');
     }
 }
