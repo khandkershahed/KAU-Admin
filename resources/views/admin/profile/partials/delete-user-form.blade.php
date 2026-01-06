@@ -42,10 +42,10 @@
             <div class="col-4 d-flex align-items-center">
                 {{-- <x-danger-button x-data=""
                     x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">{{ __('Delete Account') }}</x-danger-button> --}}
-                <a class="delete-account btn btn-danger font-weight-bold mr-2" href="{{ route('admin.profile.destroy') }}"
+                {{-- <a class="delete-account btn btn-danger font-weight-bold mr-2" href="{{ route('admin.profile.destroy') }}"
                 data-check-password-url="{{ route('admin.checkPassword') }}" >
                     {{ __('Delete Account') }}
-                </a>
+                </a> --}}
 
 
             </div>

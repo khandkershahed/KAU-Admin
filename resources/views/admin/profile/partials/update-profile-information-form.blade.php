@@ -6,9 +6,9 @@
         </div>
     </div>
 
-    <form id="send-verification" method="post" action="{{ route('admin.verification.send') }}">
+    {{-- <form id="send-verification" method="post" action="{{ route('admin.verification.send') }}">
         @csrf
-    </form>
+    </form> --}}
 
 
     <form class="form" method="post" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">

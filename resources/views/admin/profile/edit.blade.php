@@ -212,11 +212,11 @@
                 </div>
 
 
-                <div class="tab-pane fade" id="kt_user_view_overview_events_and_logs_tab" role="tabpanel">
+                {{-- <div class="tab-pane fade" id="kt_user_view_overview_events_and_logs_tab" role="tabpanel">
 
                     @include('admin.profile.partials.delete-user-form')
 
-                </div>
+                </div> --}}
 
             </div>
 

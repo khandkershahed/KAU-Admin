@@ -15,10 +15,10 @@ use App\Http\Requests\Admin\AdminProfileUpdateRequest;
 
 class AdminProfileController extends Controller
 {
-    
+
     public function edit(): View
     {
-        return view('admin.pages.profile.edit', [
+        return view('admin.profile.edit', [
             'user' => Auth::guard('admin')->user(),
             'roles' => Role::get(),
         ]);
