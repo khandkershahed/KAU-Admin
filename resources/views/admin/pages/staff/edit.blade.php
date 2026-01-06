@@ -135,7 +135,7 @@
                             class="col-form-label fw-bold fs-6">{{ __('Photo') }}</x-metronic.label>
                         <x-metronic.file-input id="photo" name="photo"></x-metronic.file-input>
 
-                        <img src="{{ !empty($staff->photo) ? url('storage/admin_images/' . $staff->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($staff->name) }}"
+                        <img src="{{ !empty($staff->photo) ? url('storage/' . $staff->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($staff->name) }}"
                             height="80" width="80" alt="{{ $staff->name }}" class="mt-3">
                     </div>
                 </div>
