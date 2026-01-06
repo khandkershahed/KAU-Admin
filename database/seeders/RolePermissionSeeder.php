@@ -291,10 +291,10 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Assign role to default admin
-        $admin = Admin::where('email', 'backend@admin.com')->first();
-        if ($admin) {
-            $admin->assignRole($roleAdmin);
-        }
+        // $admin = Admin::where('email', 'backend@admin.com')->first();
+        // if ($admin) {
+        //     $admin->assignRole($roleAdmin);
+        // }
         $admin = Admin::where('email', 'admin@kau.ac.bd')->first();
         if ($admin) {
             $admin->assignRole($roleAdmin);
