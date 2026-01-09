@@ -16,6 +16,7 @@ class AdminOfficeMember extends Model
         'designation',
         'email',
         'phone',
+        'label',
         'image',
         'type',
         'position'
