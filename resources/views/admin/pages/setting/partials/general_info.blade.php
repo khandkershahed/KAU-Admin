@@ -32,13 +32,13 @@
 
 <div class="row mb-10">
     {{-- Theme Color --}}
-    <div class="col-lg-3 mb-5">
+    <div class="col-lg-4 mb-5">
         <label class="form-label fw-bold">Primary Theme Color</label>
         <x-metronic.color-picker id="themeColor" name="theme_color" :value="old('theme_color', optional($setting)->theme_color)" class="form-control-sm"
             buttonClass="btn-sm" />
 
     </div>
-    <div class="col-lg-3 mb-5">
+    <div class="col-lg-4 mb-5">
         <label class="form-label fw-bold">Secondary Theme Color</label>
         <x-metronic.color-picker id="secondaryThemeColor" name="secondary_theme_color" :value="old('secondary_theme_color', optional($setting)->secondary_theme_color)"
             class="form-control-sm" buttonClass="btn-sm" />
