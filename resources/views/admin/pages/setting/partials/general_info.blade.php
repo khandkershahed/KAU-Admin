@@ -15,7 +15,10 @@
         <label class="form-label fw-bold">Site Title</label>
         <input type="text" name="site_title" class="form-control" value="{{ $setting->site_title }}">
     </div>
-
+    <div class="col-lg-6 mb-5">
+        <label class="form-label fw-bold">Website URL</label>
+        <input type="text" name="website_url" class="form-control" value="{{ $setting->website_url }}">
+    </div>
     {{-- Motto --}}
     <div class="col-lg-12 mb-5">
         <label class="form-label fw-bold">Site Motto</label>
@@ -31,8 +34,8 @@
     </div>
     <div class="col-lg-3 mb-5">
         <label class="form-label fw-bold">Secondary Theme Color</label>
-        <x-metronic.color-picker id="secondaryThemeColor" name="secondary_theme_color" :value="old('secondary_theme_color', optional($setting)->secondary_theme_color)" class="form-control-sm"
-            buttonClass="btn-sm" />
+        <x-metronic.color-picker id="secondaryThemeColor" name="secondary_theme_color" :value="old('secondary_theme_color', optional($setting)->secondary_theme_color)"
+            class="form-control-sm" buttonClass="btn-sm" />
 
     </div>
 
@@ -47,15 +50,13 @@
     </div> --}}
 
     {{-- Website URL --}}
-    <div class="col-lg-4 mb-5">
-        <label class="form-label fw-bold">Website URL</label>
-        <input type="text" name="website_url" class="form-control" value="{{ $setting->website_url }}">
-    </div>
+
 
     {{-- Logos --}}
     <div class="col-md-4 mb-7">
         <div>
-            <x-metronic.label for="siteLogoWhite" class="col-form-label mb-5">Logo (For Black Backgorund)</x-metronic.label>
+            <x-metronic.label for="siteLogoWhite" class="col-form-label mb-5">Logo (For Black
+                Backgorund)</x-metronic.label>
         </div>
         <x-metronic.image-input name="site_logo_white" id="siteLogoWhite" :source="!empty(optional($setting)->site_logo_white)
             ? asset('storage/' . optional($setting)->site_logo_white)
@@ -64,7 +65,8 @@
     </div>
     <div class="col-md-4 mb-7">
         <div>
-            <x-metronic.label for="siteLogoBlack" class="col-form-label mb-5">Logo (For White Backgorund)</x-metronic.label>
+            <x-metronic.label for="siteLogoBlack" class="col-form-label mb-5">Logo (For White
+                Backgorund)</x-metronic.label>
         </div>
         <x-metronic.image-input name="site_logo_black" id="siteLogoBlack" :source="!empty(optional($setting)->site_logo_black)
             ? asset('storage/' . optional($setting)->site_logo_black)
@@ -92,8 +94,9 @@
                     <input type="text" name="emails[{{ $i }}][title]"
                         class="form-control form-control-sm w-40" placeholder="Title"
                         value="{{ $email['title'] ?? '' }}">
-                    <input type="email" name="emails[{{ $i }}][email]" class="form-control form-control-sm w-60"
-                        placeholder="Email" value="{{ $email['email'] ?? '' }}">
+                    <input type="email" name="emails[{{ $i }}][email]"
+                        class="form-control form-control-sm w-60" placeholder="Email"
+                        value="{{ $email['email'] ?? '' }}">
                     <button type="button" class="btn btn-danger btn-sm delete-row-btn">
                         <i class="fas fa-trash-alt"></i>
                     </button>
