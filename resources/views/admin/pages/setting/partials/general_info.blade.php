@@ -9,8 +9,9 @@
         <label class="form-label fw-bold">Website Name Bangla</label>
         <input type="text" name="website_name_bn" class="form-control" value="{{ $setting->website_name_bn }}">
     </div>
-
-    {{-- Site Title --}}
+</div>
+{{-- Site Title --}}
+<div class="row mb-10">
     <div class="col-lg-6 mb-5">
         <label class="form-label fw-bold">Site Title</label>
         <input type="text" name="site_title" class="form-control" value="{{ $setting->site_title }}">
@@ -19,12 +20,17 @@
         <label class="form-label fw-bold">Website URL</label>
         <input type="text" name="website_url" class="form-control" value="{{ $setting->website_url }}">
     </div>
+</div>
+
+<div class="row mb-10">
     {{-- Motto --}}
     <div class="col-lg-12 mb-5">
         <label class="form-label fw-bold">Site Motto</label>
         <textarea name="site_motto" rows="2" class="form-control">{{ $setting->site_motto }}</textarea>
     </div>
+</div>
 
+<div class="row mb-10">
     {{-- Theme Color --}}
     <div class="col-lg-3 mb-5">
         <label class="form-label fw-bold">Primary Theme Color</label>
@@ -38,9 +44,10 @@
             class="form-control-sm" buttonClass="btn-sm" />
 
     </div>
+</div>
 
-    {{-- Dark Mode --}}
-    {{-- <div class="col-lg-4 mb-5">
+{{-- Dark Mode --}}
+{{-- <div class="col-lg-4 mb-5">
         <label class="form-label fw-bold d-block">Dark Mode</label>
 
         <div class="form-check form-switch form-check-custom form-check-solid">
@@ -49,9 +56,10 @@
         </div>
     </div> --}}
 
-    {{-- Website URL --}}
+{{-- Website URL --}}
 
 
+<div class="row mb-10">
     {{-- Logos --}}
     <div class="col-md-4 mb-7">
         <div>

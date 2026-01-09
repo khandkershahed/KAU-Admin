@@ -35,7 +35,7 @@
 
     <div id="contactPersonRepeater" class="repeater-wrapper" data-field="contact_person">
         @foreach ($setting->contact_person ?? [] as $i => $p)
-            <div class="repeater-row d-flex gap-2 align-items-center mb-2">
+            <div class="repeater-row d-flex gap-2 align-items-center mb-7" style="flex-wrap: wrap;">
 
                 <input type="text" name="contact_person[{{ $i }}][name]" class="form-control"
                     placeholder="Name" value="{{ $p['name'] ?? '' }}">
@@ -46,7 +46,9 @@
                 <input type="text" name="contact_person[{{ $i }}][phone]" class="form-control"
                     placeholder="Phone" value="{{ $p['phone'] ?? '' }}">
 
-                <button type="button" class="btn btn-danger btn-sm delete-row-btn">Delete</button>
+                <button type="button" class="btn btn-danger btn-sm delete-row-btn">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             </div>
         @endforeach
     </div>
