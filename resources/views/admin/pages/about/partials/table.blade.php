@@ -17,8 +17,8 @@
                     <td class="sort-handle" style="cursor: grab;">
                         <i class="fa-solid fa-up-down text-muted"></i>
                     </td>
-                    <td style="cursor: grab;">{{ $page->title }}</td>
-                    <td style="cursor: grab;">{{ $page->slug }}</td>
+                    <td class="sort-handle" style="cursor: grab;">{{ $page->title }}</td>
+                    <td class="sort-handle" style="cursor: grab;">{{ $page->slug }}</td>
 
                     {{-- <td>
                         @can('edit about page')
