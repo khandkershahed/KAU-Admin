@@ -184,6 +184,14 @@
                             <span class="text-danger error-text phone_error small"></span>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Label(Specially for Syndicate Members)</label>
+                            <input type="text" name="label" class="form-control form-control-sm"
+                                placeholder="Label (optional)">
+
+                            <span class="text-danger error-text label_error small"></span>
+                        </div>
+
                     </div>
 
                 </div>
@@ -290,7 +298,13 @@
 
                             <span class="text-danger error-text phone_error small"></span>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Label(Specially for Syndicate Members)</label>
+                            <input type="text" name="label" class="form-control form-control-sm"
+                                placeholder="Label (optional)">
 
+                            <span class="text-danger error-text label_error small"></span>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Section</label>
 

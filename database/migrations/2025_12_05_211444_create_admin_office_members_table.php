@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('image')->nullable();
+            $table->string('label')->nullable();
 
             $table->string('type')->nullable(); // head / member / committee-member
             $table->integer('position')->default(0);

@@ -150,10 +150,13 @@ class OfficeStaffController extends Controller
             'office_id'  => 'required|exists:admin_offices,id',
             'section_id' => 'required|exists:admin_office_sections,id',
             'name'       => 'required|string|max:255',
+            'label'      => 'nullable|string|max:250',
             'image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ], [
             'name.required' => 'Member name is required.',
             'image.image'   => 'Image must be a valid file.',
+            'name.max'      => 'Name may not be greater than 255 characters.',
+            'label.max'     => 'Label may not be greater than 250 characters.'
         ]);
 
         if ($validator->fails()) {
@@ -180,6 +183,7 @@ class OfficeStaffController extends Controller
                 'designation' => $request->designation,
                 'email'       => $request->email,
                 'phone'       => $request->phone,
+                'label'       => $request->label,
                 'image'       => $image,
                 'position'    => $position,
             ]);
@@ -229,6 +233,7 @@ class OfficeStaffController extends Controller
                 'email'       => $request->email,
                 'phone'       => $request->phone,
                 'section_id'  => $request->section_id,
+                'label'       => $request->label,
                 'image'       => $image,
             ]);
 

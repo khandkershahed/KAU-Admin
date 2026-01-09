@@ -452,6 +452,7 @@ class HomeApiController extends Controller
                         'designation' => $m->designation,
                         'email'       => $m->email,
                         'phone'       => $m->phone,
+                        'label'       => $m->label,
                         'image'       => $m->image ? asset('storage/' . $m->image) : null,
                         'position'    => $m->position,
                     ];

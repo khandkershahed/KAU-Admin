@@ -181,6 +181,7 @@
         $("#editMemberForm [name='designation']").val($(this).data("designation"));
         $("#editMemberForm [name='email']").val($(this).data("email"));
         $("#editMemberForm [name='phone']").val($(this).data("phone"));
+        $("#editMemberForm [name='label']").val($(this).data("label"));
         $("#editMemberSectionSelect").val($(this).data("section")).trigger("change");
 
         let image = $(this).data("image");

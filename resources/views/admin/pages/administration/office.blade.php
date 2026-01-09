@@ -178,6 +178,7 @@
                                                                 data-email="{{ $member->email }}"
                                                                 data-phone="{{ $member->phone }}"
                                                                 data-section="{{ $member->section_id }}"
+                                                                data-label="{{ $member->label }}"
                                                                 data-image="{{ $member->image }}">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>
