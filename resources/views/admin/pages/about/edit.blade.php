@@ -65,12 +65,8 @@
 
                     <div class="mb-5">
                         <x-metronic.label>Banner Image</x-metronic.label>
-                        <input type="file" name="banner_image" class="form-control form-control-sm">
-                        @if ($page->banner_image)
-                            <small class="text-muted d-block mt-1">
-                                Current: {{ $page->banner_image }}
-                            </small>
-                        @endif
+                        <x-metronic.image-input name="banner_image" id="bannerImageInput" :source="!empty($page?->banner_image) ? asset('storage/' . $page->banner_image) : ''" />
+
                     </div>
 
                     <div class="mb-5">
@@ -103,8 +99,8 @@
 
                     <div class="mb-5">
                         <x-metronic.label>Meta Tags</x-metronic.label>
-                        <input type="text" name="meta_tags" placeholder="example1,example2,example3,..." value="{{ old('meta_tags', $page->meta_tags) }}"
-                            class="form-control form-control-sm">
+                        <input type="text" name="meta_tags" placeholder="example1,example2,example3,..."
+                            value="{{ old('meta_tags', $page->meta_tags) }}" class="form-control form-control-sm">
                     </div>
 
                     <div class="mb-5">

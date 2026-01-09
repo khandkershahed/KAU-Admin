@@ -62,8 +62,9 @@
                     </div> --}}
 
                     <div class="mb-5">
-                        <x-metronic.label>Banner Image</x-metronic.label> 
-                        <input type="file" name="banner_image" class="form-control form-control-sm">
+                        <x-metronic.label>Banner Image</x-metronic.label>
+                        <x-metronic.image-input name="banner_image" id="bannerImageInput" />
+
                     </div>
 
                     <div class="mb-5">
