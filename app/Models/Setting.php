@@ -18,6 +18,7 @@ class Setting extends Model
         'login_background_image',
 
         'theme_color',
+        'secondary_theme_color',
         'dark_mode',
 
         'custom_css',
