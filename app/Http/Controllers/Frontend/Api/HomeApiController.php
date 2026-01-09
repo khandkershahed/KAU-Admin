@@ -114,7 +114,7 @@ class HomeApiController extends Controller
                     ->all(),
 
                 'business_hours' => json_decode($settings->business_hours, true) ?? [],
-
+                'copyright_text' => $settings->copyright_text,
                 'developer' => [
                     'text' => $settings->developer_text,
                     'url'  => $settings->developer_link,
