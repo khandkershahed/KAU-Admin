@@ -74,8 +74,9 @@ class HomeApiController extends Controller
                     'site_favicon' => $settings->site_favicon
                         ? URL::to('storage/' . $settings->site_favicon) : null,
 
-                    'theme_color' => $settings->theme_color,
-                    'dark_mode'  => (bool) $settings->dark_mode,
+                    'theme_color'           => $settings->theme_color,
+                    'secondary_theme_color' => $settings->secondary_theme_color,
+                    // 'dark_mode'  => (bool) $settings->dark_mode,
                 ],
 
 

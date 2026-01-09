@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('login_background_image')->nullable();
 
             $table->string('theme_color', 50)->nullable();
+            $table->string('secondary_theme_color', 50)->nullable();
             $table->boolean('dark_mode')->default(false);
 
             // Custom assets
