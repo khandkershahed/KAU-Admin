@@ -5,8 +5,16 @@
         @method('PUT')
 
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title fw-bold">Edit About Page</h3>
+            <div class="card-header d-lg-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="card-title fw-bold">Edit About Page</h3>
+                </div>
+                <div class="card-toolbar">
+                    <a href="{{ route('admin.about.index') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Back to list
+                    </a>
+                </div>
             </div>
 
             <div class="card-body row g-5">

@@ -132,8 +132,14 @@
                     <i class="fa-solid fa-pen-to-square fs-6"></i>
                 </a>
             @endcan
-
             @can('delete admission')
+                <a href="{{ route('admin.admission.destroy', $node->id) }}"
+                    class="delete btn btn-light-danger btn-sm me-2">
+                    <i class="fa-solid fa-trash-alt fs-6"></i>
+                </a>
+            @endcan
+
+            {{-- @can('delete admission')
                 <form action="{{ route('admin.admission.destroy', $node->id) }}" method="POST"
                     onsubmit="return confirm('Delete this item?');">
                     @csrf
@@ -142,7 +148,7 @@
                         <i class="fa-solid fa-trash fs-6"></i>
                     </button>
                 </form>
-            @endcan
+            @endcan --}}
         </div>
     </div>
 
@@ -190,7 +196,8 @@
                                         </td>
                                         <td class="node-sort-handle" style="cursor:grab;">{{ $child->title }}</td>
                                         <td class="node-sort-handle" style="cursor:grab;">{{ $child->slug }}</td>
-                                        <td class="node-sort-handle" style="cursor:grab;">{{ ucfirst($child->type) }}</td>
+                                        <td class="node-sort-handle" style="cursor:grab;">{{ ucfirst($child->type) }}
+                                        </td>
                                         <td>
                                             @if ($child->external_url)
                                                 <a href="{{ $child->external_url }}" target="_blank">
@@ -207,8 +214,13 @@
                                                     <i class="fa-solid fa-pen-to-square fs-6"></i>
                                                 </a>
                                             @endcan
-
                                             @can('delete admission')
+                                                <a href="{{ route('admin.admission.destroy', $node->id) }}"
+                                                    class="delete btn btn-light-danger btn-sm me-2">
+                                                    <i class="fa-solid fa-trash-alt fs-6"></i>
+                                                </a>
+                                            @endcan
+                                            {{-- @can('delete admission')
                                                 <form action="{{ route('admin.admission.destroy', $child->id) }}"
                                                     method="POST" class="d-inline"
                                                     onsubmit="return confirm('Delete this item?');">
@@ -218,7 +230,7 @@
                                                         <i class="fa-solid fa-trash fs-6"></i>
                                                     </button>
                                                 </form>
-                                            @endcan
+                                            @endcan --}}
                                         </td>
                                     </tr>
                                 @endforeach
