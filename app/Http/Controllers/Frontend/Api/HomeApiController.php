@@ -270,11 +270,29 @@ class HomeApiController extends Controller
             ->orderBy('published_at', 'DESC')
             ->paginate(10);
 
+        // Add exact image URLs
+        $news->getCollection()->transform(function ($item) {
+            if ($item->thumb_image) {
+                $item->thumb_image = asset('storage/' . $item->thumb_image);
+            } else {
+                $item->thumb_image = asset('images/image.png');
+            }
+
+            if ($item->banner_image) {
+                $item->banner_image = asset('storage/' . $item->banner_image);
+            } else {
+                $item->banner_image = asset('images/image.png');
+            }
+
+            return $item;
+        });
+
         return response()->json([
             'success' => true,
             'data' => $news
         ]);
     }
+
 
     public function newsDetails($slug)
     {
@@ -302,13 +320,22 @@ class HomeApiController extends Controller
         // use exact url for images
         if ($news->thumb_image) {
             $news->thumb_image = asset('storage/' . $news->thumb_image);
+        } else {
+            $news->thumb_image = asset('images/image.png');
         }
-        if ($news->content_image) {
-            $news->content_image = asset('storage/' . $news->content_image);
-        }
+
         if ($news->banner_image) {
             $news->banner_image = asset('storage/' . $news->banner_image);
+        } else {
+            $news->banner_image = asset('images/image.png');
         }
+        
+        if ($news->content_image) {
+            $news->content_image = asset('storage/' . $news->content_image);
+        } else {
+            $news->content_image = asset('images/image.png');
+        }
+        
 
 
         // Increase view count
