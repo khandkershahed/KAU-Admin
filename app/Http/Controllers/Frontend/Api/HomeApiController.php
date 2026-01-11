@@ -339,7 +339,7 @@ class HomeApiController extends Controller
                 return [
                     'type'  => 'news',
                     'title' => $item->title,
-                    'url'   => url('/api/v1/news/' . $item->slug), // DIRECT PAGE URL
+                    'url'   => $item->slug,
                     'date'  => $item->published_at,
                 ];
             });
@@ -353,7 +353,7 @@ class HomeApiController extends Controller
                 return [
                     'type'  => 'notice',
                     'title' => $item->title,
-                    'url'   => url('/api/v1/notices/' . $item->slug), // DIRECT PAGE URL
+                    'url'   => $item->slug, // DIRECT PAGE URL
                     'date'  => $item->publish_date,
                 ];
             });
