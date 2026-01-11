@@ -210,7 +210,10 @@ class HomeApiController extends Controller
         $notice->increment('views');
 
         // Decode attachments safely
+        // use exact path for attachments where it is saved in storage
+        
         $attachments = [];
+
         if (!empty($notice->attachments)) {
             $attachments = is_string($notice->attachments)
                 ? json_decode($notice->attachments, true)
@@ -296,7 +299,17 @@ class HomeApiController extends Controller
             ->where('status', 'published')
             ->firstOrFail();
 
-        // Decode tags
+        // use exact url for images
+        if ($news->thumb_image) {
+            $news->thumb_image = asset('storage/' . $news->thumb_image);
+        }
+        if ($news->content_image) {
+            $news->content_image = asset('storage/' . $news->content_image);
+        }
+        if ($news->banner_image) {
+            $news->banner_image = asset('storage/' . $news->banner_image);
+        }
+
 
         // Increase view count
         $news->increment('read_time');
