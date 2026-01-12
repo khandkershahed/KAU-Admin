@@ -456,7 +456,7 @@ class AcademicDepartmentStaffController extends Controller
 
         // Generate uuid if missing
         $uuid = $member->uuid;
-        if (!$uuid) {
+        if (!$uuid || $data['name'] !== $member->name) {
             $section = AcademicStaffSection::find($member->staff_section_id);
             $departmentShortCode = null;
 
