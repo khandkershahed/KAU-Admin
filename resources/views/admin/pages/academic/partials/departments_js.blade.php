@@ -1167,52 +1167,57 @@
         /* =====================================================
            4) SWEETALERT DELETE (unified)
         ===================================================== */
-        $(document).on("click", ".delete", function(e) {
-            e.preventDefault();
-            const url = $(this).attr("href");
-            const CSRF = "{{ csrf_token() }}";
-            Swal.fire({
-                title: "Are you sure?",
-                text: "This action cannot be undone.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it",
-                cancelButtonText: "Cancel",
-                reverseButtons: true
-            }).then((result) => {
-                if (!result.isConfirmed) return;
+        // $.ajaxSetup({
+        //     headers: {
+        //         "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        //     }
+        // });
+        // $(document).on("click", ".delete", function(e) {
+        //     e.preventDefault();
+        //     const url = $(this).attr("href");
+        //     const CSRF = "{{ csrf_token() }}";
+        //     Swal.fire({
+        //         title: "Are you sure?",
+        //         text: "This action cannot be undone.",
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         confirmButtonText: "Yes, delete it",
+        //         cancelButtonText: "Cancel",
+        //         reverseButtons: true
+        //     }).then((result) => {
+        //         if (!result.isConfirmed) return;
 
-                fetch(url, {
-                        method: "DELETE",
-                        headers: {
-                            "X-CSRF-TOKEN": CSRF,
-                            "Accept": "application/json"
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(json => {
-                        if (json.success) {
-                            Swal.fire({
-                                title: "Deleted!",
-                                text: json.message || "Deleted successfully.",
-                                icon: "success",
-                                timer: 1200,
-                                showConfirmButton: false
-                            }).then(() => {
-                                const pubMemberId = $("#pubMemberId").val();
-                                if (pubMemberId) {
-                                    openPublicationsModal(pubMemberId);
-                                    return;
-                                }
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire("Error", json.message || "Delete failed", "error");
-                        }
-                    })
-                    .catch(() => Swal.fire("Error", "Delete failed", "error"));
-            });
-        });
+        //         fetch(url, {
+        //                 method: "DELETE",
+        //                 headers: {
+        //                     "X-CSRF-TOKEN": CSRF,
+        //                     "Accept": "application/json"
+        //                 }
+        //             })
+        //             .then(res => res.json())
+        //             .then(json => {
+        //                 if (json.success) {
+        //                     Swal.fire({
+        //                         title: "Deleted!",
+        //                         text: json.message || "Deleted successfully.",
+        //                         icon: "success",
+        //                         timer: 1200,
+        //                         showConfirmButton: false
+        //                     }).then(() => {
+        //                         const pubMemberId = $("#pubMemberId").val();
+        //                         if (pubMemberId) {
+        //                             openPublicationsModal(pubMemberId);
+        //                             return;
+        //                         }
+        //                         location.reload();
+        //                     });
+        //                 } else {
+        //                     Swal.fire("Error", json.message || "Delete failed", "error");
+        //                 }
+        //             })
+        //             .catch(() => Swal.fire("Error", "Delete failed", "error"));
+        //     });
+        // });
 
         /* =====================================================
            5) EDIT DEPARTMENT MODAL POPULATION
