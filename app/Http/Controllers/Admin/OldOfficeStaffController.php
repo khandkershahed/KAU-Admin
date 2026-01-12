@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
-class OfficeStaffController extends Controller
+class OldOfficeStaffController extends Controller
 {
     public function __construct()
     {
@@ -46,62 +46,16 @@ class OfficeStaffController extends Controller
     }
 
     /* =====================================================
-        SECTION PAGES (NO MODALS)
-    ====================================================== */
-    public function sectionCreate($slug)
-    {
-        $office = AdminOffice::where('slug', $slug)->firstOrFail();
-
-        return view('admin.pages.administration.forms.section_create', compact('office'));
-    }
-
-    public function sectionEdit($slug, $id)
-    {
-        $office = AdminOffice::where('slug', $slug)->firstOrFail();
-        $section = AdminOfficeSection::where('id', $id)->where('office_id', $office->id)->firstOrFail();
-
-        return view('admin.pages.administration.forms.section_edit', compact('office', 'section'));
-    }
-
-    /* =====================================================
-        MEMBER PAGES (NO MODALS)
-    ====================================================== */
-    public function memberCreate($slug, $sectionId)
-    {
-        $office = AdminOffice::where('slug', $slug)->firstOrFail();
-        $section = AdminOfficeSection::where('id', $sectionId)->where('office_id', $office->id)->firstOrFail();
-
-        return view('admin.pages.administration.forms.member_create', compact('office', 'section'));
-    }
-
-    public function memberEdit($slug, $id)
-    {
-        $office = AdminOffice::where('slug', $slug)->firstOrFail();
-        $member = AdminOfficeMember::where('id', $id)->where('office_id', $office->id)->firstOrFail();
-        $section = AdminOfficeSection::where('id', $member->section_id)->where('office_id', $office->id)->firstOrFail();
-
-        return view('admin.pages.administration.forms.member_edit', compact('office', 'section', 'member'));
-    }
-
-
-    /* =====================================================
         SECTION CRUD
     ====================================================== */
     public function sectionStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'office_id'     => 'required|exists:admin_offices,id',
-            'title'         => 'required|string|max:255',
-            'section_type'  => 'nullable|string|max:100',
-            'content'       => 'nullable',
-            'tab_label'     => 'nullable|string|max:255',
-            'tab_subtitle'  => 'nullable|string|max:255',
-            'tab_icon'      => 'nullable|string|max:255',
-            'tab_color'     => 'nullable|string|max:100',
-            'extra_json'    => 'nullable'
+            'office_id' => 'required|exists:admin_offices,id',
+            'title'     => 'required|string|max:255',
         ], [
             'office_id.required' => 'Office reference missing.',
-            'title.required'     => 'Section title is required.'
+            'title.required'     => 'Section title is required.',
         ]);
 
         if ($validator->fails()) {
@@ -117,12 +71,9 @@ class OfficeStaffController extends Controller
             $position = AdminOfficeSection::where('office_id', $request->office_id)->max('position') + 1;
 
             AdminOfficeSection::create([
-                'office_id'    => $request->office_id,
-                'title'        => $request->title,
-                'section_type' => $request->section_type ?? 'content',
-                'content'      => $request->content,
-                'extra'        => $this->buildSectionExtra($request),
-                'position'     => $position,
+                'office_id' => $request->office_id,
+                'title'     => $request->title,
+                'position'  => $position,
             ]);
 
             DB::commit();
@@ -138,19 +89,10 @@ class OfficeStaffController extends Controller
     public function sectionUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id'           => 'required|exists:admin_office_sections,id',
-            'title'         => 'required|string|max:255',
-            'section_type'  => 'nullable|string|max:100',
-            'content'       => 'nullable',
-            'tab_label'     => 'nullable|string|max:255',
-            'tab_subtitle'  => 'nullable|string|max:255',
-            'tab_icon'      => 'nullable|string|max:255',
-            'tab_color'     => 'nullable|string|max:100',
-            'extra_json'    => 'nullable'
+            'id'    => 'required|exists:admin_office_sections,id',
+            'title' => 'required|string|max:255',
         ], [
-
             'title.required' => 'Section title is required.',
-        
         ]);
 
         if ($validator->fails()) {
@@ -164,10 +106,7 @@ class OfficeStaffController extends Controller
             DB::beginTransaction();
 
             AdminOfficeSection::findOrFail($request->id)->update([
-                'title'        => $request->title,
-                'section_type' => $request->section_type ?? 'content',
-                'content'      => $request->content,
-                'extra'        => $this->buildSectionExtra($request),
+                'title' => $request->title,
             ]);
 
             DB::commit();
@@ -210,20 +149,14 @@ class OfficeStaffController extends Controller
         $validator = Validator::make($request->all(), [
             'office_id'  => 'required|exists:admin_offices,id',
             'section_id' => 'required|exists:admin_office_sections,id',
-            'image'      => 'nullable|image|max:2048',
             'name'       => 'required|string|max:255',
-            'designation'=> 'nullable|string|max:255',
-            'email'      => 'nullable|email|max:255',
-            'phone'      => 'nullable|string|max:255',
-            'label'      => 'nullable|string|max:255',
-            'type'       => 'nullable|string|max:50'
+            'label'      => 'nullable|string|max:250',
+            'image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ], [
-
             'name.required' => 'Member name is required.',
             'image.image'   => 'Image must be a valid file.',
             'name.max'      => 'Name may not be greater than 255 characters.',
             'label.max'     => 'Label may not be greater than 250 characters.'
-        
         ]);
 
         if ($validator->fails()) {
@@ -268,21 +201,13 @@ class OfficeStaffController extends Controller
     public function memberUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id'        => 'required|exists:admin_office_members,id',
-            'office_id'  => 'required|exists:admin_offices,id',
-            'section_id' => 'required|exists:admin_office_sections,id',
-            'image'      => 'nullable|image|max:2048',
+            'id'         => 'required|exists:admin_office_members,id',
             'name'       => 'required|string|max:255',
-            'designation'=> 'nullable|string|max:255',
-            'email'      => 'nullable|email|max:255',
-            'phone'      => 'nullable|string|max:255',
-            'label'      => 'nullable|string|max:255',
-            'type'       => 'nullable|string|max:50'
+            'section_id' => 'required|exists:admin_office_sections,id',
+            'image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ], [
-
             'name.required' => 'Member name is required.',
             'image.image'   => 'Uploaded file must be an image.'
-        
         ]);
 
         if ($validator->fails()) {
@@ -308,8 +233,7 @@ class OfficeStaffController extends Controller
                 'email'       => $request->email,
                 'phone'       => $request->phone,
                 'section_id'  => $request->section_id,
-                'label'      => $request->label,
-                'type'       => $request->type,
+                'label'       => $request->label,
                 'image'       => $image,
             ]);
 
@@ -345,36 +269,4 @@ class OfficeStaffController extends Controller
             return response()->json(['success' => false], 500);
         }
     }
-
-
-    /* =====================================================
-        HELPERS
-    ====================================================== */
-    private function buildSectionExtra(Request $request): ?array
-    {
-        $extra = [];
-
-        if ($request->filled('tab_label')) {
-            $extra['tab_label'] = $request->tab_label;
-        }
-        if ($request->filled('tab_subtitle')) {
-            $extra['tab_subtitle'] = $request->tab_subtitle;
-        }
-        if ($request->filled('tab_icon')) {
-            $extra['tab_icon'] = $request->tab_icon;
-        }
-        if ($request->filled('tab_color')) {
-            $extra['tab_color'] = $request->tab_color;
-        }
-
-        if ($request->filled('extra_json')) {
-            $decoded = json_decode($request->extra_json, true);
-            if (is_array($decoded)) {
-                $extra = array_merge($extra, $decoded);
-            }
-        }
-
-        return empty($extra) ? null : $extra;
-    }
-
 }

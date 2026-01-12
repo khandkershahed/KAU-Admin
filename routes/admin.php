@@ -165,46 +165,70 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
     // Administration
     Route::prefix('administration')->name('administration.')->group(function () {
-
-        /* =============================
-         PAGE LINKS
-        ============================== */
+        // ===============================
+        // ADMINISTRATION (NO MODALS PAGES)
+        // ===============================
         Route::get('/', [AdministrationController::class, 'index'])->name('index');
+
+        // Group pages
+        Route::get('/group/create', [AdministrationController::class, 'groupCreate'])->name('group.create');
+        Route::get('/group/{id}/edit', [AdministrationController::class, 'groupEdit'])->name('group.edit');
+
+        // Office pages
+        Route::get('/office/create', [AdministrationController::class, 'officeCreate'])->name('office.create');
+        Route::get('/office/{id}/edit', [AdministrationController::class, 'officeEdit'])->name('office.edit');
+
+        // Office staff page (already exists in your system)
+        Route::get('/office/{slug}', [OfficeStaffController::class, 'officePage'])->name('office.page');
+
+        // Section pages
+        Route::get('/office/{slug}/section/create', [OfficeStaffController::class, 'sectionCreate'])->name('section.create');
+        Route::get('/office/{slug}/section/{id}/edit', [OfficeStaffController::class, 'sectionEdit'])->name('section.edit');
+
+        // Member pages
+        Route::get('/office/{slug}/section/{sectionId}/member/create', [OfficeStaffController::class, 'memberCreate'])->name('member.create');
+        Route::get('/office/{slug}/member/{id}/edit', [OfficeStaffController::class, 'memberEdit'])->name('member.edit');
+
+
+        // /* =============================
+        //  PAGE LINKS
+        // ============================== */
+        // Route::get('/', [AdministrationController::class, 'index'])->name('index');
         Route::get('/office/{slug}', [OfficeStaffController::class, 'officePage'])->name('office.page');
 
 
-        /* =============================
-         GROUP CRUD
-        ============================== */
+        // /* =============================
+        //  GROUP CRUD
+        // ============================== */
         Route::post('/group/store',  [AdministrationController::class, 'groupStore'])->name('group.store');
-        Route::put('/group/update', [AdministrationController::class, 'groupUpdate'])->name('group.update');
+        Route::post('/group/update', [AdministrationController::class, 'groupUpdate'])->name('group.update');
         Route::delete('/group/delete/{id}', [AdministrationController::class, 'groupDelete'])->name('group.delete');
         Route::post('/group/sort',   [AdministrationController::class, 'groupSort'])->name('group.sort');
 
 
-        /* =============================
-         OFFICE CRUD
-        ============================== */
+        // /* =============================
+        //  OFFICE CRUD
+        // ============================== */
         Route::post('/office/store',  [AdministrationController::class, 'officeStore'])->name('office.store');
-        Route::put('/office/update', [AdministrationController::class, 'officeUpdate'])->name('office.update');
+        Route::post('/office/update', [AdministrationController::class, 'officeUpdate'])->name('office.update');
         Route::delete('/office/delete/{id}', [AdministrationController::class, 'officeDelete'])->name('office.delete');
         Route::post('/office/sort',   [AdministrationController::class, 'officeSort'])->name('office.sort');
 
 
-        /* =============================
-         SECTION CRUD
-        ============================== */
+        // /* =============================
+        //  SECTION CRUD
+        // ============================== */
         Route::post('/section/store',  [OfficeStaffController::class, 'sectionStore'])->name('section.store');
-        Route::put('/section/update', [OfficeStaffController::class, 'sectionUpdate'])->name('section.update');
+        Route::post('/section/update', [OfficeStaffController::class, 'sectionUpdate'])->name('section.update');
         Route::delete('/section/delete/{id}', [OfficeStaffController::class, 'sectionDelete'])->name('section.delete');
         Route::post('/section/sort',   [OfficeStaffController::class, 'sectionSort'])->name('section.sort');
 
 
-        /* =============================
-         MEMBER CRUD
-        ============================== */
+        // /* =============================
+        //  MEMBER CRUD
+        // ============================== */
         Route::post('/member/store',  [OfficeStaffController::class, 'memberStore'])->name('member.store');
-        Route::put('/member/update', [OfficeStaffController::class, 'memberUpdate'])->name('member.update');
+        Route::post('/member/update', [OfficeStaffController::class, 'memberUpdate'])->name('member.update');
         Route::delete('/member/delete/{id}', [OfficeStaffController::class, 'memberDelete'])->name('member.delete');
         Route::post('/member/sort',   [OfficeStaffController::class, 'memberSort'])->name('member.sort');
     });

@@ -36,7 +36,7 @@
                         <div class="col-md-4">
                             <x-metronic.label class="col-form-label fw-bold fs-6">Short Name</x-metronic.label>
                             <input type="text" name="short_name" id="createSiteShortName"
-                                class="form-control form-control-sm" placeholder="VABS" required>
+                                class="form-control form-control-sm" placeholder="FST" required>
                         </div>
                     </div>
 
@@ -44,7 +44,7 @@
                         <div class="col-md-4">
                             <x-metronic.label class="col-form-label fw-bold fs-6">Slug</x-metronic.label>
                             <input type="text" name="slug" id="createSiteSlug"
-                                class="form-control form-control-sm" placeholder="vabs" required>
+                                class="form-control form-control-sm" placeholder="fst" required>
                             <small class="text-muted">Auto-filled from Short Name (can edit).</small>
                         </div>
 

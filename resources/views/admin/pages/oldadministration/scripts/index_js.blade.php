@@ -12,25 +12,45 @@
     /* =====================================================
        SELECT2 INIT
     ===================================================== */
-            });
+    function initSelect2() {
+        $('[data-control="select2"]').select2({
+            width: "100%",
+            dropdownParent: $(".modal.show")
+        });
+    }
+
+    $(document).on("shown.bs.modal", ".modal", function() {
+        $(this).find("[data-control='select2']").select2({
+            dropdownParent: $(this)
+        });
+    });
 
     /* =====================================================
        CREATE OFFICE MODAL (Auto-select Group)
     ===================================================== */
-            $("#createOfficeGroupId").val(groupId);
+    $(document).on("click", ".createOfficeBtn", function() {
+        let groupId = $(this).data("group-id");
+        $("#createOfficeGroupId").val(groupId);
         $("#officeGroupSelect").val(groupId).trigger("change");
-        });
+        $("#createOfficeModal").modal("show");
+    });
 
     /* =====================================================
        EDIT GROUP
     ===================================================== */
-            $("#editGroupForm [name='name']").val($(this).data("name"));
-        });
+    $(document).on("click", ".editGroupBtn", function() {
+        $("#editGroupForm [name='id']").val($(this).data("id"));
+        $("#editGroupForm [name='name']").val($(this).data("name"));
+        $("#editGroupModal").modal("show");
+    });
 
     /* =====================================================
        EDIT OFFICE
     ===================================================== */
-            $("#editOfficeForm [name='title']").val($(this).data("title"));
+    $(document).on("click", ".editOfficeBtn", function() {
+
+        $("#editOfficeForm [name='id']").val($(this).data("id"));
+        $("#editOfficeForm [name='title']").val($(this).data("title"));
         $("#editOfficeForm [name='group_id']").val($(this).data("group")).trigger("change");
         $("#editOfficeForm [name='description']").val($(this).data("description"));
 
@@ -38,7 +58,8 @@
         $("#editOfficeForm [name='meta_tags']").val($(this).data("meta_tags"));
         $("#editOfficeForm [name='meta_description']").val($(this).data("meta_description"));
 
-        });
+        $("#editOfficeModal").modal("show");
+    });
 
     /* =====================================================
        DELETE (SweetAlert + AJAX)

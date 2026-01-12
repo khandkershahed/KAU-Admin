@@ -40,15 +40,15 @@ class AcademicNavController extends Controller
         ]);
 
         // If nav type is PAGE — enforce: matching AcademicPage must exist
-        if ($data['type'] === 'page') {
-            $page = AcademicPage::where('academic_site_id', $site->id)
-                ->where('slug', $data['slug'])
-                ->first();
+        // if ($data['type'] === 'page') {
+        //     $page = AcademicPage::where('academic_site_id', $site->id)
+        //         ->where('slug', $data['slug'])
+        //         ->first();
 
-            if (!$page) {
-                return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
-            }
-        }
+        //     if (!$page) {
+        //         return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
+        //     }
+        // }
 
         AcademicNavItem::create([
             'academic_site_id' => $site->id,
@@ -91,15 +91,15 @@ class AcademicNavController extends Controller
         ]);
 
         // If nav type is PAGE — enforce linked page must exist
-        if ($data['type'] === 'page') {
-            $page = AcademicPage::where('academic_site_id', $item->academic_site_id)
-                ->where('slug', $data['slug'])
-                ->first();
+        // if ($data['type'] === 'page') {
+        //     $page = AcademicPage::where('academic_site_id', $item->academic_site_id)
+        //         ->where('slug', $data['slug'])
+        //         ->first();
 
-            if (!$page) {
-                return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
-            }
-        }
+        //     if (!$page) {
+        //         return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
+        //     }
+        // }
 
         $item->update([
             'label'        => $data['label'],

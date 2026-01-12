@@ -29,9 +29,9 @@
 
                 <!-- ADD SECTION -->
                 @can('create admin section')
-                    <a href="{{ route('admin.administration.section.create', $office->slug) }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus me-2"></i> Add Section
-                    </a>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createSectionModal">
+                        <i class="fa fa-plus me-2"></i> Add Section
+                    </button>
                 @endcan
 
             </div>
@@ -82,9 +82,11 @@
                             <div class="d-flex align-items-center ms-3">
 
                                 @can('edit admin section')
-                                    <a href="{{ route('admin.administration.section.edit', [$office->slug, $section->id]) }}" class="btn btn-light-success btn-sm me-2">
-                                            <i class="fa-solid fa-pen-to-square fs-6"></i>
-                                        </a>
+                                    <button class="btn btn-light-success btn-sm me-2 editSectionBtn"
+                                        data-id="{{ $section->id }}"
+                                        data-title="{{ $section->title }}">
+                                        <i class="fa-solid fa-pen-to-square fs-6"></i>
+                                    </button>
                                 @endcan
 
                                 @can('delete admin section')
@@ -108,9 +110,12 @@
 
                                 <!-- CREATE MEMBER -->
                                 @can('create admin member')
-                                    <a href="{{ route('admin.administration.member.create', [$office->slug, $section->id]) }}" class="btn btn-outline-info btn-active-info float-end btn-sm mb-3">
-                                        <i class="fa fa-plus me-2"></i> Add Member
-                                    </a>
+                                    <button class="btn btn-outline btn-outline-info btn-active-info float-end btn-sm mb-3 createMemberBtn"
+                                        data-section-id="{{ $section->id }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#createMemberModal">
+                                        <i class="fas fa-plus me-2"></i> Add Member
+                                    </button>
                                 @endcan
 
                                 <!-- MEMBERS TABLE -->
@@ -166,9 +171,17 @@
                                                     <td>
                                                         <!-- EDIT -->
                                                         @can('edit admin member')
-                                                            <a href="{{ route('admin.administration.member.edit', [$office->slug, $member->id]) }}" class="btn btn-light-success btn-sm me-2">
-                                                                    <i class="fa-solid fa-pen fs-6"></i>
-                                                                </a>
+                                                            <button class="btn btn-light-success btn-sm me-2 editMemberBtn"
+                                                                data-id="{{ $member->id }}"
+                                                                data-name="{{ $member->name }}"
+                                                                data-designation="{{ $member->designation }}"
+                                                                data-email="{{ $member->email }}"
+                                                                data-phone="{{ $member->phone }}"
+                                                                data-section="{{ $member->section_id }}"
+                                                                data-label="{{ $member->label }}"
+                                                                data-image="{{ $member->image }}">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
                                                         @endcan
 
                                                         <!-- DELETE -->
@@ -209,7 +222,7 @@
     <!-- =====================
          PAGE-2 MODALS
     ====================== -->
-    
+    @include('admin.pages.administration.modals.office_modals')
 
     <!-- =====================
          PAGE-2 JAVASCRIPT

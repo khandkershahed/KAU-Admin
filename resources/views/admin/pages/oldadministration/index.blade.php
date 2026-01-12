@@ -22,9 +22,9 @@
                 </div>
 
                 @can('create admin group')
-                    <a href="{{ route('admin.administration.group.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus me-2"></i> Add Group
-                    </a>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                        <i class="fa fa-plus me-2"></i> Add Group
+                    </button>
                 @endcan
 
             </div>
@@ -67,9 +67,10 @@
                             <div class="d-flex align-items-center ms-3">
 
                                 @can('edit admin group')
-                                    <a href="{{ route('admin.administration.group.edit', $group->id) }}" class="btn btn-light-success btn-sm me-2">
+                                    <button class="btn btn-light-success btn-sm editGroupBtn me-2"
+                                        data-id="{{ $group->id }}" data-name="{{ $group->name }}">
                                         <i class="fa-solid fa-pen-to-square fs-6"></i>
-                                    </a>
+                                    </button>
                                 @endcan
 
                                 @can('delete admin group')
@@ -92,9 +93,10 @@
 
                                 <!-- ADD OFFICE BUTTON -->
                                 @can('create admin office')
-                                    <a href="{{ route('admin.administration.office.create', ['group_id' => $group->id]) }}" class="btn btn-sm btn-primary mb-4 float-end">
+                                    <button class="btn btn-sm btn-primary mb-4 createOfficeBtn float-end"
+                                        data-group-id="{{ $group->id }}">
                                         <i class="fa fa-plus me-2"></i> Add Office
-                                    </a>
+                                    </button>
                                 @endcan
 
                                 <!-- OFFICE TABLE -->
@@ -125,9 +127,16 @@
 
                                                         <!-- EDIT -->
                                                         @can('edit admin office')
-                                                            <a href="{{ route('admin.administration.office.edit', $office->id) }}" class="btn btn-light-success btn-sm me-2">
+                                                            <button class="btn btn-light-success btn-sm editOfficeBtn me-2"
+                                                                data-id="{{ $office->id }}"
+                                                                data-title="{{ $office->title }}"
+                                                                data-group="{{ $office->group_id }}"
+                                                                data-description="{{ $office->description }}"
+                                                                data-meta_title="{{ $office->meta_title }}"
+                                                                data-meta_tags="{{ $office->meta_tags }}"
+                                                                data-meta_description="{{ $office->meta_description }}">
                                                                 <i class="fa-solid fa-pen fs-6"></i>
-                                                            </a>
+                                                            </button>
                                                         @endcan
 
                                                         <!-- DELETE (custom SweetAlert delete pattern) -->
@@ -172,7 +181,7 @@
     <!-- =======================
          INCLUDE ALL MODALS
     ======================== -->
-    
+    @include('admin.pages.administration.modals.index_modals')
 
     <!-- =======================
          PAGE JS

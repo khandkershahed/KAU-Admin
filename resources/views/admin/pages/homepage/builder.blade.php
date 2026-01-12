@@ -62,7 +62,7 @@
                                                 class="btn btn-icon btn-sm btn-light-success js-edit-section"
                                                 data-key="{{ $section->section_key }}" data-id="{{ $section->id }}"
                                                 title="Edit section">
-                                                <i class="fa fa-pen"></i>
+                                                <i class="fas fa-pen"></i>
                                             </button>
                                         </div>
                                     </li>

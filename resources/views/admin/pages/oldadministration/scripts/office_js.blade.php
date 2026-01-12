@@ -13,7 +13,18 @@
     /* =====================================================
        SELECT2 INIT
     ===================================================== */
-            });
+    function initSelect2() {
+        $('[data-control="select2"]').select2({
+            width: "100%",
+            dropdownParent: $(".modal.show")
+        });
+    }
+
+    $(document).on("shown.bs.modal", ".modal", function() {
+        $(this).find("[data-control='select2']").select2({
+            dropdownParent: $(this)
+        });
+    });
 
 
     /* =====================================================
@@ -144,20 +155,29 @@
     /* =====================================================
        OPEN EDIT SECTION MODAL
     ===================================================== */
-            $("#editSectionForm [name='title']").val($(this).data("title"));
-        });
+    $(document).on("click", ".editSectionBtn", function() {
+        $("#editSectionForm [name='id']").val($(this).data("id"));
+        $("#editSectionForm [name='title']").val($(this).data("title"));
+        $("#editSectionModal").modal("show");
+    });
 
 
     /* =====================================================
        OPEN CREATE MEMBER MODAL
     ===================================================== */
-            });
+    $(document).on("click", ".createMemberBtn", function() {
+        $("#createMemberSectionId").val($(this).data("section-id"));
+        $("#createMemberModal").modal("show");
+    });
 
 
     /* =====================================================
        OPEN EDIT MEMBER MODAL
     ===================================================== */
-            $("#editMemberForm [name='name']").val($(this).data("name"));
+    $(document).on("click", ".editMemberBtn", function() {
+
+        $("#editMemberForm [name='id']").val($(this).data("id"));
+        $("#editMemberForm [name='name']").val($(this).data("name"));
         $("#editMemberForm [name='designation']").val($(this).data("designation"));
         $("#editMemberForm [name='email']").val($(this).data("email"));
         $("#editMemberForm [name='phone']").val($(this).data("phone"));
@@ -173,7 +193,8 @@
             preview.css("background-image", "url('{{ asset('images/default-user.png') }}')");
         }
 
-        });
+        $("#editMemberModal").modal("show");
+    });
 
 
 

@@ -4,21 +4,19 @@
         <div class="card-header mt-6 align-items-center">
             <h3 class="card-title fw-bold">About Pages Management</h3>
 
-            <div class="card-toolbar d-flex">
-
+            <div class="card-toolbar d-flex align-items-center">
                 <div class="row g-2 me-4">
-                    <div class="col">
-                        <x-metronic.label for="aboutSearch" class="col-form-label fw-bold fs-6">
+                    <div class="col-lg-7">
+                        {{-- <x-metronic.label for="aboutSearch" class="col-form-label fw-bold fs-6">
                             Search
-                        </x-metronic.label>
+                        </x-metronic.label> --}}
                         <input type="text" id="aboutSearch" class="form-control form-control-sm"
-                            placeholder="Title, slug..." value="{{ $search }}">
+                            placeholder="Search by Title, slug..." value="{{ $search }}">
                     </div>
-
-                    <div class="col">
-                        <x-metronic.label for="aboutStatusFilter" class="col-form-label fw-bold fs-6">
+                    <div class="col-lg-5">
+                        {{-- <x-metronic.label for="aboutStatusFilter" class="col-form-label fw-bold fs-6">
                             Status
-                        </x-metronic.label>
+                        </x-metronic.label> --}}
                         <x-metronic.select-option id="aboutStatusFilter" class="form-select-sm" name="status"
                             data-hide-search="true">
                             <option value="">All</option>

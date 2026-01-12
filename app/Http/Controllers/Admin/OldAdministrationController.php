@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
-class AdministrationController extends Controller
+class OldAdministrationController extends Controller
 {
     public function __construct()
     {
@@ -52,42 +52,7 @@ class AdministrationController extends Controller
     /* =====================================================
         GROUP STORE
     ====================================================== */
-    
-    /* =====================================================
-        GROUP PAGES (NO MODALS)
-    ====================================================== */
-    public function groupCreate()
-    {
-        return view('admin.pages.administration.forms.group_create');
-    }
-
-    public function groupEdit($id)
-    {
-        $group = AdminGroup::findOrFail($id);
-        return view('admin.pages.administration.forms.group_edit', compact('group'));
-    }
-
-    /* =====================================================
-        OFFICE PAGES (NO MODALS)
-    ====================================================== */
-    public function officeCreate(Request $request)
-    {
-        $groups = AdminGroup::orderBy('position')->get();
-        $selectedGroupId = $request->get('group_id');
-
-        return view('admin.pages.administration.forms.office_create', compact('groups', 'selectedGroupId'));
-    }
-
-    public function officeEdit($id)
-    {
-        $office = AdminOffice::findOrFail($id);
-        $groups = AdminGroup::orderBy('position')->get();
-
-        return view('admin.pages.administration.forms.office_edit', compact('office', 'groups'));
-    }
-
-
-public function groupStore(Request $request)
+    public function groupStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name'  => 'required|string|max:255'

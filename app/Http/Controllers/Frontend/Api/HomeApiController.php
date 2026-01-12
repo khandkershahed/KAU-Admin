@@ -211,7 +211,7 @@ class HomeApiController extends Controller
 
         // Decode attachments safely
         // use exact path for attachments where it is saved in storage
-        
+
         $attachments = [];
 
         if (!empty($notice->attachments)) {
@@ -329,13 +329,13 @@ class HomeApiController extends Controller
         } else {
             $news->banner_image = asset('images/image.png');
         }
-        
+
         if ($news->content_image) {
             $news->content_image = asset('storage/' . $news->content_image);
         } else {
             $news->content_image = asset('images/image.png');
         }
-        
+
 
 
         // Increase view count
@@ -417,11 +417,12 @@ class HomeApiController extends Controller
         ]);
     }
 
-
     public function adminIndex()
     {
         $groups = AdminGroup::with([
-            'offices' => fn($q) => $q->orderBy('position')
+            'offices' => function ($q) {
+                $q->orderBy('position');
+            }
         ])
             ->orderBy('position')
             ->get();
@@ -441,22 +442,24 @@ class HomeApiController extends Controller
                         'title'       => $office->title,
                         'slug'        => $office->slug,
                         'description' => $office->description,
+                        'banner_image' => $office->banner_image ? asset('storage/' . $office->banner_image) : null,
+                        'status'      => (bool) $office->status,
 
                         // SEO
-                        'meta_title'        => $office->meta_title,
-                        'meta_tags'         => $office->meta_tags,
-                        'meta_description'  => $office->meta_description,
+                        'meta_title'       => $office->meta_title,
+                        'meta_tags'        => $office->meta_tags,
+                        'meta_description' => $office->meta_description,
 
                         'total_sections' => $office->sections()->count(),
                         'total_members'  => $office->members()->count(),
                     ];
-                })
+                })->values()
             ];
-        });
+        })->values();
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data'    => $data
         ]);
     }
 
@@ -464,21 +467,36 @@ class HomeApiController extends Controller
     {
         $office = AdminOffice::where('slug', $slug)
             ->with([
-                'sections' => fn($q) => $q->orderBy('position'),
-                'members'  => fn($q) => $q->orderBy('position'),
+                'group:id,name,slug',
+                'sections' => function ($q) {
+                    $q->orderBy('position');
+                },
+                'members'  => function ($q) {
+                    $q->orderBy('position');
+                },
             ])
             ->first();
 
-        if (!$office) {
+        if (! $office) {
             return response()->json([
                 'success' => false,
                 'message' => 'Office not found'
             ], 404);
         }
 
+        // Helper: normalize extra field (array/null)
+        $normalizeExtra = function ($extra) {
+            if (is_array($extra)) return $extra;
+            if (is_object($extra)) return (array) $extra;
+            if (is_string($extra) && trim($extra) !== '') {
+                $decoded = json_decode($extra, true);
+                return is_array($decoded) ? $decoded : null;
+            }
+            return null;
+        };
 
-
-        $sections = $office->sections->map(function ($section) use ($office) {
+        // Build sections with their own members
+        $sections = $office->sections->map(function ($section) use ($office, $normalizeExtra) {
 
             $members = $office->members
                 ->where('section_id', $section->id)
@@ -493,44 +511,175 @@ class HomeApiController extends Controller
                         'email'       => $m->email,
                         'phone'       => $m->phone,
                         'label'       => $m->label,
+                        'type'        => $m->type, // IMPORTANT for crown/head etc.
                         'image'       => $m->image ? asset('storage/' . $m->image) : null,
-                        'position'    => $m->position,
+                        'position'    => (int) $m->position,
                     ];
                 });
 
             return [
-                'id'          => $section->id,
-                'title'       => $section->title,
+                'id'           => $section->id,
+                'title'        => $section->title,
                 'section_type' => $section->section_type,
-                'content'     => $section->content,
-                'extra'       => $section->extra,
-                'position'    => $section->position,
-                'members'     => $members,
+                'content'      => $section->content,
+                'extra'        => $normalizeExtra($section->extra),
+                'position'     => (int) $section->position,
+                'members'      => $members,
             ];
-        });
+        })->values();
+
+        // Optionally expose office-level contact/stats from overview section extra
+        $overviewSection = $office->sections->firstWhere('section_type', 'overview');
+        $overviewExtra   = $overviewSection ? $normalizeExtra($overviewSection->extra) : null;
 
         return response()->json([
             'success' => true,
             'data' => [
                 'office' => [
-                    'id'               => $office->id,
-                    'title'            => $office->title,
-                    'slug'             => $office->slug,
-                    'description'      => $office->description,
+                    'id'          => $office->id,
+                    'title'       => $office->title,
+                    'slug'        => $office->slug,
+                    'description' => $office->description,
+                    'banner_image' => $office->banner_image ? asset('storage/' . $office->banner_image) : null,
+
+                    'group' => $office->group ? [
+                        'id'   => $office->group->id,
+                        'name' => $office->group->name,
+                        'slug' => $office->group->slug,
+                    ] : null,
 
                     // SEO
                     'meta_title'       => $office->meta_title,
                     'meta_tags'        => $office->meta_tags,
                     'meta_description' => $office->meta_description,
 
-                    'total_sections'   => $office->sections->count(),
-                    'total_members'    => $office->members->count(),
-                ],
+                    'total_sections' => $office->sections->count(),
+                    'total_members'  => $office->members->count(),
 
+                    // dynamic (optional)
+                    'contact' => $overviewExtra['contact'] ?? null,
+                    'stats'   => $overviewExtra['stats'] ?? null,
+                ],
                 'sections' => $sections
             ]
         ]);
     }
+
+
+
+    // public function adminIndex()
+    // {
+    //     $groups = AdminGroup::with([
+    //         'offices' => fn($q) => $q->orderBy('position')
+    //     ])
+    //         ->orderBy('position')
+    //         ->get();
+
+    //     $data = $groups->map(function ($group) {
+
+    //         return [
+    //             'id'       => $group->id,
+    //             'name'     => $group->name,
+    //             'slug'     => $group->slug,
+    //             'position' => $group->position,
+
+    //             'offices' => $group->offices->map(function ($office) {
+
+    //                 return [
+    //                     'id'          => $office->id,
+    //                     'title'       => $office->title,
+    //                     'slug'        => $office->slug,
+    //                     'description' => $office->description,
+
+    //                     // SEO
+    //                     'meta_title'        => $office->meta_title,
+    //                     'meta_tags'         => $office->meta_tags,
+    //                     'meta_description'  => $office->meta_description,
+
+    //                     'total_sections' => $office->sections()->count(),
+    //                     'total_members'  => $office->members()->count(),
+    //                 ];
+    //             })
+    //         ];
+    //     });
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $data
+    //     ]);
+    // }
+
+    // public function adminOfficeDetails($slug)
+    // {
+    //     $office = AdminOffice::where('slug', $slug)
+    //         ->with([
+    //             'sections' => fn($q) => $q->orderBy('position'),
+    //             'members'  => fn($q) => $q->orderBy('position'),
+    //         ])
+    //         ->first();
+
+    //     if (!$office) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Office not found'
+    //         ], 404);
+    //     }
+
+
+
+    //     $sections = $office->sections->map(function ($section) use ($office) {
+
+    //         $members = $office->members
+    //             ->where('section_id', $section->id)
+    //             ->sortBy('position')
+    //             ->values()
+    //             ->map(function ($m) {
+
+    //                 return [
+    //                     'id'          => $m->id,
+    //                     'name'        => $m->name,
+    //                     'designation' => $m->designation,
+    //                     'email'       => $m->email,
+    //                     'phone'       => $m->phone,
+    //                     'label'       => $m->label,
+    //                     'image'       => $m->image ? asset('storage/' . $m->image) : null,
+    //                     'position'    => $m->position,
+    //                 ];
+    //             });
+
+    //         return [
+    //             'id'          => $section->id,
+    //             'title'       => $section->title,
+    //             'section_type' => $section->section_type,
+    //             'content'     => $section->content,
+    //             'extra'       => $section->extra,
+    //             'position'    => $section->position,
+    //             'members'     => $members,
+    //         ];
+    //     });
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => [
+    //             'office' => [
+    //                 'id'               => $office->id,
+    //                 'title'            => $office->title,
+    //                 'slug'             => $office->slug,
+    //                 'description'      => $office->description,
+
+    //                 // SEO
+    //                 'meta_title'       => $office->meta_title,
+    //                 'meta_tags'        => $office->meta_tags,
+    //                 'meta_description' => $office->meta_description,
+
+    //                 'total_sections'   => $office->sections->count(),
+    //                 'total_members'    => $office->members->count(),
+    //             ],
+
+    //             'sections' => $sections
+    //         ]
+    //     ]);
+    // }
 
 
 
