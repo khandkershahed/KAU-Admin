@@ -1039,8 +1039,8 @@
 @verbatim
     <script>
         /* =====================================================
-                       TOASTR OPTIONS (if not already set globally)
-                    ===================================================== */
+                           TOASTR OPTIONS (if not already set globally)
+                        ===================================================== */
         if (window.toastr) {
             toastr.options = {
                 positionClass: "toast-top-right",
@@ -1170,7 +1170,7 @@
         $(document).on("click", ".delete", function(e) {
             e.preventDefault();
             const url = $(this).attr("href");
-
+            const CSRF = "{{ csrf_token() }}";
             Swal.fire({
                 title: "Are you sure?",
                 text: "This action cannot be undone.",

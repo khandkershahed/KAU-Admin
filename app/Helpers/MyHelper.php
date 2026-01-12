@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
+use App\Models\AcademicDepartment;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 
 if (!function_exists('customUpload')) {
@@ -119,3 +120,6 @@ if (!function_exists('get_image')) {
     }
 }
 
+// if (!function_exists('generateUniqueShortCode')) {
+
+// }

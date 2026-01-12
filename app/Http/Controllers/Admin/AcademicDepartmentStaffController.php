@@ -93,7 +93,40 @@ class AcademicDepartmentStaffController extends Controller
     /* =========================================================================
         DEPARTMENTS
        ========================================================================= */
+    public function generateUniqueShortCode(string $title, $ignoreId = null)
+    {
+        $words = collect(explode(' ', trim($title)))
+            ->filter()
+            ->values();
 
+        $maxLength = max(array_map('strlen', $words->toArray()));
+
+        // Loop by increasing letter depth
+        for ($depth = 1; $depth <= $maxLength; $depth++) {
+            $code = '';
+
+            foreach ($words as $index => $word) {
+                $length = min($depth, strlen($word));
+
+                // First letter uppercase, rest lowercase
+                $part = substr($word, 0, $length);
+                $code .= $index === 0
+                    ? ucfirst(strtolower($part))
+                    : ucfirst(strtolower($part));
+            }
+
+            $exists = AcademicDepartment::where('short_code', $code)
+                ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+                ->exists();
+
+            if (! $exists) {
+                return $code;
+            }
+        }
+
+        // Fallback if everything exists
+        return strtoupper(Str::random(5));
+    }
     public function storeDepartment(Request $request)
     {
         $data = $request->validate([
@@ -106,10 +139,13 @@ class AcademicDepartmentStaffController extends Controller
             'position'         => 'nullable|integer',
         ]);
 
+        $shortCode = $data['short_code']
+            ?? $this->generateUniqueShortCode($data['title']);
+
         AcademicDepartment::create([
             'academic_site_id' => $data['academic_site_id'],
             'title'            => $data['title'],
-            'short_code'       => $data['short_code'] ?? null,
+            'short_code'       => $shortCode,
             'slug'             => $data['slug'] ?? null,
             'description'      => $data['description'] ?? null,
             'status'           => $data['status'] ?? 'published',
@@ -118,6 +154,7 @@ class AcademicDepartmentStaffController extends Controller
 
         return back()->with('success', 'Department created.');
     }
+
 
     public function updateDepartment(AcademicDepartment $department, Request $request)
     {
@@ -130,9 +167,12 @@ class AcademicDepartmentStaffController extends Controller
             'position'    => 'nullable|integer',
         ]);
 
+        $shortCode = $data['short_code']
+            ?? $this->generateUniqueShortCode($data['title'], $department->id);
+
         $department->update([
             'title'       => $data['title'],
-            'short_code'  => $data['short_code'] ?? null,
+            'short_code'  => $shortCode,
             'slug'        => $data['slug'] ?? null,
             'description' => $data['description'] ?? null,
             'status'      => $data['status'] ?? $department->status,
@@ -141,6 +181,7 @@ class AcademicDepartmentStaffController extends Controller
 
         return back()->with('success', 'Department updated.');
     }
+
 
     public function destroyDepartment(AcademicDepartment $department)
     {
@@ -337,7 +378,7 @@ class AcademicDepartmentStaffController extends Controller
             'phone'            => $data['phone'] ?? null,
             'mobile'           => $data['mobile'] ?? null,
             'address'          => $data['address'] ?? null,
-            'research_interest'=> $data['research_interest'] ?? null,
+            'research_interest' => $data['research_interest'] ?? null,
             'bio'              => $data['bio'] ?? null,
             'education'        => $data['education'] ?? null,
             'experience'       => $data['experience'] ?? null,
@@ -413,7 +454,7 @@ class AcademicDepartmentStaffController extends Controller
             'phone'            => $data['phone'] ?? null,
             'mobile'           => $data['mobile'] ?? null,
             'address'          => $data['address'] ?? null,
-            'research_interest'=> $data['research_interest'] ?? null,
+            'research_interest' => $data['research_interest'] ?? null,
             'bio'              => $data['bio'] ?? null,
             'education'        => $data['education'] ?? null,
             'experience'       => $data['experience'] ?? null,
