@@ -93,26 +93,38 @@ class AcademicDepartmentStaffController extends Controller
     /* =========================================================================
         DEPARTMENTS
        ========================================================================= */
-    public function generateUniqueShortCode(string $title, $ignoreId = null)
+    private array $ignoredWords = [
+        'and',
+        'or',
+        'of',
+        'the',
+        'for',
+        'to',
+        'in',
+        'on',
+        'with'
+    ];
+    private function generateUniqueShortCode(string $title, $ignoreId = null)
     {
         $words = collect(explode(' ', trim($title)))
             ->filter()
+            ->reject(fn($word) => in_array(strtolower($word), $this->ignoredWords))
             ->values();
+
+        if ($words->isEmpty()) {
+            return strtoupper(Str::random(3));
+        }
 
         $maxLength = max(array_map('strlen', $words->toArray()));
 
-        // Loop by increasing letter depth
+        // Increase letter depth progressively
         for ($depth = 1; $depth <= $maxLength; $depth++) {
             $code = '';
 
-            foreach ($words as $index => $word) {
+            foreach ($words as $word) {
                 $length = min($depth, strlen($word));
-
-                // First letter uppercase, rest lowercase
                 $part = substr($word, 0, $length);
-                $code .= $index === 0
-                    ? ucfirst(strtolower($part))
-                    : ucfirst(strtolower($part));
+                $code .= ucfirst(strtolower($part));
             }
 
             $exists = AcademicDepartment::where('short_code', $code)
@@ -124,9 +136,10 @@ class AcademicDepartmentStaffController extends Controller
             }
         }
 
-        // Fallback if everything exists
+        // Final fallback
         return strtoupper(Str::random(5));
     }
+
     public function storeDepartment(Request $request)
     {
         $data = $request->validate([
@@ -286,45 +299,50 @@ class AcademicDepartmentStaffController extends Controller
     }
 
     /* =========================================================================
-        UUID GENERATOR (6–8 chars, based on name + mobile/phone/random)
+        UUID GENERATOR (slug-based, with department short_code + numeric suffix)
        ========================================================================= */
 
-    private function generateMemberUuid(string $name, ?string $mobile, ?string $phone): string
+    private function generateMemberUuid(string $name, ?string $departmentShortCode = null): string
     {
-        $namePart = Str::of($name)->lower()->ascii()->replaceMatches('/[^a-z0-9]/', '')->toString();
-        $namePart = $namePart !== '' ? $namePart : 'member';
+        $base = Str::slug($name);
 
-        $num = $mobile ?: $phone ?: (string) random_int(1000000, 999999999);
-
-        $base = $namePart . '|' . preg_replace('/\D+/', '', $num);
-
-        // Deterministic-ish short hash: crc32 -> base36 -> 6–8 chars
-        $crc = sprintf('%u', crc32($base)); // unsigned
-        $b36 = strtolower(base_convert($crc, 10, 36));
-        $short = substr($b36, 0, 8);
-        if (strlen($short) < 6) {
-            $short = str_pad($short, 6, '0');
+        if ($base === '') {
+            $base = 'member';
         }
 
-        // Ensure uniqueness in DB
-        $uuid = $short;
-        $tries = 0;
-        while (AcademicStaffMember::where('uuid', $uuid)->exists()) {
-            $tries++;
-            $salt = (string) random_int(1000, 999999);
-            $crc2 = sprintf('%u', crc32($base . '|' . $salt));
-            $b362 = strtolower(base_convert($crc2, 10, 36));
-            $uuid = substr($b362, 0, 8);
-            if (strlen($uuid) < 6) {
-                $uuid = str_pad($uuid, 6, '0');
-            }
-            if ($tries > 20) {
-                $uuid = strtolower(Str::random(8));
-                break;
-            }
+        // 1) Try name slug first
+        $uuid = $base;
+        if (!AcademicStaffMember::where('uuid', $uuid)->exists()) {
+            return $uuid;
         }
 
-        return $uuid;
+        // 2) If not unique, try with department short_code (lowercase)
+        $dept = null;
+        if ($departmentShortCode) {
+            $dept = Str::of($departmentShortCode)
+                ->lower()
+                ->ascii()
+                ->replaceMatches('/[^a-z0-9]+/', '')
+                ->toString();
+        }
+
+        if ($dept) {
+            $uuid = $base . '-' . $dept;
+
+            if (!AcademicStaffMember::where('uuid', $uuid)->exists()) {
+                return $uuid;
+            }
+        } else {
+            $uuid = $base;
+        }
+
+        // 3) If still not unique, add numeric suffix
+        $i = 1;
+        while (AcademicStaffMember::where('uuid', $uuid . '-' . $i)->exists()) {
+            $i++;
+        }
+
+        return $uuid . '-' . $i;
     }
 
     /* =========================================================================
@@ -362,10 +380,11 @@ class AcademicDepartmentStaffController extends Controller
             $imagePath = $request->file('image')->store('academic/staff', 'public');
         }
 
+        $departmentShortCode = AcademicDepartment::where('id', $group->academic_department_id)->value('short_code');
+
         $uuid = $this->generateMemberUuid(
             $data['name'],
-            $data['mobile'] ?? null,
-            $data['phone'] ?? null
+            $departmentShortCode
         );
 
         AcademicStaffMember::create([
@@ -438,10 +457,16 @@ class AcademicDepartmentStaffController extends Controller
         // Generate uuid if missing
         $uuid = $member->uuid;
         if (!$uuid) {
+            $section = AcademicStaffSection::find($member->staff_section_id);
+            $departmentShortCode = null;
+
+            if ($section) {
+                $departmentShortCode = AcademicDepartment::where('id', $section->academic_department_id)->value('short_code');
+            }
+
             $uuid = $this->generateMemberUuid(
                 $data['name'],
-                $data['mobile'] ?? null,
-                $data['phone'] ?? null
+                $departmentShortCode
             );
         }
 
