@@ -422,14 +422,14 @@ class AcademicDepartmentStaffController extends Controller
             'email'       => 'nullable|string|max:255',
             'phone'       => 'nullable|string|max:50',
             'mobile'      => 'nullable|string|max:20',
-            'address'     => 'nullable|string',
-            'research_interest' => 'nullable|string',
-            'bio'         => 'nullable|string',
-            'education'   => 'nullable|string',
-            'experience'  => 'nullable|string',
-            'scholarship' => 'nullable|string',
-            'research'    => 'nullable|string',
-            'teaching'    => 'nullable|string',
+            'address'     => 'nullable',
+            'research_interest' => 'nullable',
+            'bio'         => 'nullable',
+            'education'   => 'nullable',
+            'experience'  => 'nullable',
+            'scholarship' => 'nullable',
+            'research'    => 'nullable',
+            'teaching'    => 'nullable',
 
             'status'      => 'nullable|in:published,draft,archived',
             'position'    => 'nullable|integer',
@@ -439,6 +439,11 @@ class AcademicDepartmentStaffController extends Controller
             'links.*.icon' => 'nullable|string|max:255',
             'links.*.url'  => 'nullable|string|max:1000',
         ]);
+        // validation error flash message
+        if ($errors = $request->errors()) {
+            return back()->withErrors($errors)->withInput();
+        }
+
 
         $imagePath = $member->image_path;
 
