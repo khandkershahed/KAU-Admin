@@ -358,14 +358,14 @@ class AcademicDepartmentStaffController extends Controller
                 'email'       => 'nullable|email|max:255',
                 'phone'       => 'nullable|string|max:50',
                 'mobile'      => 'nullable|string|max:20',
-                'address'     => 'nullable|string',
-                'research_interest' => 'nullable|string',
-                'bio'         => 'nullable|string',
-                'education'   => 'nullable|string',
-                'experience'  => 'nullable|string',
-                'scholarship' => 'nullable|string',
-                'research'    => 'nullable|string',
-                'teaching'    => 'nullable|string',
+                'address'     => 'nullable',
+                'research_interest' => 'nullable',
+                'bio'         => 'nullable',
+                'education'   => 'nullable',
+                'experience'  => 'nullable',
+                'scholarship' => 'nullable',
+                'research'    => 'nullable',
+                'teaching'    => 'nullable',
 
                 'status'      => 'nullable|in:published,draft,archived',
                 'position'    => 'nullable|integer',
@@ -432,7 +432,6 @@ class AcademicDepartmentStaffController extends Controller
 
     public function updateMember(AcademicStaffMember $member, Request $request)
     {
-        dd($request->all());
         $data = $request->validate(
             [
                 'name'        => 'required|string|max:255',
@@ -440,14 +439,14 @@ class AcademicDepartmentStaffController extends Controller
                 'email'       => 'nullable|email|max:255',
                 'phone'       => 'nullable|string|max:50',
                 'mobile'      => 'nullable|string|max:20',
-                'address'     => 'nullable|string',
-                'research_interest' => 'nullable|string',
-                'bio'         => 'nullable|string',
-                'education'   => 'nullable|string',
-                'experience'  => 'nullable|string',
-                'scholarship' => 'nullable|string',
-                'research'    => 'nullable|string',
-                'teaching'    => 'nullable|string',
+                'address'     => 'nullable',
+                'research_interest' => 'nullable',
+                'bio'         => 'nullable',
+                'education'   => 'nullable',
+                'experience'  => 'nullable',
+                'scholarship' => 'nullable',
+                'research'    => 'nullable',
+                'teaching'    => 'nullable',
 
                 'status'      => 'nullable|in:published,draft,archived',
                 'position'    => 'nullable|integer',
