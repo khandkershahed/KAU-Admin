@@ -351,36 +351,51 @@ class AcademicDepartmentStaffController extends Controller
 
     public function storeMember(AcademicStaffSection $group, Request $request)
     {
-        $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'designation' => 'nullable|string|max:255',
-            'email'       => 'nullable|string|max:255',
-            'phone'       => 'nullable|string|max:50',
-            'mobile'      => 'nullable|string|max:20',
-            'address'     => 'nullable|string',
-            'research_interest' => 'nullable|string',
-            'bio'         => 'nullable|string',
-            'education'   => 'nullable|string',
-            'experience'  => 'nullable|string',
-            'scholarship' => 'nullable|string',
-            'research'    => 'nullable|string',
-            'teaching'    => 'nullable|string',
+        $data = $request->validate(
+            [
+                'name'        => 'required|string|max:255',
+                'designation' => 'nullable|string|max:255',
+                'email'       => 'nullable|email|max:255',
+                'phone'       => 'nullable|string|max:50',
+                'mobile'      => 'nullable|string|max:20',
+                'address'     => 'nullable|string',
+                'research_interest' => 'nullable|string',
+                'bio'         => 'nullable|string',
+                'education'   => 'nullable|string',
+                'experience'  => 'nullable|string',
+                'scholarship' => 'nullable|string',
+                'research'    => 'nullable|string',
+                'teaching'    => 'nullable|string',
 
-            'status'      => 'nullable|in:published,draft,archived',
-            'position'    => 'nullable|integer',
-            'image'       => 'nullable|image|max:4096',
+                'status'      => 'nullable|in:published,draft,archived',
+                'position'    => 'nullable|integer',
+                'image'       => 'nullable|image|max:4096',
 
-            'links'        => 'nullable|array',
-            'links.*.icon' => 'nullable|string|max:255',
-            'links.*.url'  => 'nullable|string|max:1000',
-        ]);
+                'links'        => 'nullable|array',
+                'links.*.icon' => 'nullable|string|max:255',
+                'links.*.url'  => 'nullable|url|max:1000',
+            ],
+            [
+                'name.required'  => 'Staff member name is required.',
+                'name.max'       => 'Name cannot exceed 255 characters.',
+                'email.email'    => 'Please enter a valid email address.',
+                'image.image'    => 'Uploaded file must be an image.',
+                'image.max'      => 'Image size must not exceed 4MB.',
+                'status.in'      => 'Invalid status selected.',
+                'links.array'    => 'Links must be a valid list.',
+                'links.*.url'    => 'Each link must be a valid URL.',
+            ]
+        );
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('academic/staff', 'public');
         }
 
-        $departmentShortCode = AcademicDepartment::where('id', $group->academic_department_id)->value('short_code');
+        $departmentShortCode = AcademicDepartment::where(
+            'id',
+            $group->academic_department_id
+        )->value('short_code');
 
         $uuid = $this->generateMemberUuid(
             $data['name'],
@@ -411,39 +426,45 @@ class AcademicDepartmentStaffController extends Controller
             'links'            => $data['links'] ?? null,
         ]);
 
-        return back()->with('success', 'Staff member created.');
+        return back()->with('success', 'Staff member created successfully.');
     }
+
 
     public function updateMember(AcademicStaffMember $member, Request $request)
     {
-        $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'designation' => 'nullable|string|max:255',
-            'email'       => 'nullable|string|max:255',
-            'phone'       => 'nullable|string|max:50',
-            'mobile'      => 'nullable|string|max:20',
-            'address'     => 'nullable',
-            'research_interest' => 'nullable',
-            'bio'         => 'nullable',
-            'education'   => 'nullable',
-            'experience'  => 'nullable',
-            'scholarship' => 'nullable',
-            'research'    => 'nullable',
-            'teaching'    => 'nullable',
+        $data = $request->validate(
+            [
+                'name'        => 'required|string|max:255',
+                'designation' => 'nullable|string|max:255',
+                'email'       => 'nullable|email|max:255',
+                'phone'       => 'nullable|string|max:50',
+                'mobile'      => 'nullable|string|max:20',
+                'address'     => 'nullable|string',
+                'research_interest' => 'nullable|string',
+                'bio'         => 'nullable|string',
+                'education'   => 'nullable|string',
+                'experience'  => 'nullable|string',
+                'scholarship' => 'nullable|string',
+                'research'    => 'nullable|string',
+                'teaching'    => 'nullable|string',
 
-            'status'      => 'nullable|in:published,draft,archived',
-            'position'    => 'nullable|integer',
-            'image'       => 'nullable|image|max:4096',
+                'status'      => 'nullable|in:published,draft,archived',
+                'position'    => 'nullable|integer',
+                'image'       => 'nullable|image|max:4096',
 
-            'links'        => 'nullable|array',
-            'links.*.icon' => 'nullable|string|max:255',
-            'links.*.url'  => 'nullable|string|max:1000',
-        ]);
-        // validation error flash message
-        if ($errors = $request->errors()) {
-            return back()->withErrors($errors)->withInput();
-        }
-
+                'links'        => 'nullable|array',
+                'links.*.icon' => 'nullable|string|max:255',
+                'links.*.url'  => 'nullable|url|max:1000',
+            ],
+            [
+                'name.required'  => 'Staff member name is required.',
+                'email.email'    => 'Please enter a valid email address.',
+                'image.image'    => 'Uploaded file must be an image.',
+                'image.max'      => 'Image size must not exceed 4MB.',
+                'status.in'      => 'Invalid status selected.',
+                'links.*.url'    => 'Each link must be a valid URL.',
+            ]
+        );
 
         $imagePath = $member->image_path;
 
@@ -459,14 +480,17 @@ class AcademicDepartmentStaffController extends Controller
             $imagePath = $request->file('image')->store('academic/staff', 'public');
         }
 
-        // Generate uuid if missing
+        // Regenerate UUID if name changed or missing
         $uuid = $member->uuid;
         if (!$uuid || $data['name'] !== $member->name) {
             $section = AcademicStaffSection::find($member->staff_section_id);
             $departmentShortCode = null;
 
             if ($section) {
-                $departmentShortCode = AcademicDepartment::where('id', $section->academic_department_id)->value('short_code');
+                $departmentShortCode = AcademicDepartment::where(
+                    'id',
+                    $section->academic_department_id
+                )->value('short_code');
             }
 
             $uuid = $this->generateMemberUuid(
@@ -498,8 +522,10 @@ class AcademicDepartmentStaffController extends Controller
             'links'            => $data['links'] ?? null,
         ]);
 
-        return back()->with('success', 'Staff member updated.');
+        return back()->with('success', 'Staff member updated successfully.');
     }
+
+
 
     public function destroyMember(AcademicStaffMember $member)
     {
