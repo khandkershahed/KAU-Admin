@@ -172,7 +172,7 @@ class AcademicSiteController extends Controller
 
         AcademicSite::create($data);
 
-        return back()->with('success', 'Site created successfully.');
+        return back()->with('success', 'Site created successfully.'); 
     }
 
     public function updateSite(AcademicSite $site, Request $request)

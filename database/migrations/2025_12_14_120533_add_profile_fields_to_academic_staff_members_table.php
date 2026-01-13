@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('academic_staff_members', function (Blueprint $table) {
             if (!Schema::hasColumn('academic_staff_members', 'uuid')) {
-                $table->string('uuid', 8)->unique()->nullable()->after('position');
+                $table->string('uuid', 191)->unique()->nullable()->after('position');
             }
 
             if (!Schema::hasColumn('academic_staff_members', 'mobile')) {

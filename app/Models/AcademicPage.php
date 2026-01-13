@@ -34,9 +34,10 @@ class AcademicPage extends Model
     ];
 
     protected $casts = [
-        'is_home' => 'boolean',
+        'is_home'             => 'boolean',
         'is_department_boxes' => 'boolean',
-        'is_faculty_members' => 'boolean',
+        'is_faculty_members'  => 'boolean',
+        'settings'            => 'array',
         // 'status' => AcademicStatus::class,
     ];
 
@@ -48,5 +49,9 @@ class AcademicPage extends Model
     public function nav()
     {
         return $this->belongsTo(AcademicNavItem::class, 'nav_item_id');
+    }
+    public function blocks()
+    {
+        return $this->hasMany(\App\Models\AcademicPageBlock::class, 'academic_page_id')->orderBy('position');
     }
 }

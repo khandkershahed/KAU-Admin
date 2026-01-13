@@ -21,3 +21,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# zip files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+# system files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+Icon?
+# log files

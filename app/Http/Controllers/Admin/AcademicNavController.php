@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class AcademicNavController extends Controller
 {
-    public function __construct()
+    public function __construct() 
     {
         $this->middleware('permission:manage academic sites');
     }

@@ -6,7 +6,9 @@ use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\Api\HomeApiController;
 use App\Http\Controllers\Frontend\Api\UserApiController;
+use App\Http\Controllers\Frontend\Api\CmsBundleController;
 use App\Http\Controllers\Frontend\Api\AcademicApiController;
+use App\Http\Controllers\Frontend\Api\AcademicDepartmentApiController;
 
 
 // Login
@@ -31,8 +33,10 @@ Route::prefix('api/v1')->group(function () {
 
 Route::prefix('api/v1')->group(function () {
 
-
-
+    Route::get('academics/departments/{departmentSlug}', [AcademicDepartmentApiController::class, 'show']);
+    Route::get('cms/main', [CmsBundleController::class, 'main']);
+    Route::get('cms/site/{siteSlug}', [CmsBundleController::class, 'site']);
+    Route::get('cms/department/{departmentSlug}', [CmsBundleController::class, 'department']);
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
     Route::get('/footer', [HomeApiController::class, 'footer']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);

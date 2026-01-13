@@ -307,7 +307,7 @@ class AcademicDepartmentStaffController extends Controller
         $base = Str::slug($name);
 
         if ($base === '') {
-            $base = 'member';
+            $base = 'faculty';
         }
 
         // 1) Try name slug first
