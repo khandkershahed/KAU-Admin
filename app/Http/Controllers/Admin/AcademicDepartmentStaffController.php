@@ -432,6 +432,7 @@ class AcademicDepartmentStaffController extends Controller
 
     public function updateMember(AcademicStaffMember $member, Request $request)
     {
+        dd($request->all());
         $data = $request->validate(
             [
                 'name'        => 'required|string|max:255',
