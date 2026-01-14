@@ -21,7 +21,7 @@ class AcademicSite extends Model
         'logo_path',
         'position',
         'status',
-        'config',
+        'config', 
     ];
 
     protected $casts = [
@@ -47,7 +47,7 @@ class AcademicSite extends Model
 
     public function departments()
     {
-        return $this->hasMany(AcademicDepartment::class, 'academic_site_id')->orderBy('position');
+        return $this->hasMany(AcademicDepartment::class, 'academic_site_id')->orderBy('position')->where('status', 'published');
     }
 
     public function staffSections()

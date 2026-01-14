@@ -14,13 +14,52 @@ use App\Http\Controllers\Controller;
 class AcademicApiController extends Controller
 {
     /**
-     * GET /api/v1/academics/sites
+     * GET /api/v1/academics/sites 
      * Returns groups and their published sites.
      */
+    // public function sites(): JsonResponse
+    // {
+    //     $groups = AcademicMenuGroup::with([
+    //         'sites.departments' => function ($q) {
+    //             $q->where('status', 'published')
+    //                 ->orderBy('position')
+    //                 ->orderBy('id');
+    //         }
+    //     ])
+    //         ->where('status', 'published')
+    //         ->orderBy('position')
+    //         ->orderBy('id')
+    //         ->get();
+
+    //     return response()->json([
+    //         'groups' => $groups->map(function ($group) {
+    //             return [
+    //                 'id'       => $group->id,
+    //                 'title'    => $group->title,
+    //                 'slug'     => $group->slug,
+    //                 'position' => (int)$group->position,
+    //                 'sites'    => $group->sites->map(function ($site) {
+    //                     return [
+    //                         'id'                   => $site->id,
+    //                         'name'                 => $site->name,
+    //                         'short_name'           => $site->short_name,
+    //                         'slug'                 => $site->slug,
+    //                         'short_description'    => $site->short_description,
+    //                         'theme_primary_color'  => $site->theme_primary_color,
+    //                         'theme_secondary_color' => $site->theme_secondary_color,
+    //                         'logo_url'             => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
+    //                         'position'             => (int) $site->position,
+    //                     ];
+    //                 })->values(),
+    //             ];
+    //         })->values()
+    //     ]);
+    // }
+
     public function sites(): JsonResponse
     {
         $groups = AcademicMenuGroup::with([
-            'sites' => function ($q) {
+            'sites.departments' => function ($q) {
                 $q->where('status', 'published')
                     ->orderBy('position')
                     ->orderBy('id');
@@ -37,24 +76,39 @@ class AcademicApiController extends Controller
                     'id'       => $group->id,
                     'title'    => $group->title,
                     'slug'     => $group->slug,
-                    'position' => (int)$group->position,
-                    'sites'    => $group->sites->map(function ($site) {
+                    'position' => (int) $group->position,
+
+                    'sites' => $group->sites->map(function ($site) {
                         return [
-                            'id'                   => $site->id,
-                            'name'                 => $site->name,
-                            'short_name'           => $site->short_name,
-                            'slug'                 => $site->slug,
-                            'short_description'    => $site->short_description,
-                            'theme_primary_color'  => $site->theme_primary_color,
-                            'theme_secondary_color' => $site->theme_secondary_color,
-                            'logo_url'             => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
-                            'position'             => (int) $site->position,
+                            'id'                    => $site->id,
+                            'name'                  => $site->name,
+                            'short_name'            => $site->short_name,
+                            'slug'                  => $site->slug,
+                            // 'short_description'     => $site->short_description,
+                            // 'theme_primary_color'   => $site->theme_primary_color,
+                            // 'theme_secondary_color' => $site->theme_secondary_color,
+                            // 'logo_url'              => $site->logo_path
+                            //     ? asset('storage/' . $site->logo_path)
+                            //     : null,
+                            'position'              => (int) $site->position,
+
+                            // ✅ ADD THIS
+                            'departments' => $site->departments->map(function ($department) use ($site) {
+                                return [
+                                    'title'      => $department->title,
+                                    'slug'       => $department->slug,
+                                    'short_code' => $department->short_code,
+                                    'position'   => (int) $department->position,
+                                    'url'        => "/{$site->slug}/{$department->slug}",
+                                ];
+                            })->values(),
                         ];
                     })->values(),
                 ];
-            })->values()
+            })->values(),
         ]);
     }
+
 
     /**
      * GET /api/v1/academics/sites/{site_slug}/pages
