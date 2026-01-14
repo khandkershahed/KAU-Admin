@@ -101,101 +101,103 @@
                         <!-- ======================
                             SECTION BODY
                         ======================= -->
-                        <div id="sectionCollapse{{ $section->id }}" class="accordion-collapse collapse"
-                            data-bs-parent="#officeSectionsAccordion">
-
-                            <div class="accordion-body">
-
-                                <!-- CREATE MEMBER -->
-                                @can('create admin member')
-                                    <a href="{{ route('admin.administration.member.create', [$office->slug, $section->id]) }}" class="btn btn-outline-info btn-active-info float-end btn-sm mb-3">
-                                        <i class="fa fa-plus me-2"></i> Add Member
-                                    </a>
-                                @endcan
-
-                                <!-- MEMBERS TABLE -->
-                                <div class="table-responsive w-100">
-                                    <table class="table border table-row-bordered align-middle gy-3 memberTable"
-                                        data-section="{{ $section->id }}">
-
-                                        <thead style="background: beige;">
-                                            <tr class="fw-bold">
-                                                <th style="width: 40px;">Sort</th>
-                                                <th>Photo</th>
-                                                <th>Name</th>
-                                                <th>Designation</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th style="width: 160px;">Actions</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody id="memberSortSection{{ $section->id }}">
-
-                                            @forelse ($section->members as $member)
-                                                <tr class="member-row" data-id="{{ $member->id }}">
-
-                                                    <!-- SORT -->
-                                                    <td class=" member-sort">
-                                                        <i class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
-                                                    </td>
-
-                                                    <!-- PHOTO -->
-                                                    <td class=" member-sort">
-                                                        @if ($member->image)
-                                                            <img src="{{ asset('storage/' . $member->image) }}"
-                                                                class="rounded-circle" width="45" height="45">
-                                                        @else
-                                                            <img src="{{ asset('images/default-user.png') }}"
-                                                                class="rounded-circle" width="45" height="45">
-                                                        @endif
-                                                    </td>
-
-                                                    <!-- NAME -->
-                                                    <td class="member-sort">{{ $member->name }}</td>
-
-                                                    <!-- DESIGNATION -->
-                                                    <td class="member-sort">{{ $member->designation }}</td>
-
-                                                    <!-- EMAIL -->
-                                                    <td class="member-sort">{{ $member->email }}</td>
-
-                                                    <!-- PHONE -->
-                                                    <td>{{ $member->phone }}</td>
-
-                                                    <td>
-                                                        <!-- EDIT -->
-                                                        @can('edit admin member')
-                                                            <a href="{{ route('admin.administration.member.edit', [$office->slug, $member->id]) }}" class="btn btn-light-success btn-sm me-2">
-                                                                    <i class="fa-solid fa-pen fs-6"></i>
+                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards') 
+                            <div id="sectionCollapse{{ $section->id }}" class="accordion-collapse collapse"
+                                data-bs-parent="#officeSectionsAccordion">
+    
+                                <div class="accordion-body">
+    
+                                    <!-- CREATE MEMBER -->
+                                    @can('create admin member')
+                                        <a href="{{ route('admin.administration.member.create', [$office->slug, $section->id]) }}" class="btn btn-outline-info btn-active-info float-end btn-sm mb-3">
+                                            <i class="fa fa-plus me-2"></i> Add Member
+                                        </a>
+                                    @endcan
+    
+                                    <!-- MEMBERS TABLE -->
+                                    <div class="table-responsive w-100">
+                                        <table class="table border table-row-bordered align-middle gy-3 memberTable"
+                                            data-section="{{ $section->id }}">
+    
+                                            <thead style="background: beige;">
+                                                <tr class="fw-bold">
+                                                    <th style="width: 40px;">Sort</th>
+                                                    <th>Photo</th>
+                                                    <th>Name</th>
+                                                    <th>Designation</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                    <th style="width: 160px;">Actions</th>
+                                                </tr>
+                                            </thead>
+    
+                                            <tbody id="memberSortSection{{ $section->id }}">
+    
+                                                @forelse ($section->members as $member)
+                                                    <tr class="member-row" data-id="{{ $member->id }}">
+    
+                                                        <!-- SORT -->
+                                                        <td class=" member-sort">
+                                                            <i class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
+                                                        </td>
+    
+                                                        <!-- PHOTO -->
+                                                        <td class=" member-sort">
+                                                            @if ($member->image)
+                                                                <img src="{{ asset('storage/' . $member->image) }}"
+                                                                    class="rounded-circle" width="45" height="45">
+                                                            @else
+                                                                <img src="{{ asset('images/default-user.png') }}"
+                                                                    class="rounded-circle" width="45" height="45">
+                                                            @endif
+                                                        </td>
+    
+                                                        <!-- NAME -->
+                                                        <td class="member-sort">{{ $member->name }}</td>
+    
+                                                        <!-- DESIGNATION -->
+                                                        <td class="member-sort">{{ $member->designation }}</td>
+    
+                                                        <!-- EMAIL -->
+                                                        <td class="member-sort">{{ $member->email }}</td>
+    
+                                                        <!-- PHONE -->
+                                                        <td>{{ $member->phone }}</td>
+    
+                                                        <td>
+                                                            <!-- EDIT -->
+                                                            @can('edit admin member')
+                                                                <a href="{{ route('admin.administration.member.edit', [$office->slug, $member->id]) }}" class="btn btn-light-success btn-sm me-2">
+                                                                        <i class="fa-solid fa-pen fs-6"></i>
+                                                                    </a>
+                                                            @endcan
+    
+                                                            <!-- DELETE -->
+                                                            @can('delete admin member')
+                                                                <a href="{{ route('admin.administration.member.delete', $member->id) }}"
+                                                                    class="btn btn-light-danger btn-sm delete"
+                                                                    data-id="{{ $member->id }}">
+                                                                    <i class="fa fa-trash"></i>
                                                                 </a>
-                                                        @endcan
-
-                                                        <!-- DELETE -->
-                                                        @can('delete admin member')
-                                                            <a href="{{ route('admin.administration.member.delete', $member->id) }}"
-                                                                class="btn btn-light-danger btn-sm delete"
-                                                                data-id="{{ $member->id }}">
-                                                                <i class="fa fa-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </td>
-
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="8" class="text-center">No data found</td>
-                                                </tr>
-                                            @endforelse
-
-                                        </tbody>
-
-                                    </table>
+                                                            @endcan
+                                                        </td>
+    
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="8" class="text-center">No data found</td>
+                                                    </tr>
+                                                @endforelse
+    
+                                            </tbody>
+    
+                                        </table>
+                                    </div>
+    
                                 </div>
-
+    
                             </div>
-
-                        </div>
+                        @endif
 
                     </div>
                 @endforeach

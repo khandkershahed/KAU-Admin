@@ -13,7 +13,12 @@
     /* =====================================================
        SELECT2 INIT
     ===================================================== */
-            });
+    $(document).ready(function() {
+        $("select[data-control='select2']").select2({
+            width: '100%',
+            theme: 'bootstrap-5'
+        });
+    });
 
 
     /* =====================================================
@@ -141,39 +146,39 @@
     });
 
 
-    /* =====================================================
-       OPEN EDIT SECTION MODAL
-    ===================================================== */
-            $("#editSectionForm [name='title']").val($(this).data("title"));
-        });
+    // /* =====================================================
+    //    OPEN EDIT SECTION MODAL
+    // ===================================================== */
+    //         $("#editSectionForm [name='title']").val($(this).data("title"));
+    //     });
 
 
-    /* =====================================================
-       OPEN CREATE MEMBER MODAL
-    ===================================================== */
-            });
+    // /* =====================================================
+    //    OPEN CREATE MEMBER MODAL
+    // ===================================================== */
+    //         });
 
 
     /* =====================================================
        OPEN EDIT MEMBER MODAL
     ===================================================== */
-            $("#editMemberForm [name='name']").val($(this).data("name"));
-        $("#editMemberForm [name='designation']").val($(this).data("designation"));
-        $("#editMemberForm [name='email']").val($(this).data("email"));
-        $("#editMemberForm [name='phone']").val($(this).data("phone"));
-        $("#editMemberForm [name='label']").val($(this).data("label"));
-        $("#editMemberSectionSelect").val($(this).data("section")).trigger("change");
+        //     $("#editMemberForm [name='name']").val($(this).data("name"));
+        // $("#editMemberForm [name='designation']").val($(this).data("designation"));
+        // $("#editMemberForm [name='email']").val($(this).data("email"));
+        // $("#editMemberForm [name='phone']").val($(this).data("phone"));
+        // $("#editMemberForm [name='label']").val($(this).data("label"));
+        // $("#editMemberSectionSelect").val($(this).data("section")).trigger("change");
 
-        let image = $(this).data("image");
-        let preview = $("#editMemberImagePreview");
+        // let image = $(this).data("image");
+        // let preview = $("#editMemberImagePreview");
 
-        if (image) {
-            preview.css("background-image", "url('{{ asset('storage') }}/" + image + "')");
-        } else {
-            preview.css("background-image", "url('{{ asset('images/default-user.png') }}')");
-        }
+        // if (image) {
+        //     preview.css("background-image", "url('{{ asset('storage') }}/" + image + "')");
+        // } else {
+        //     preview.css("background-image", "url('{{ asset('images/default-user.png') }}')");
+        // }
 
-        });
+        // });
 
 
 

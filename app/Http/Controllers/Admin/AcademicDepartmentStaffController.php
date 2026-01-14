@@ -432,6 +432,7 @@ class AcademicDepartmentStaffController extends Controller
 
     public function updateMember(AcademicStaffMember $member, Request $request)
     {
+
         $data = $request->validate(
             [
                 'name'        => 'required|string|max:255',
@@ -498,7 +499,6 @@ class AcademicDepartmentStaffController extends Controller
                 $departmentShortCode
             );
         }
-
         $member->update([
             'uuid'             => $uuid,
 
