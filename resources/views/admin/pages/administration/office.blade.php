@@ -71,9 +71,15 @@
                                     <span class="fw-semibold d-flex align-items-center">
                                         {{ $section->title }}
 
-                                        <span class="badge badge-info ms-2">
-                                            Members: {{ $section->members->count() }}
-                                        </span>
+                                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards') 
+                                            <span class="badge badge-info ms-2">
+                                                Members: {{ $section->members->count() }}
+                                            </span>
+                                            @else
+                                            <span class="badge badge-secondary ms-2">
+                                                Page Type: {{ ucwords(str_replace('_', ' ', $section->section_type)) }}
+                                            </span>
+                                        @endif
                                     </span>
                                 </button>
                             </div>
