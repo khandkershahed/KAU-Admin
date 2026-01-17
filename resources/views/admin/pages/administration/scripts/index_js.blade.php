@@ -1,44 +1,43 @@
-
 <script>
     // import toastr from '@toastr/toastr';
 
     toastr.options = {
-        positionClass: "top-right",
-        closeButton: true,
-        progressBar: true,
-        newestOnTop: true,
+    positionClass: "top-right",
+    closeButton: true,
+    progressBar: true,
+    newestOnTop: true,
     };
 
-    /* =====================================================
-       SELECT2 INIT
-    ===================================================== */
-            });
+    // /* =====================================================
+    //    SELECT2 INIT
+    // ===================================================== */
+    // });
 
-    /* =====================================================
-       CREATE OFFICE MODAL (Auto-select Group)
-    ===================================================== */
-            $("#createOfficeGroupId").val(groupId);
-        $("#officeGroupSelect").val(groupId).trigger("change");
-        });
+    // /* =====================================================
+    //    CREATE OFFICE MODAL (Auto-select Group)
+    // ===================================================== */
+    // $("#createOfficeGroupId").val(groupId);
+    // $("#officeGroupSelect").val(groupId).trigger("change");
+    // });
 
-    /* =====================================================
-       EDIT GROUP
-    ===================================================== */
-            $("#editGroupForm [name='name']").val($(this).data("name"));
-        });
+    // /* =====================================================
+    //    EDIT GROUP
+    // ===================================================== */
+    // $("#editGroupForm [name='name']").val($(this).data("name"));
+    // });
 
-    /* =====================================================
-       EDIT OFFICE
-    ===================================================== */
-            $("#editOfficeForm [name='title']").val($(this).data("title"));
-        $("#editOfficeForm [name='group_id']").val($(this).data("group")).trigger("change");
-        $("#editOfficeForm [name='description']").val($(this).data("description"));
+    // /* =====================================================
+    //    EDIT OFFICE
+    // ===================================================== */
+    // $("#editOfficeForm [name='title']").val($(this).data("title"));
+    // $("#editOfficeForm [name='group_id']").val($(this).data("group")).trigger("change");
+    // $("#editOfficeForm [name='description']").val($(this).data("description"));
 
-        $("#editOfficeForm [name='meta_title']").val($(this).data("meta_title"));
-        $("#editOfficeForm [name='meta_tags']").val($(this).data("meta_tags"));
-        $("#editOfficeForm [name='meta_description']").val($(this).data("meta_description"));
+    // $("#editOfficeForm [name='meta_title']").val($(this).data("meta_title"));
+    // $("#editOfficeForm [name='meta_tags']").val($(this).data("meta_tags"));
+    // $("#editOfficeForm [name='meta_description']").val($(this).data("meta_description"));
 
-        });
+    // });
 
     /* =====================================================
        DELETE (SweetAlert + AJAX)
@@ -132,22 +131,22 @@
                 });
 
                 $.post("{{ route('admin.administration.office.sort') }}", {
-                    order: order,
-                    _token: "{{ csrf_token() }}"
-                }).done(function() {
+                        order: order,
+                        _token: "{{ csrf_token() }}"
+                    }).done(function() {
 
-                    // SweetAlert Success
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Office order saved.',
-                        icon: 'success',
-                        timer: 1200,
-                        showConfirmButton: false
+                        // SweetAlert Success
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Office order saved.',
+                            icon: 'success',
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                    })
+                    .fail(function() {
+                        toastr.error("Failed to save Office order");
                     });
-                })
-                .fail(function() {
-                    toastr.error("Failed to save Office order");
-                });
             }
         });
     });
