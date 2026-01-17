@@ -10,7 +10,7 @@ class MainPageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage main pages');
+        $this->middleware('permission:manage academic pages');
     }
 
     public function index()

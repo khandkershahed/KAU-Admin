@@ -10,7 +10,7 @@ class MainMenuController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage main menu');
+        $this->middleware('permission:manage academic sites');
     }
 
     public function index()
