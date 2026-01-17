@@ -21,7 +21,7 @@ class PageAliasApiController extends Controller
             'data' => ['page' => $page],
         ]);
     }
-}
+
     public function show(string $slug): JsonResponse
     {
         $page = \App\Models\AcademicPage::query()
