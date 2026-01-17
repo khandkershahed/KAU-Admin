@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\AcademicStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,13 +21,10 @@ class AcademicNavItem extends Model
         'type',          // route|page|external|group
         'external_url',
         'menu_location', // navbar|topbar
+        'layout',        // dropdown|mega|null
         'icon',
         'position',
         'status',
-    ];
-
-    protected $casts = [
-        // 'status' => AcademicStatus::class,
     ];
 
     public function site()
@@ -43,8 +39,7 @@ class AcademicNavItem extends Model
 
     public function children()
     {
-        return $this->hasMany(AcademicNavItem::class, 'parent_id')
-                    ->orderBy('position');
+        return $this->hasMany(AcademicNavItem::class, 'parent_id')->orderBy('position');
     }
 
     public function page()
@@ -52,29 +47,8 @@ class AcademicNavItem extends Model
         return $this->hasOne(AcademicPage::class, 'nav_item_id');
     }
 
-    // Check before delete (Option B)
     public function canBeDeleted(): bool
     {
         return $this->page === null;
-    }
-
-    // Build recursive tree structure
-    public static function getTreeForSite($siteId)
-    {
-        $items = self::where('academic_site_id', $siteId)
-                     ->orderBy('position')
-                     ->get()
-                     ->groupBy('parent_id');
-
-        $buildTree = function ($parentId) use (&$buildTree, $items) {
-            return ($items[$parentId] ?? collect())->map(function ($item) use (&$buildTree) {
-                return [
-                    'model' => $item,
-                    'children' => $buildTree($item->id),
-                ];
-            })->toArray();
-        };
-
-        return $buildTree(null);
     }
 }

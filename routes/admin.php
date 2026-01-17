@@ -263,25 +263,26 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     });
 
     // Main CMS
-    Route::prefix('admin/cms/main')->name('cms.main.')->group(function () {
+    Route::prefix('cms/main')->name('cms.main.')->group(function () {
 
         // Main Menu Builder
-        Route::get('/menu', [MainMenuController::class, 'index'])->name('menu.index');
-        Route::get('/menu/create', [MainMenuController::class, 'create'])->name('menu.create');
-        Route::post('/menu', [MainMenuController::class, 'store'])->name('menu.store');
-        Route::get('/menu/{item}/edit', [MainMenuController::class, 'edit'])->name('menu.edit');
-        Route::post('/menu/{item}', [MainMenuController::class, 'update'])->name('menu.update');
-        Route::delete('/menu/{item}', [MainMenuController::class, 'destroy'])->name('menu.destroy');
-        Route::post('/menu/sort', [MainMenuController::class, 'sort'])->name('menu.sort');
+        Route::get('/menu', [\App\Http\Controllers\Admin\MainMenuController::class, 'index'])->name('menu.index');
+        Route::get('/menu/create', [\App\Http\Controllers\Admin\MainMenuController::class, 'create'])->name('menu.create');
+        Route::post('/menu', [\App\Http\Controllers\Admin\MainMenuController::class, 'store'])->name('menu.store');
+        Route::get('/menu/{item}/edit', [\App\Http\Controllers\Admin\MainMenuController::class, 'edit'])->name('menu.edit');
+        Route::post('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'update'])->name('menu.update');
+        Route::delete('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'destroy'])->name('menu.destroy');
+        Route::post('/menu/sort', [\App\Http\Controllers\Admin\MainMenuController::class, 'sort'])->name('menu.sort');
 
         // Main Page Builder
-        Route::get('/pages', [MainPageController::class, 'index'])->name('pages.index');
-        Route::get('/pages/create', [MainPageController::class, 'create'])->name('pages.create');
-        Route::post('/pages', [MainPageController::class, 'store'])->name('pages.store');
-        Route::get('/pages/{page}/edit', [MainPageController::class, 'edit'])->name('pages.edit');
-        Route::post('/pages/{page}', [MainPageController::class, 'update'])->name('pages.update');
-        Route::delete('/pages/{page}', [MainPageController::class, 'destroy'])->name('pages.destroy');
+        Route::get('/pages', [\App\Http\Controllers\Admin\MainPageController::class, 'index'])->name('pages.index');
+        Route::get('/pages/create', [\App\Http\Controllers\Admin\MainPageController::class, 'create'])->name('pages.create');
+        Route::post('/pages', [\App\Http\Controllers\Admin\MainPageController::class, 'store'])->name('pages.store');
+        Route::get('/pages/{page}/edit', [\App\Http\Controllers\Admin\MainPageController::class, 'edit'])->name('pages.edit');
+        Route::post('/pages/{page}', [\App\Http\Controllers\Admin\MainPageController::class, 'update'])->name('pages.update');
+        Route::delete('/pages/{page}', [\App\Http\Controllers\Admin\MainPageController::class, 'destroy'])->name('pages.destroy');
     });
+
 
     // Admission
 

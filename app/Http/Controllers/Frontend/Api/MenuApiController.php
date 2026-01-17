@@ -5,19 +5,25 @@ namespace App\Http\Controllers\Frontend\Api;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicNavItem;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class MenuApiController extends Controller
 {
     /**
-     * GET /api/v1/menus
+     * GET /api/v1/menus?location=navbar|topbar
      * Returns MenuNode[] for Next.js DesktopMenu.tsx + MobileDrawer.tsx
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $location = $request->query('location', 'navbar');
+        if (!in_array($location, ['navbar', 'topbar'], true)) {
+            $location = 'navbar';
+        }
+
         $items = AcademicNavItem::query()
             ->where('owner_type', 'main')
             ->whereNull('owner_id')
-            ->where('menu_location', 'navbar')
+            ->where('menu_location', $location)
             ->where('status', 'published')
             ->orderBy('parent_id')
             ->orderBy('position')
@@ -35,8 +41,16 @@ class MenuApiController extends Controller
                 if ($item->type === 'external') $nodeType = 'external';
                 if ($item->type === 'group') $nodeType = 'group';
 
+                // Layout:
+                // - if DB layout set => use it
+                // - otherwise if it has children => dropdown
+                // - if leaf => null
                 $layout = null;
-                if (count($children) > 0) $layout = 'dropdown';
+                if (!empty($item->layout)) {
+                    $layout = $item->layout;
+                } elseif (count($children) > 0) {
+                    $layout = 'dropdown';
+                }
 
                 $link = $this->makeLink($item);
 
@@ -62,6 +76,7 @@ class MenuApiController extends Controller
 
         return response()->json([
             'success' => true,
+            'location' => $location,
             'data' => $build(null),
         ]);
     }

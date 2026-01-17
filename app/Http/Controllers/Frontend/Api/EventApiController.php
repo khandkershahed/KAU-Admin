@@ -108,7 +108,7 @@ class EventApiController extends Controller
             'data' => $event,
         ]);
     }
-}
+
                 'per_page' => $p->perPage(),
                 'total' => $p->total(),
             ],
