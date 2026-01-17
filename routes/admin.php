@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\PrivacyController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\HomepageController;
+use App\Http\Controllers\Admin\MainMenuController;
+use App\Http\Controllers\Admin\MainPageController;
 use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Admin\AdmissionController;
 use App\Http\Controllers\Admin\HomePopupController;
@@ -237,7 +239,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     });
 
     // Main CMS
-    Route::prefix('admin/cms/main')->name('admin.cms.main.')->group(function () {
+    Route::prefix('admin/cms/main')->name('cms.main.')->group(function () {
 
         // Main Menu Builder
         Route::get('/menu', [MainMenuController::class, 'index'])->name('menu.index');
@@ -256,7 +258,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/pages/{page}', [MainPageController::class, 'update'])->name('pages.update');
         Route::delete('/pages/{page}', [MainPageController::class, 'destroy'])->name('pages.destroy');
     });
-    
+
     // Admission
 
     Route::prefix('office/{slug}/cms')->name('office.cms.')->group(function () {
