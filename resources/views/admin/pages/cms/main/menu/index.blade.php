@@ -76,9 +76,19 @@
                             handle: '.sort-handle',
                             draggable: '.menu-item-row',
                             onEnd: function() {
+
+                                // IMPORTANT:
+                                // collect ONLY the direct children of THIS list (not nested lists)
                                 const order = [];
-                                list.querySelectorAll('.menu-item-row').forEach(function(row) {
-                                    order.push(parseInt(row.getAttribute('data-id'), 10));
+                                Array.from(list.children).forEach(function(li) {
+                                    // find the row for this direct <li> only
+                                    const row = li.querySelector(':scope > .menu-item-row') ||
+                                        li.querySelector(
+                                            '.menu-item-row');
+                                    if (!row) return;
+
+                                    const id = parseInt(row.getAttribute('data-id'), 10);
+                                    if (!isNaN(id)) order.push(id);
                                 });
 
                                 const parentId = list.getAttribute('data-parent') || null;
@@ -132,7 +142,8 @@
                         }).then(function(json) {
                             if (json && json.success) {
                                 Swal.fire('Deleted', json.message || 'Deleted', 'success').then(
-                                () => window.location.reload());
+                                () => window
+                                    .location.reload());
                             } else {
                                 Swal.fire('Error', (json && json.message) ? json.message : 'Failed',
                                     'error');
