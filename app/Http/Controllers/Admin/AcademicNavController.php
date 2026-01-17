@@ -5,15 +5,53 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicNavItem;
 use App\Models\AcademicSite;
-use App\Models\AcademicPage;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AcademicNavController extends Controller
 {
-    public function __construct() 
+    public function __construct()
     {
         $this->middleware('permission:manage academic sites');
+    }
+
+    /**
+     * CREATE NAV ITEM PAGE (NO MODAL)
+     */
+    public function create(AcademicSite $site, Request $request)
+    {
+        $parentId = $request->query('parent_id');
+
+        $parents = AcademicNavItem::where('academic_site_id', $site->id)
+            ->orderBy('parent_id')
+            ->orderBy('position')
+            ->get();
+
+        return view('admin.pages.academic.nav.create', [
+            'site' => $site,
+            'parents' => $parents,
+            'parentId' => $parentId,
+        ]);
+    }
+
+    /**
+     * EDIT NAV ITEM PAGE (NO MODAL)
+     */
+    public function edit(AcademicNavItem $item)
+    {
+        $site = AcademicSite::findOrFail($item->academic_site_id);
+
+        $parents = AcademicNavItem::where('academic_site_id', $site->id)
+            ->where('id', '!=', $item->id)
+            ->orderBy('parent_id')
+            ->orderBy('position')
+            ->get();
+
+        return view('admin.pages.academic.nav.edit', [
+            'site' => $site,
+            'item' => $item,
+            'parents' => $parents,
+        ]);
     }
 
     /**
@@ -39,17 +77,6 @@ class AcademicNavController extends Controller
             'status'       => 'required|in:published,draft,archived',
         ]);
 
-        // If nav type is PAGE — enforce: matching AcademicPage must exist
-        // if ($data['type'] === 'page') {
-        //     $page = AcademicPage::where('academic_site_id', $site->id)
-        //         ->where('slug', $data['slug'])
-        //         ->first();
-
-        //     if (!$page) {
-        //         return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
-        //     }
-        // }
-
         AcademicNavItem::create([
             'academic_site_id' => $site->id,
             'parent_id'        => $data['parent_id'] ?? null,
@@ -59,11 +86,14 @@ class AcademicNavController extends Controller
             'type'             => $data['type'],
             'external_url'     => $data['type'] === 'external' ? $data['external_url'] : null,
             'icon'             => $data['icon'] ?? null,
-            'position'         => AcademicNavItem::where('academic_site_id', $site->id)->where('parent_id', $data['parent_id'])->max('position') + 1,
+            'position'         => AcademicNavItem::where('academic_site_id', $site->id)
+                                    ->where('parent_id', $data['parent_id'] ?? null)
+                                    ->max('position') + 1,
             'status'           => $data['status'],
         ]);
 
-        return back()->with('success', 'Navigation item created successfully.');
+        return redirect()->route('admin.academic.sites.index', ['site_id' => $site->id])
+            ->with('success', 'Navigation item created successfully.');
     }
 
     /**
@@ -90,17 +120,6 @@ class AcademicNavController extends Controller
             'status'       => 'required|in:published,draft,archived',
         ]);
 
-        // If nav type is PAGE — enforce linked page must exist
-        // if ($data['type'] === 'page') {
-        //     $page = AcademicPage::where('academic_site_id', $item->academic_site_id)
-        //         ->where('slug', $data['slug'])
-        //         ->first();
-
-        //     if (!$page) {
-        //         return back()->with('warning', 'A page with matching slug does not exist. Create the page first.');
-        //     }
-        // }
-
         $item->update([
             'label'        => $data['label'],
             'slug'         => $data['slug'],
@@ -111,7 +130,8 @@ class AcademicNavController extends Controller
             'status'       => $data['status'],
         ]);
 
-        return back()->with('success', 'Navigation item updated successfully.');
+        return redirect()->route('admin.academic.sites.index', ['site_id' => $item->academic_site_id])
+            ->with('success', 'Navigation item updated successfully.');
     }
 
     /**

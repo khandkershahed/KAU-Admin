@@ -17,7 +17,7 @@
                     <label class="form-label fw-semibold">Group Name <span class="text-danger">*</span></label>
                     <input type="text" name="name" class="form-control form-control-sm"
                         value="{{ old('name', $group->name) }}" placeholder="Enter group name..." required>
-                </div>
+                </div> 
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary btn-sm">

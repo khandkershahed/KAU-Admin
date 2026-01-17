@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Frontend\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\AcademicSite;
-use App\Models\AcademicDepartment;
-use App\Models\AcademicNavItem;
+use App\Models\Gallery;
+use App\Models\AdminOffice;
 use App\Models\AcademicPage;
+use App\Models\AcademicSite;
+use App\Models\AcademicNavItem;
 use Illuminate\Http\JsonResponse;
+use App\Models\AcademicDepartment;
+use App\Http\Controllers\Controller;
 
 class CmsBundleController extends Controller
 {
@@ -71,6 +73,7 @@ class CmsBundleController extends Controller
 
         $home = $pages->firstWhere('is_home', true) ?: $pages->first();
 
+
         return [
             'owner' => [
                 'type' => $ownerType,
@@ -84,7 +87,7 @@ class CmsBundleController extends Controller
                 'short_description' => $site->short_description,
                 'theme_primary_color' => $site->theme_primary_color,
                 'theme_secondary_color' => $site->theme_secondary_color,
-                'logo_url' => $site->logo_path ? asset('storage/'.$site->logo_path) : null,
+                'logo_url' => $site->logo_path ? asset('storage/' . $site->logo_path) : null,
             ] : null,
             'department' => $department ? [
                 'id' => $department->id,
@@ -96,6 +99,31 @@ class CmsBundleController extends Controller
             'navigation' => $this->tree($navItems),
             'pages' => $pages->map(fn($p) => $this->pageShape($p))->values(),
             'home' => $home ? $this->pageShape($home) : null,
+            'galleries' => Gallery::query()
+                ->with('items')
+                ->where('owner_type', $ownerType)
+                ->where(function ($q) use ($ownerId) {
+                    if ($ownerId === null) $q->whereNull('owner_id');
+                    else $q->where('owner_id', $ownerId);
+                })
+                ->where('is_active', 1)
+                ->orderBy('position')
+                ->get()
+                ->map(fn($g) => [
+                    'id' => $g->id,
+                    'title' => $g->title,
+                    'slug' => $g->slug,
+                    'type' => $g->type,
+                    'items' => $g->items->map(fn($it) => [
+                        'id' => $it->id,
+                        'item_type' => $it->item_type,
+                        'title' => $it->title,
+                        'media_url' => $it->media_path ? asset('storage/' . $it->media_path) : null,
+                        'video_url' => $it->video_url,
+                        'position' => (int) $it->position,
+                    ])->values(),
+                ])->values(),
+
         ];
     }
 
@@ -153,7 +181,7 @@ class CmsBundleController extends Controller
         }
 
         $sortFn = function (&$nodes) use (&$sortFn) {
-            usort($nodes, fn($a,$b) => ($a['position'] ?? 0) <=> ($b['position'] ?? 0));
+            usort($nodes, fn($a, $b) => ($a['position'] ?? 0) <=> ($b['position'] ?? 0));
             foreach ($nodes as &$n) {
                 if (!empty($n['children'])) $sortFn($n['children']);
             }
@@ -161,5 +189,29 @@ class CmsBundleController extends Controller
         $sortFn($tree);
 
         return $tree;
+    }
+
+    public function office(string $slug)
+    {
+        $office = AdminOffice::where('slug', $slug)->where('is_active', 1)->firstOrFail();
+
+        $pages = AcademicPage::where('owner_type', 'office')
+            ->where('owner_id', $office->id)
+            ->where('status', 'published')
+            ->orderBy('position')
+            ->get();
+
+        $navItems = AcademicNavItem::where('owner_type', 'office')
+            ->where('owner_id', $office->id)
+            ->where('status', 'published')
+            ->orderBy('position')
+            ->get();
+
+        return response()->json([
+            'owner_type' => 'office',
+            'office' => $office,
+            'pages' => $pages,
+            'navigation' => $navItems,
+        ]);
     }
 }

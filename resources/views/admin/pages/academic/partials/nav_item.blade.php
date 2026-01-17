@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div class="d-flex align-items-center">
+    {{-- <div class="d-flex align-items-center">
         <button type="button" class="btn btn-light-success btn-sm me-2 editNavItemBtn"
             data-id="{{ $item->id }}"
             data-label="{{ $item->label }}"
@@ -48,7 +48,24 @@
         <a href="{{ route('admin.academic.nav.destroy', $item->id) }}" class="delete">
             <i class="fa-solid fa-trash text-danger fs-4"></i>
         </a>
+    </div> --}}
+    <div class="d-flex align-items-center">
+
+        <a href="{{ route('admin.academic.nav.create', $site->id) }}?parent_id={{ $item->id }}"
+            class="btn btn-light-primary btn-sm me-2" title="Add child item">
+            <i class="fa-solid fa-plus fs-6"></i>
+        </a>
+
+        <a href="{{ route('admin.academic.nav.edit', $item->id) }}" class="btn btn-light-success btn-sm me-2"
+            title="Edit item">
+            <i class="fa-solid fa-pen-to-square fs-6"></i>
+        </a>
+
+        <a href="{{ route('admin.academic.nav.destroy', $item->id) }}" class="delete">
+            <i class="fa-solid fa-trash text-danger fs-4"></i>
+        </a>
     </div>
+
 
 </li>
 

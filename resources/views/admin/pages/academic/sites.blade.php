@@ -159,10 +159,15 @@
                     @if (!$selectedSite)
                         <p class="text-muted">Select a site to manage its navigation.</p>
                     @else
-                        <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal"
+                        {{-- <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal"
                             data-bs-target="#createNavModal" data-site-id="{{ $selectedSite->id }}">
                             <i class="fa fa-plus me-2"></i> Add Root Nav Item
-                        </button>
+                        </button> --}}
+                        <a href="{{ route('admin.academic.nav.create', $selectedSite->id) }}"
+                            class="btn btn-sm btn-primary mb-3">
+                            <i class="fa fa-plus me-2"></i> Add Root Nav Item
+                        </a>
+
                         {{-- @php
                             $rootItems = $navItemsTree; // already root nodes
                         @endphp --}}
@@ -187,7 +192,7 @@
     {{-- MODALS --}}
     @include('admin.pages.academic.modals.group_modals')
     @include('admin.pages.academic.modals.site_modals')
-    @include('admin.pages.academic.modals.nav_modals')
+    {{-- @include('admin.pages.academic.modals.nav_modals') --}}
 
     @push('scripts')
         @include('admin.pages.academic.partials.sites_js')

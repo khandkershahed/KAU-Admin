@@ -38,11 +38,12 @@ return [
                 'route'      => 'admin.home_popups.index',
             ],
         ],
-
     ],
+
     [
         'title' => 'About Pages',
         'icon'  => 'fa-solid fa-circle-info fs-3',
+        'permission' => 'view about page',
         'routes' => [
             'admin.about.index',
             'admin.about.create',
@@ -54,64 +55,128 @@ return [
     [
         'title' => 'Notice Management',
         'icon'  => 'fa-solid fa-bullhorn fs-3',
-        'routes' => ['admin.notice-category.index', 'admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
-        'route'      => 'admin.notice.index',
-        // 'subMenu' => [
-        //     [
-        //         'title'      => 'Manage Notices',
-        //         'permission' => 'view notice',
-        //         'routes'     => [
-        //             'admin.notice.index',
-        //             'admin.notice.create',
-        //             'admin.notice.edit',
-        //         ],
-        //         'route'      => 'admin.notice.index',
-        //     ],
-        // ],
+        'routes' => [
+            'admin.notice-category.index',
+            'admin.notice.index',
+            'admin.notice.create',
+            'admin.notice.edit',
+        ],
+        'subMenu' => [
+            [
+                'title'      => 'Notice Categories',
+                'permission' => 'view notice category',
+                'routes'     => ['admin.notice-category.index'],
+                'route'      => 'admin.notice-category.index',
+            ],
+            [
+                'title'      => 'Notices',
+                'permission' => 'view notice',
+                'routes'     => ['admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
+                'route'      => 'admin.notice.index',
+            ],
+        ],
     ],
+
     [
         'title' => 'News Management',
         'icon'  => 'fa-solid fa-newspaper fs-3',
+        'permission' => 'view news',
         'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
         'route' => 'admin.news.index',
-        // 'subMenu' => [
-        //     [
-        //         'title' => 'All News',
-        //         'permission' => 'view news',
-        //         'routes' => ['admin.news.index', 'admin.news.create', 'admin.news.edit'],
-        //         'route' => 'admin.news.index',
-        //     ],
-        // ],
     ],
 
+
+    // |--------------------------------------------------------------
+    // | NOTE (Future steps)
+    // |--------------------------------------------------------------
+    // | Events, Tenders and Galleries controllers/views exist in your
+    // | project, but the admin routes are planned to be added in:
+    // |   - Step 7: Gallery Integration (admin routes + frontend binding)
+    // |   - Step 8: Public/Admin APIs for Events/Tenders
+    // |
+    // | After those steps, we will uncomment these menu items.
+
     [
-        'title' => 'Administration Panel',
+        'title' => 'Events',
+        'icon'  => 'fa-solid fa-calendar-days fs-3',
+        'permission' => 'view events',
+        'routes' => ['admin.events.index', 'admin.events.create', 'admin.events.edit'],
+        'route' => 'admin.events.index',
+    ],
+    [
+        'title' => 'Tenders',
+        'icon'  => 'fa-solid fa-file-contract fs-3',
+        'permission' => 'view tenders',
+        'routes' => ['admin.tenders.index', 'admin.tenders.create', 'admin.tenders.edit'],
+        'route' => 'admin.tenders.index',
+    ],
+    [
+        'title' => 'Galleries',
+        'icon'  => 'fa-solid fa-images fs-3',
+        'permission' => 'view gallery',
+        'routes' => ['admin.galleries.index', 'admin.galleries.create', 'admin.galleries.edit'],
+        'route' => 'admin.galleries.index',
+    ],
+
+
+    [
+        'title' => 'Administration',
         'icon'  => 'fa-solid fa-sitemap fs-3',
         'routes' => [
+            // Structure
             'admin.administration.index',
+            'admin.administration.group.create',
+            'admin.administration.group.edit',
+            'admin.administration.office.create',
+            'admin.administration.office.edit',
             'admin.administration.office.page',
+            'admin.administration.section.create',
+            'admin.administration.section.edit',
+            'admin.administration.member.create',
+            'admin.administration.member.edit',
+            // Office CMS
+            'admin.office.cms.dashboard',
+            'admin.office.cms.pages.index',
+            'admin.office.cms.pages.create',
+            'admin.office.cms.pages.edit',
+            'admin.office.cms.menu.index',
+            'admin.office.cms.menu.create',
+            'admin.office.cms.menu.edit',
         ],
-        'route' => 'admin.administration.index',
-        // 'subMenu' => [
-
-        //     [
-        //         'title'      => 'Administration Offices',
-        //         'permission' => 'view admin office',
-        //         'routes' => [
-        //             'admin.administration.index',
-        //         ],
-        //         'route' => 'admin.administration.index',
-        //     ],
-
-        //     [
-        //         'title'      => 'Administration Members',
-        //         'permission' => 'view admin member',
-        //         'routes' => [
-        //             'admin.administration.office.page',
-        //         ],
-        //         'route' => 'admin.administration.index',
-        //     ],
-        // ],
+        'subMenu' => [
+            [
+                'title'      => 'Administration Structure',
+                'permission' => 'view admin office',
+                'routes'     => [
+                    'admin.administration.index',
+                    'admin.administration.group.create',
+                    'admin.administration.group.edit',
+                    'admin.administration.office.create',
+                    'admin.administration.office.edit',
+                    'admin.administration.office.page',
+                    'admin.administration.section.create',
+                    'admin.administration.section.edit',
+                    'admin.administration.member.create',
+                    'admin.administration.member.edit',
+                ],
+                'route'      => 'admin.administration.index',
+            ],
+            [
+                'title'      => 'Office CMS (Pages & Menu)',
+                'permission' => 'view admin section',
+                'routes'     => [
+                    'admin.office.cms.dashboard',
+                    'admin.office.cms.pages.index',
+                    'admin.office.cms.pages.create',
+                    'admin.office.cms.pages.edit',
+                    'admin.office.cms.menu.index',
+                    'admin.office.cms.menu.create',
+                    'admin.office.cms.menu.edit',
+                ],
+                // Office CMS routes need {slug}. Link to structure index so admin can pick an office.
+                'route'      => 'admin.administration.index',
+            ],
+        ],
     ],
 
     [
@@ -120,6 +185,8 @@ return [
         'routes' => [
             'admin.academic.sites.index',
             'admin.academic.pages.index',
+            'admin.academic.pages.create',
+            'admin.academic.pages.edit',
             'admin.academic.staff.index',
         ],
         'subMenu' => [
@@ -136,6 +203,8 @@ return [
                 'permission' => 'view academic pages',
                 'routes' => [
                     'admin.academic.pages.index',
+                    'admin.academic.pages.create',
+                    'admin.academic.pages.edit',
                 ],
                 'route' => 'admin.academic.pages.index',
             ],
@@ -150,7 +219,6 @@ return [
         ],
     ],
 
-
     [
         'title' => 'Admission Panel',
         'icon'  => 'fa-solid fa-user-graduate fs-3',
@@ -160,20 +228,45 @@ return [
             'admin.admission.edit',
         ],
         'route' => 'admin.admission.index',
-        // 'subMenu' => [
+    ],
 
-        //     [
-        //         'title'      => 'Admission Menu & Pages',
-        //         'permission' => 'view admission',
-        //         'routes' => [
-        //             'admin.admission.index',
-        //             'admin.admission.create',
-        //             'admin.admission.edit',
-        //         ],
-        //         'route' => 'admin.admission.index',
-        //     ],
+    [
+        'title' => 'Main CMS',
+        'icon'  => 'fa-solid fa-layer-group fs-3',
+        'routes' => [
+            'admin.cms.main.menu.index',
+            'admin.cms.main.menu.create',
+            'admin.cms.main.menu.edit',
 
-        // ],
+            'admin.cms.main.pages.index',
+            'admin.cms.main.pages.create',
+            'admin.cms.main.pages.edit',
+
+            // galleries already exist in your app
+            'admin.galleries.index',
+            'admin.galleries.create',
+            'admin.galleries.edit',
+        ],
+        'subMenu' => [
+            [
+                'title' => 'Main Menu Builder',
+                'icon'  => 'fa-solid fa-bars fs-3',
+                'route' => 'admin.cms.main.menu.index',
+                'permission' => 'view academic sites',
+            ],
+            [
+                'title' => 'Main Page Builder',
+                'icon'  => 'fa-solid fa-file-lines fs-3',
+                'route' => 'admin.cms.main.pages.index',
+                'permission' => 'view academic pages',
+            ],
+            [
+                'title' => 'Galleries',
+                'icon'  => 'fa-solid fa-images fs-3',
+                'route' => 'admin.galleries.index',
+                'permission' => 'view galleries',
+            ],
+        ],
     ],
 
 
@@ -207,19 +300,6 @@ return [
                 'routes' => ['admin.contact.index', 'admin.contact.create', 'admin.contact.edit'],
                 'route' => 'admin.contact.index',
             ],
-            // [
-            //     'title' => 'User List',
-            //     'permission' => 'view user',
-            //     'routes' => ['admin.user.index', 'admin.user.create', 'admin.user.edit'],
-            //     'route' => 'admin.user.index',
-            // ],
-
-            // [
-            //     'title' => 'Subscription',
-            //     'permission' => 'view subscription',
-            //     'routes' => ['admin.subscription.index', 'admin.subscription.create', 'admin.subscription.edit'],
-            //     'route' => 'admin.subscription.index',
-            // ],
         ],
     ],
 
@@ -231,19 +311,35 @@ return [
     [
         'title' => 'Staff Management',
         'icon' => 'fa-solid fa-user-shield fs-3',
-        'routes' => ['admin.staff.index', 'admin.roles.index'],
+        'routes' => [
+            'admin.staff.index',
+            'admin.staff.create',
+            'admin.staff.edit',
+            'admin.roles.index',
+            'admin.roles.create',
+            'admin.roles.edit',
+            'admin.permission.index',
+            'admin.permission.create',
+            'admin.permission.edit',
+        ],
         'subMenu' => [
             [
-                'title' => 'Staff',
+                'title' => 'Staff / Admins',
                 'permission' => 'view staff',
                 'routes' => ['admin.staff.index', 'admin.staff.create', 'admin.staff.edit'],
                 'route' => 'admin.staff.index',
             ],
             [
-                'title' => 'Roles & Permission',
+                'title' => 'Roles',
                 'permission' => 'view role',
                 'routes' => ['admin.roles.index', 'admin.roles.create', 'admin.roles.edit'],
                 'route' => 'admin.roles.index',
+            ],
+            [
+                'title' => 'Permissions',
+                'permission' => 'view permission',
+                'routes' => ['admin.permission.index', 'admin.permission.create', 'admin.permission.edit'],
+                'route' => 'admin.permission.index',
             ],
         ],
     ],
@@ -284,12 +380,4 @@ return [
             ],
         ],
     ],
-
-
-
-
-
-
-
-
 ];

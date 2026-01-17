@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\HomepageController;
 use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Admin\AdmissionController;
 use App\Http\Controllers\Admin\HomePopupController;
+use App\Http\Controllers\Admin\OfficeCmsController;
+use App\Http\Controllers\Admin\OfficeMenuController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\AcademicNavController;
@@ -31,6 +33,7 @@ use App\Http\Controllers\Admin\NoticeCategoryController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AcademicContentController;
 use App\Http\Controllers\Admin\Auth\NewPasswordController;
+use App\Http\Controllers\Admin\AcademicPageBlockController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\AcademicDepartmentStaffController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
@@ -233,7 +236,52 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/member/sort',   [OfficeStaffController::class, 'memberSort'])->name('member.sort');
     });
 
+    // Main CMS
+    Route::prefix('admin/cms/main')->name('admin.cms.main.')->group(function () {
+
+        // Main Menu Builder
+        Route::get('/menu', [MainMenuController::class, 'index'])->name('menu.index');
+        Route::get('/menu/create', [MainMenuController::class, 'create'])->name('menu.create');
+        Route::post('/menu', [MainMenuController::class, 'store'])->name('menu.store');
+        Route::get('/menu/{item}/edit', [MainMenuController::class, 'edit'])->name('menu.edit');
+        Route::post('/menu/{item}', [MainMenuController::class, 'update'])->name('menu.update');
+        Route::delete('/menu/{item}', [MainMenuController::class, 'destroy'])->name('menu.destroy');
+        Route::post('/menu/sort', [MainMenuController::class, 'sort'])->name('menu.sort');
+
+        // Main Page Builder
+        Route::get('/pages', [MainPageController::class, 'index'])->name('pages.index');
+        Route::get('/pages/create', [MainPageController::class, 'create'])->name('pages.create');
+        Route::post('/pages', [MainPageController::class, 'store'])->name('pages.store');
+        Route::get('/pages/{page}/edit', [MainPageController::class, 'edit'])->name('pages.edit');
+        Route::post('/pages/{page}', [MainPageController::class, 'update'])->name('pages.update');
+        Route::delete('/pages/{page}', [MainPageController::class, 'destroy'])->name('pages.destroy');
+    });
+    
     // Admission
+
+    Route::prefix('office/{slug}/cms')->name('office.cms.')->group(function () {
+
+        // Dashboard
+        Route::get('/', [OfficeCmsController::class, 'dashboard'])->name('dashboard');
+
+        // Pages
+        Route::get('/pages', [OfficeCmsController::class, 'pagesIndex'])->name('pages.index');
+        Route::get('/pages/create', [OfficeCmsController::class, 'pagesCreate'])->name('pages.create');
+        Route::post('/pages/store', [OfficeCmsController::class, 'pagesStore'])->name('pages.store');
+        Route::get('/pages/{page}/edit', [OfficeCmsController::class, 'pagesEdit'])->name('pages.edit');
+        Route::post('/pages/{page}/update', [OfficeCmsController::class, 'pagesUpdate'])->name('pages.update');
+        Route::delete('/pages/{page}/delete', [OfficeCmsController::class, 'pagesDestroy'])->name('pages.destroy');
+
+        // Menu
+        Route::get('/menu', [OfficeMenuController::class, 'index'])->name('menu.index');
+        Route::get('/menu/create', [OfficeMenuController::class, 'create'])->name('menu.create');
+        Route::post('/menu/store', [OfficeMenuController::class, 'store'])->name('menu.store');
+        Route::get('/menu/{item}/edit', [OfficeMenuController::class, 'edit'])->name('menu.edit');
+        Route::post('/menu/{item}/update', [OfficeMenuController::class, 'update'])->name('menu.update');
+        Route::delete('/menu/{item}/delete', [OfficeMenuController::class, 'destroy'])->name('menu.destroy');
+        Route::post('/menu/sort', [OfficeMenuController::class, 'sort'])->name('menu.sort');
+    });
+
     Route::controller(AdmissionController::class)->prefix('admission')->name('admission.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
@@ -244,8 +292,6 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/sort/parents', 'sortParents')->name('sort.parents');
         Route::post('/sort/children', 'sortChildren')->name('sort.children');
     });
-
-
 
     Route::prefix('academic')->name('academic.')->group(function () {
 
@@ -276,17 +322,52 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::delete('/nav/{item}', [AcademicNavController::class, 'destroy'])->name('nav.destroy');
         Route::post('/sites/{site}/nav/sort', [AcademicNavController::class, 'sort'])->name('nav.sort');
 
+        Route::get('/sites/{site}/nav/create', [AcademicNavController::class, 'create'])->name('nav.create');
+        Route::get('/nav/{item}/edit', [AcademicNavController::class, 'edit'])->name('nav.edit');
+
 
         /*
         |--------------------------------------------------------------------------
         | MODULE 2: Academic Pages
         |--------------------------------------------------------------------------
         */
-        Route::get('/pages', [AcademicContentController::class, 'index'])->name('pages.index');
-        Route::post('/pages', [AcademicContentController::class, 'storePage'])->name('pages.store');
-        Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])->name('pages.update');
-        Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])->name('pages.destroy');
+        // Route::get('/pages', [AcademicContentController::class, 'index'])->name('pages.index');
+        // Route::post('/pages', [AcademicContentController::class, 'storePage'])->name('pages.store');
+        // Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])->name('pages.update');
+        // Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])->name('pages.destroy');
 
+        // Academic Pages (Split UI: index + create + edit)
+        Route::get('/pages', [AcademicContentController::class, 'index'])
+            ->name('pages.index');
+
+        Route::get('/pages/create', [AcademicContentController::class, 'create'])
+            ->name('pages.create');
+
+        Route::post('/pages', [AcademicContentController::class, 'storePage'])
+            ->name('pages.store');
+
+        Route::get('/pages/{page}/edit', [AcademicContentController::class, 'edit'])
+            ->name('pages.edit');
+
+        Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])
+            ->name('pages.update');
+
+        Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])
+            ->name('pages.destroy');
+
+
+        // Page Blocks (Builder)
+        Route::post('/pages/{page}/blocks', [AcademicPageBlockController::class, 'store'])
+            ->name('pages.blocks.store');
+
+        Route::post('/pages/{page}/blocks/{block}', [AcademicPageBlockController::class, 'update'])
+            ->name('pages.blocks.update');
+
+        Route::delete('/pages/{page}/blocks/{block}', [AcademicPageBlockController::class, 'destroy'])
+            ->name('pages.blocks.destroy');
+
+        Route::post('/pages/{page}/blocks-sort', [AcademicPageBlockController::class, 'sort'])
+            ->name('pages.blocks.sort');
 
         /*
         |--------------------------------------------------------------------------

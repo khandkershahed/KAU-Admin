@@ -5,9 +5,16 @@ use App\Http\Controllers\Admin\HomePopupController;
 use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\Api\HomeApiController;
+use App\Http\Controllers\Frontend\Api\MenuApiController;
 use App\Http\Controllers\Frontend\Api\UserApiController;
+use App\Http\Controllers\Frontend\Api\EventApiController;
 use App\Http\Controllers\Frontend\Api\CmsBundleController;
+use App\Http\Controllers\Frontend\Api\NoticeApiController;
+use App\Http\Controllers\Frontend\Api\SearchApiController;
+use App\Http\Controllers\Frontend\Api\TenderApiController;
 use App\Http\Controllers\Frontend\Api\AcademicApiController;
+use App\Http\Controllers\Frontend\Api\PageAliasApiController;
+use App\Http\Controllers\Frontend\Api\OfficeAliasApiController;
 use App\Http\Controllers\Frontend\Api\AcademicDepartmentApiController;
 
 
@@ -40,8 +47,31 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/site-informations', [HomeApiController::class, 'siteInformations']);
     Route::get('/footer', [HomeApiController::class, 'footer']);
     Route::post('/contact/add', [HomeApiController::class, 'contactStore']);
+    Route::get('/cms/office/{slug}', [CmsBundleController::class, 'office']);
 
+    Route::get('/menus', [MenuApiController::class, 'index']);
 
+    // Events
+    Route::get('/events', [EventApiController::class, 'index']);
+    Route::get('/events/{slug}', [EventApiController::class, 'show']);
+
+    // Tenders
+    Route::get('/tenders', [TenderApiController::class, 'index']);
+    Route::get('/tenders/{slug}', [TenderApiController::class, 'show']);
+
+    // Page alias (main pages)
+    Route::get('/page/{slug}', [PageAliasApiController::class, 'show']);
+
+    // Notices (category filter support)
+    Route::get('/notices', [NoticeApiController::class, 'index']);
+    Route::get('/notice/{slug}', [NoticeApiController::class, 'show']);
+
+    // Offices alias routes
+    Route::get('/offices/{slug}', [OfficeAliasApiController::class, 'show']);
+    Route::get('/offices/page/{pageSlug}', [OfficeAliasApiController::class, 'page']);
+
+    // Search
+    Route::get('/search', [SearchApiController::class, 'index']);
 
     // Home
 

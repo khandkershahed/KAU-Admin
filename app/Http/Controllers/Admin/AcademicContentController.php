@@ -15,69 +15,97 @@ class AcademicContentController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view academic pages')->only(['index']);
-        $this->middleware('permission:create academic pages')->only(['storePage']);
-        $this->middleware('permission:edit academic pages')->only(['updatePage']);
+        $this->middleware('permission:create academic pages')->only(['create', 'storePage']);
+        $this->middleware('permission:edit academic pages')->only(['edit', 'updatePage']);
         $this->middleware('permission:delete academic pages')->only(['destroyPage']);
     }
 
-    /* ========================================================================== 
-        INDEX
+    /* ==========================================================================
+        INDEX (LIST ONLY)
        ========================================================================== */
-
     public function index(Request $request)
     {
         $sites = AcademicSite::orderBy('position')->get();
         $siteId = $request->get('site_id', optional($sites->first())->id);
 
-        $mode = $request->get('mode', null); // create | edit | null
-        $editingPage = null;
-
         $selectedSite = null;
         $pages = collect();
+
+        if ($siteId) {
+            $selectedSite = AcademicSite::find($siteId);
+
+            if ($selectedSite) {
+                $pages = AcademicPage::where('academic_site_id', $siteId)
+                    ->orderByDesc('is_home')
+                    ->orderBy('position')
+                    ->orderBy('id')
+                    ->get();
+            }
+        }
+
+        return view('admin.pages.academic.pages.index', [
+            'sites'        => $sites,
+            'selectedSite' => $selectedSite,
+            'pages'        => $pages,
+        ]);
+    }
+
+    /* ==========================================================================
+        CREATE (FORM PAGE)
+       ========================================================================== */
+    public function create(Request $request)
+    {
+        $sites = AcademicSite::orderBy('position')->get();
+        $siteId = $request->get('site_id', optional($sites->first())->id);
+
+        $selectedSite = null;
         $navItems = collect();
 
         if ($siteId) {
             $selectedSite = AcademicSite::find($siteId);
 
             if ($selectedSite) {
-
-                $pages = AcademicPage::where('academic_site_id', $siteId)
-                    ->orderByDesc('is_home')
-                    ->orderBy('position')
-                    ->orderBy('id')
-                    ->get();
-
                 $navItems = AcademicNavItem::where('academic_site_id', $siteId)
                     ->where('type', 'page')
                     ->orderBy('position')
                     ->orderBy('id')
                     ->get();
-
-                // When editing, load the page
-                if ($mode === 'edit' && $request->filled('page_id')) {
-                    $editingPage = AcademicPage::where('academic_site_id', $siteId)
-                        ->where('id', $request->page_id)
-                        ->first();
-                }
             }
         }
 
-        return view('admin.pages.academic.pages', [
+        return view('admin.pages.academic.pages.create', [
             'sites'        => $sites,
             'selectedSite' => $selectedSite,
-            'pages'        => $pages,
             'navItems'     => $navItems,
-
-            'mode'         => $mode,          // <-- FIXED
-            'editingPage'  => $editingPage,   // <-- FIXED
+            'page'         => null,
         ]);
     }
 
+    /* ==========================================================================
+        EDIT (FORM PAGE)
+       ========================================================================== */
+    public function edit(AcademicPage $page, Request $request)
+    {
+        $sites = AcademicSite::orderBy('position')->get();
+        $selectedSite = AcademicSite::find($page->academic_site_id);
+
+        $navItems = AcademicNavItem::where('academic_site_id', $page->academic_site_id)
+            ->where('type', 'page')
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get();
+
+        return view('admin.pages.academic.pages.edit', [
+            'sites'        => $sites,
+            'selectedSite' => $selectedSite,
+            'navItems'     => $navItems,
+            'page'         => $page,
+        ]);
+    }
 
     /* ==========================================================================
         IMAGE HANDLER (reusable)
        ========================================================================== */
-
     protected function handleImages(Request $request, ?AcademicPage $page = null): array
     {
         $bannerImage = $page?->banner_image;
@@ -101,9 +129,8 @@ class AcademicContentController extends Controller
     }
 
     /* ==========================================================================
-        STORE PAGE (STRICT VERSION)
+        STORE PAGE (STRICT VERSION)  [UNCHANGED LOGIC]
        ========================================================================== */
-
     public function storePage(Request $request)
     {
         $data = $request->validate([
@@ -136,9 +163,6 @@ class AcademicContentController extends Controller
 
         $site = AcademicSite::findOrFail($data['academic_site_id']);
 
-        /* -----------------------------
-            Validate Navigation Item
-        ------------------------------*/
         $navItem = AcademicNavItem::where('academic_site_id', $site->id)
             ->where('id', $data['nav_item_id'])
             ->firstOrFail();
@@ -147,7 +171,6 @@ class AcademicContentController extends Controller
             return back()->with('error', 'Selected navigation item is not a PAGE type menu.');
         }
 
-        // forced sync
         $data['slug'] = $navItem->slug;
         $data['page_key'] = $navItem->menu_key;
 
@@ -200,9 +223,8 @@ class AcademicContentController extends Controller
     }
 
     /* ==========================================================================
-        UPDATE PAGE (STRICT VERSION)
+        UPDATE PAGE (STRICT VERSION) [UNCHANGED LOGIC]
        ========================================================================== */
-
     public function updatePage(AcademicPage $page, Request $request)
     {
         $data = $request->validate([
@@ -234,9 +256,6 @@ class AcademicContentController extends Controller
 
         $site = AcademicSite::findOrFail($page->academic_site_id);
 
-        /* -----------------------------
-            Validate Navigation Item
-        ------------------------------*/
         $navItem = AcademicNavItem::where('academic_site_id', $site->id)
             ->where('id', $data['nav_item_id'])
             ->firstOrFail();
@@ -245,7 +264,6 @@ class AcademicContentController extends Controller
             return back()->with('error', 'Selected navigation item is not a PAGE type menu.');
         }
 
-        // forced sync
         $data['slug'] = $navItem->slug;
         $data['page_key'] = $navItem->menu_key;
 
@@ -299,9 +317,8 @@ class AcademicContentController extends Controller
     }
 
     /* ==========================================================================
-        DELETE PAGE (AJAX PATTERN)
+        DELETE PAGE (AJAX PATTERN) [UNCHANGED LOGIC]
        ========================================================================== */
-
     public function destroyPage(AcademicPage $page)
     {
         if ($page->banner_image) {

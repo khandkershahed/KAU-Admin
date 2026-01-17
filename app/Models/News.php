@@ -27,6 +27,8 @@ class News extends Model
         'category',
         'tags',
         'status',
+        'owner_type',
+        'owner_id',
     ];
 
     protected $casts = [

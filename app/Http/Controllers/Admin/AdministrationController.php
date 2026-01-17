@@ -52,7 +52,7 @@ class AdministrationController extends Controller
     /* =====================================================
         GROUP STORE
     ====================================================== */
-    
+
     /* =====================================================
         GROUP PAGES (NO MODALS)
     ====================================================== */
@@ -87,7 +87,7 @@ class AdministrationController extends Controller
     }
 
 
-public function groupStore(Request $request)
+    public function groupStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name'  => 'required|string|max:255'
@@ -164,7 +164,7 @@ public function groupStore(Request $request)
 
     /* =====================================================
         GROUP DELETE  (DELETE METHOD)
-    ====================================================== */ 
+    ====================================================== */
     public function groupDelete(string $id)
     {
         $group = AdminGroup::findOrFail($id);

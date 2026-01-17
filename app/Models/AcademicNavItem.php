@@ -12,12 +12,16 @@ class AcademicNavItem extends Model
 
     protected $fillable = [
         'academic_site_id',
+        // owner-based menus (main / site / department / office)
+        'owner_type',
+        'owner_id',
         'parent_id',
         'label',
         'slug',
         'menu_key',
-        'type',
+        'type',          // route|page|external|group
         'external_url',
+        'menu_location', // navbar|topbar
         'icon',
         'position',
         'status',
