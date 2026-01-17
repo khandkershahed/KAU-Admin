@@ -57,9 +57,14 @@ class MainMenuController extends Controller
         $item = AcademicNavItem::query()
             ->where('owner_type', 'main')
             ->whereNull('owner_id')
-            ->where('menu_location', $location)
             ->where('id', $item)
             ->firstOrFail();
+
+        if ($item->menu_location !== $location) {
+            return redirect()->route('admin.cms.main.menu.index', [
+                'menu_location' => $item->menu_location,
+            ]);
+        }
 
         $parents = AcademicNavItem::query()
             ->where('owner_type', 'main')
@@ -78,7 +83,7 @@ class MainMenuController extends Controller
         $data = $request->validate([
             'menu_location' => 'required|in:navbar,topbar',
             'label' => 'required|string|max:255',
-            'slug'  => [
+            'slug' => [
                 'required', 'string', 'max:255',
                 Rule::unique('academic_nav_items', 'slug')->where(function ($q) use ($request) {
                     return $q->where('owner_type', 'main')
@@ -145,7 +150,7 @@ class MainMenuController extends Controller
         $data = $request->validate([
             'menu_location' => 'required|in:navbar,topbar',
             'label' => 'required|string|max:255',
-            'slug'  => [
+            'slug' => [
                 'required', 'string', 'max:255',
                 Rule::unique('academic_nav_items', 'slug')
                     ->ignore($item->id)
@@ -204,7 +209,10 @@ class MainMenuController extends Controller
 
         $item->delete();
 
-        return response()->json(['success' => true, 'message' => 'Menu item deleted successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Menu item deleted successfully.',
+        ]);
     }
 
     public function sort(Request $request)
@@ -229,6 +237,9 @@ class MainMenuController extends Controller
                 ]);
         }
 
-        return response()->json(['success' => true, 'message' => 'Menu order updated.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Menu order updated.',
+        ]);
     }
 }
