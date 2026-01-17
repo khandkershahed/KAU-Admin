@@ -236,6 +236,30 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/member/update', [OfficeStaffController::class, 'memberUpdate'])->name('member.update');
         Route::delete('/member/delete/{id}', [OfficeStaffController::class, 'memberDelete'])->name('member.delete');
         Route::post('/member/sort',   [OfficeStaffController::class, 'memberSort'])->name('member.sort');
+
+
+        Route::prefix('office/{slug}/cms')->name('office.cms.')->group(function () {
+
+            // Dashboard
+            Route::get('/', [OfficeCmsController::class, 'dashboard'])->name('dashboard');
+
+            // Pages
+            Route::get('/pages', [OfficeCmsController::class, 'pagesIndex'])->name('pages.index');
+            Route::get('/pages/create', [OfficeCmsController::class, 'pagesCreate'])->name('pages.create');
+            Route::post('/pages/store', [OfficeCmsController::class, 'pagesStore'])->name('pages.store');
+            Route::get('/pages/{page}/edit', [OfficeCmsController::class, 'pagesEdit'])->name('pages.edit');
+            Route::post('/pages/{page}/update', [OfficeCmsController::class, 'pagesUpdate'])->name('pages.update');
+            Route::delete('/pages/{page}/delete', [OfficeCmsController::class, 'pagesDestroy'])->name('pages.destroy');
+
+            // Menu
+            Route::get('/menu', [OfficeMenuController::class, 'index'])->name('menu.index');
+            Route::get('/menu/create', [OfficeMenuController::class, 'create'])->name('menu.create');
+            Route::post('/menu/store', [OfficeMenuController::class, 'store'])->name('menu.store');
+            Route::get('/menu/{item}/edit', [OfficeMenuController::class, 'edit'])->name('menu.edit');
+            Route::post('/menu/{item}/update', [OfficeMenuController::class, 'update'])->name('menu.update');
+            Route::delete('/menu/{item}/delete', [OfficeMenuController::class, 'destroy'])->name('menu.destroy');
+            Route::post('/menu/sort', [OfficeMenuController::class, 'sort'])->name('menu.sort');
+        });
     });
 
     // Main CMS
@@ -261,28 +285,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
     // Admission
 
-    Route::prefix('office/{slug}/cms')->name('office.cms.')->group(function () {
 
-        // Dashboard
-        Route::get('/', [OfficeCmsController::class, 'dashboard'])->name('dashboard');
-
-        // Pages
-        Route::get('/pages', [OfficeCmsController::class, 'pagesIndex'])->name('pages.index');
-        Route::get('/pages/create', [OfficeCmsController::class, 'pagesCreate'])->name('pages.create');
-        Route::post('/pages/store', [OfficeCmsController::class, 'pagesStore'])->name('pages.store');
-        Route::get('/pages/{page}/edit', [OfficeCmsController::class, 'pagesEdit'])->name('pages.edit');
-        Route::post('/pages/{page}/update', [OfficeCmsController::class, 'pagesUpdate'])->name('pages.update');
-        Route::delete('/pages/{page}/delete', [OfficeCmsController::class, 'pagesDestroy'])->name('pages.destroy');
-
-        // Menu
-        Route::get('/menu', [OfficeMenuController::class, 'index'])->name('menu.index');
-        Route::get('/menu/create', [OfficeMenuController::class, 'create'])->name('menu.create');
-        Route::post('/menu/store', [OfficeMenuController::class, 'store'])->name('menu.store');
-        Route::get('/menu/{item}/edit', [OfficeMenuController::class, 'edit'])->name('menu.edit');
-        Route::post('/menu/{item}/update', [OfficeMenuController::class, 'update'])->name('menu.update');
-        Route::delete('/menu/{item}/delete', [OfficeMenuController::class, 'destroy'])->name('menu.destroy');
-        Route::post('/menu/sort', [OfficeMenuController::class, 'sort'])->name('menu.sort');
-    });
 
     Route::controller(AdmissionController::class)->prefix('admission')->name('admission.')->group(function () {
         Route::get('/', 'index')->name('index');

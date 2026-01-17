@@ -77,63 +77,131 @@
                         // Prevent double init
                         if (tinymce.get(id)) return;
 
+                        // tinymce.init({
+                        //     selector: '#' + CSS.escape(id),
+
+                        //     // Force TinyMCE to load its assets from cdnjs, not /admin/assets/...
+                        //     base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
+                        //     suffix: '.min',
+
+                        //     height: 550,
+
+                        //     plugins: 'image link media table lists code fullscreen',
+
+                        //     // ✅ Includes text color and highlight
+                        //     toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
+
+                        //     menubar: 'file edit view insert format tools table help',
+
+                        //     // ✅ Table features (row/column etc.)
+                        //     table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+                        //     contextmenu: 'link image table',
+
+                        //     // ✅ Helps inside modals / overflow containers
+                        //     fixed_toolbar_container: 'body',
+
+                        //     content_style: "body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:14px; }",
+
+                        //     images_upload_url: '{{ route('admin.editor.upload') }}',
+                        //     automatic_uploads: true,
+
+                        //     // TinyMCE 6: MUST return a Promise
+                        //     images_upload_handler: function(blobInfo, progress) {
+                        //         return new Promise(function(resolve, reject) {
+                        //             var xhr = new XMLHttpRequest();
+                        //             xhr.withCredentials = false;
+                        //             xhr.open('POST', '{{ route('admin.editor.upload') }}');
+                        //             xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+
+                        //             xhr.upload.onprogress = function(e) {
+                        //                 if (e.lengthComputable) {
+                        //                     progress(e.loaded / e.total * 100);
+                        //                 }
+                        //             };
+
+                        //             xhr.onload = function() {
+                        //                 if (xhr.status < 200 || xhr.status >= 300) {
+                        //                     reject('HTTP Error: ' + xhr.status);
+                        //                     return;
+                        //                 }
+
+                        //                 var json;
+                        //                 try {
+                        //                     json = JSON.parse(xhr.responseText || '{}');
+                        //                 } catch (e) {
+                        //                     reject('Invalid JSON: ' + xhr.responseText);
+                        //                     return;
+                        //                 }
+
+                        //                 if (!json || typeof json.location !== 'string') {
+                        //                     reject('Invalid JSON: ' + xhr.responseText);
+                        //                     return;
+                        //                 }
+
+                        //                 resolve(json.location);
+                        //             };
+
+                        //             xhr.onerror = function() {
+                        //                 reject(
+                        //                     'Image upload failed due to a XHR Transport error.'
+                        //                     );
+                        //             };
+
+                        //             var formData = new FormData();
+                        //             formData.append('file', blobInfo.blob(), blobInfo
+                        //                 .filename());
+                        //             xhr.send(formData);
+                        //         });
+                        //     }
+                        // });
                         tinymce.init({
                             selector: '#' + CSS.escape(id),
 
-                            // Force TinyMCE to load its assets from cdnjs, not /admin/assets/...
                             base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
                             suffix: '.min',
 
                             height: 550,
 
-                            plugins: 'image link media table lists code fullscreen',
+                            plugins: 'image link media table lists code fullscreen paste',
 
-                            // ✅ Includes text color and highlight
                             toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table | link image media | code fullscreen',
 
                             menubar: 'file edit view insert format tools table help',
 
-                            // ✅ Table features (row/column etc.)
                             table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
                             contextmenu: 'link image table',
 
-                            // ✅ Helps inside modals / overflow containers
                             fixed_toolbar_container: 'body',
 
                             content_style: "body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-size:14px; }",
 
-                            images_upload_url: '{{ route('admin.editor.upload') }}',
-                            automatic_uploads: true,
+                            /* 🔴 CRITICAL FIXES */
+                            relative_urls: false,
+                            remove_script_host: false,
+                            convert_urls: false,
+                            document_base_url: '{{ url('/') }}/',
 
-                            // TinyMCE 6: MUST return a Promise
+                            paste_data_images: true,
+                            automatic_uploads: true,
+                            images_reuse_filename: false,
+
+                            images_upload_url: '{{ route('admin.editor.upload') }}',
+
                             images_upload_handler: function(blobInfo, progress) {
                                 return new Promise(function(resolve, reject) {
                                     var xhr = new XMLHttpRequest();
-                                    xhr.withCredentials = false;
                                     xhr.open('POST', '{{ route('admin.editor.upload') }}');
                                     xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
-                                    xhr.upload.onprogress = function(e) {
-                                        if (e.lengthComputable) {
-                                            progress(e.loaded / e.total * 100);
-                                        }
-                                    };
-
                                     xhr.onload = function() {
-                                        if (xhr.status < 200 || xhr.status >= 300) {
+                                        if (xhr.status !== 200) {
                                             reject('HTTP Error: ' + xhr.status);
                                             return;
                                         }
 
-                                        var json;
-                                        try {
-                                            json = JSON.parse(xhr.responseText || '{}');
-                                        } catch (e) {
-                                            reject('Invalid JSON: ' + xhr.responseText);
-                                            return;
-                                        }
+                                        var json = JSON.parse(xhr.responseText || '{}');
 
-                                        if (!json || typeof json.location !== 'string') {
+                                        if (!json.location) {
                                             reject('Invalid JSON: ' + xhr.responseText);
                                             return;
                                         }
@@ -142,18 +210,16 @@
                                     };
 
                                     xhr.onerror = function() {
-                                        reject(
-                                            'Image upload failed due to a XHR Transport error.'
-                                            );
+                                        reject('Upload failed');
                                     };
 
                                     var formData = new FormData();
-                                    formData.append('file', blobInfo.blob(), blobInfo
-                                        .filename());
+                                    formData.append('file', blobInfo.blob(), blobInfo.filename());
                                     xhr.send(formData);
                                 });
                             }
                         });
+
                     });
                 }
 
