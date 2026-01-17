@@ -269,10 +269,21 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::get('/menu', [\App\Http\Controllers\Admin\MainMenuController::class, 'index'])->name('menu.index');
         Route::get('/menu/create', [\App\Http\Controllers\Admin\MainMenuController::class, 'create'])->name('menu.create');
         Route::post('/menu', [\App\Http\Controllers\Admin\MainMenuController::class, 'store'])->name('menu.store');
-        Route::get('/menu/{item}/edit', [\App\Http\Controllers\Admin\MainMenuController::class, 'edit'])->name('menu.edit');
-        Route::post('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'update'])->name('menu.update');
-        Route::delete('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'destroy'])->name('menu.destroy');
+
+        // IMPORTANT: put sort BEFORE /menu/{item}
         Route::post('/menu/sort', [\App\Http\Controllers\Admin\MainMenuController::class, 'sort'])->name('menu.sort');
+
+        Route::get('/menu/{item}/edit', [\App\Http\Controllers\Admin\MainMenuController::class, 'edit'])
+            ->whereNumber('item')
+            ->name('menu.edit');
+
+        Route::post('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'update'])
+            ->whereNumber('item')
+            ->name('menu.update');
+
+        Route::delete('/menu/{item}', [\App\Http\Controllers\Admin\MainMenuController::class, 'destroy'])
+            ->whereNumber('item')
+            ->name('menu.destroy');
 
         // Main Page Builder
         Route::get('/pages', [\App\Http\Controllers\Admin\MainPageController::class, 'index'])->name('pages.index');
