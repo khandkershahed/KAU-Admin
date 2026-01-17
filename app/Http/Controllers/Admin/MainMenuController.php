@@ -47,7 +47,7 @@ class MainMenuController extends Controller
         return view('admin.pages.cms.main.menu.create', compact('parents', 'location'));
     }
 
-    public function edit(int $item, Request $request)
+    public function edit($item, Request $request)
     {
         $location = $request->get('menu_location', 'navbar');
         if (!in_array($location, ['navbar', 'topbar'], true)) {
@@ -134,7 +134,7 @@ class MainMenuController extends Controller
             ->with('success', 'Menu item created successfully.');
     }
 
-    public function update(int $item, Request $request)
+    public function update($item, Request $request)
     {
         $item = AcademicNavItem::query()
             ->where('owner_type', 'main')
@@ -194,7 +194,7 @@ class MainMenuController extends Controller
             ->with('success', 'Menu item updated successfully.');
     }
 
-    public function destroy(int $item)
+    public function destroy($item)
     {
         $item = AcademicNavItem::query()
             ->where('owner_type', 'main')
