@@ -16,8 +16,7 @@ class MainMenuController extends Controller
             $location = 'navbar';
         }
 
-        $items = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $items = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('menu_location', $location)
             ->orderBy('parent_id')
@@ -36,8 +35,7 @@ class MainMenuController extends Controller
             $location = 'navbar';
         }
 
-        $parents = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $parents = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('menu_location', $location)
             ->whereNull('parent_id')
@@ -54,8 +52,7 @@ class MainMenuController extends Controller
             $location = 'navbar';
         }
 
-        $item = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $item = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('id', $item)
             ->firstOrFail();
@@ -66,8 +63,7 @@ class MainMenuController extends Controller
             ]);
         }
 
-        $parents = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $parents = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('menu_location', $location)
             ->whereNull('parent_id')
@@ -102,8 +98,7 @@ class MainMenuController extends Controller
 
         $parentId = $data['parent_id'] ?? null;
         if ($parentId) {
-            $parent = AcademicNavItem::query()
-                ->where('owner_type', 'main')
+            $parent = AcademicNavItem::where('owner_type', 'main')
                 ->whereNull('owner_id')
                 ->where('menu_location', $data['menu_location'])
                 ->where('id', $parentId)
@@ -126,8 +121,7 @@ class MainMenuController extends Controller
             'external_url' => $data['type'] === 'external' ? ($data['external_url'] ?? null) : null,
             'icon' => $data['icon'] ?? null,
             'status' => $data['status'],
-            'position' => (int) AcademicNavItem::query()
-                ->where('owner_type', 'main')
+            'position' => (int) AcademicNavItem::where('owner_type', 'main')
                 ->whereNull('owner_id')
                 ->where('menu_location', $data['menu_location'])
                 ->where('parent_id', $parentId)
@@ -141,8 +135,7 @@ class MainMenuController extends Controller
 
     public function update($item, Request $request)
     {
-        $item = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $item = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('id', $item)
             ->firstOrFail();
@@ -171,8 +164,7 @@ class MainMenuController extends Controller
 
         $parentId = $data['parent_id'] ?? null;
         if ($parentId) {
-            $parent = AcademicNavItem::query()
-                ->where('owner_type', 'main')
+            $parent = AcademicNavItem::where('owner_type', 'main')
                 ->whereNull('owner_id')
                 ->where('menu_location', $data['menu_location'])
                 ->where('id', $parentId)
@@ -201,8 +193,7 @@ class MainMenuController extends Controller
 
     public function destroy($item)
     {
-        $item = AcademicNavItem::query()
-            ->where('owner_type', 'main')
+        $item = AcademicNavItem::where('owner_type', 'main')
             ->whereNull('owner_id')
             ->where('id', $item)
             ->firstOrFail();
@@ -226,8 +217,7 @@ class MainMenuController extends Controller
         $parentId = $data['parent_id'] ?? null;
 
         foreach ($data['order'] as $pos => $id) {
-            AcademicNavItem::query()
-                ->where('owner_type', 'main')
+            AcademicNavItem::where('owner_type', 'main')
                 ->whereNull('owner_id')
                 ->where('menu_location', $data['menu_location'])
                 ->where('id', $id)
