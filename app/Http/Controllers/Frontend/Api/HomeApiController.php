@@ -228,20 +228,25 @@ class HomeApiController extends Controller
 
         // Increase view count
         $notice->increment('views');
-
         // Decode attachments safely
-        // use exact path for attachments where it is saved in storage
-
         $attachments = [];
-        // complete urls for attachments
 
         if (!empty($notice->attachments)) {
-            $attachments = collect($attachments)
-                ->filter(fn($p) => is_string($p) && trim($p) !== '')
-                ->values()
-                ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
-                ->toArray();
+
+            // Convert to array if stored as JSON
+            $rawAttachments = is_array($notice->attachments)
+                ? $notice->attachments
+                : json_decode((string) $notice->attachments, true);
+
+            if (is_array($rawAttachments)) {
+                $attachments = collect($rawAttachments)
+                    ->filter(fn($p) => is_string($p) && trim($p) !== '')
+                    ->values()
+                    ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
+                    ->toArray();
+            }
         }
+
 
         // Related notices (same category, excluding itself)
         $related = Notice::where('status', 'published')
