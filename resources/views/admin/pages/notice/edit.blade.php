@@ -109,17 +109,19 @@
                                                     Category
                                                 </x-metronic.label>
 
-                                                <x-metronic.select-option id="category_id" name="category_id"
-                                                    data-hide-search="false" data-placeholder="Select category">
+                                                <select class="form-select form-select-sm" name="category_id"
+                                                    id="category_id" data-control="select2"
+                                                    data-placeholder="Select category">
                                                     <option value="">-- None --</option>
                                                     @foreach ($categories as $c)
                                                         <option value="{{ $c->id }}"
-                                                            data-view-type="{{ $c->view_type ?? 'page' }}"
+                                                            data-viewtype="{{ $c->view_type ?? 'page' }}"
                                                             {{ old('category_id', $notice->category_id) == $c->id ? 'selected' : '' }}>
                                                             {{ $c->name }}
                                                         </option>
                                                     @endforeach
-                                                </x-metronic.select-option>
+                                                </select>
+
                                             </div>
 
                                             <div class="col-lg-6 mb-6">
@@ -367,28 +369,38 @@
     </div>
 
     {{-- SCRIPT: show/hide fields when category view_type=table --}}
-   @push('scripts')
+    @push('scripts')
         <script>
-            function toggleTableFields() {
-                var selectedOption = document.getElementById('category_id').selectedOptions[0];
-                var viewType = selectedOption.getAttribute('data-view-type');
-                var tableFieldsWrap = document.getElementById('table_fields_wrap');
+            $(document).ready(function() {
+                const categoryEl = $('#category_id');
+                const tableFieldsWrap = $('#table_fields_wrap');
 
-                if (viewType === 'table') {
-                    tableFieldsWrap.style.display = 'block';
-                } else {
-                    tableFieldsWrap.style.display = 'none';
+                if (!categoryEl.length || !tableFieldsWrap.length) return;
+
+                function toggleTableFields() {
+                    const selectedOption = categoryEl.find('option:selected');
+
+                    if (!selectedOption.length) {
+                        tableFieldsWrap.hide();
+                        return;
+                    }
+
+                    const viewType = selectedOption.data('viewtype') || 'page';
+
+                    if (viewType === 'table') {
+                        tableFieldsWrap.show();
+                    } else {
+                        tableFieldsWrap.hide();
+                    }
                 }
-            }
 
-            document.getElementById('category_id').addEventListener('change', toggleTableFields);
+                categoryEl.on('change', toggleTableFields);
 
-            // Initial check on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                toggleTableFields();
+                // IMPORTANT: run once on page load (edit mode)
+                setTimeout(toggleTableFields, 50);
             });
         </script>
+    @endpush
 
-   @endpush
 
 </x-admin-app-layout>

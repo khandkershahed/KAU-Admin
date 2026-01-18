@@ -93,18 +93,18 @@
                                                     class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Category
                                                 </x-metronic.label>
-
-                                                <x-metronic.select-option id="category_id" name="category_id"
-                                                    data-hide-search="false" data-placeholder="Select category">
+                                                <select class="form-select form-select-sm" name="category_id" id="category_id" data-control="select2"
+                                                    data-placeholder="Select category">
                                                     <option value="">-- None --</option>
                                                     @foreach ($categories as $c)
                                                         <option value="{{ $c->id }}"
-                                                            data-view-type="{{ $c->view_type ?? 'page' }}"
+                                                            data-viewType="{{ $c->view_type ?? 'page' }}"
                                                             {{ old('category_id') == $c->id ? 'selected' : '' }}>
                                                             {{ $c->name }}
                                                         </option>
                                                     @endforeach
-                                                </x-metronic.select-option>
+                                                </select>
+
                                             </div>
 
                                             <div class="col-lg-6 mb-6">
@@ -317,26 +317,57 @@
     {{-- SCRIPT: show/hide fields when category view_type=table --}}
     @push('scripts')
         <script>
-            function toggleTableFields() {
-                var selectedOption = document.getElementById('category_id').selectedOptions[0];
-                var viewType = selectedOption.getAttribute('data-view-type');
+            $(document).ready(function() {
+                const categoryEl = $('#category_id');
+                const tableFieldsWrap = $('#table_fields_wrap');
 
-                var tableFieldsWrap = document.getElementById('table_fields_wrap');
-                if (viewType === 'table') {
-                    tableFieldsWrap.style.display = 'block';
-                } else {
-                    tableFieldsWrap.style.display = 'none';
+                if (!categoryEl.length || !tableFieldsWrap.length) return;
+
+                function toggleTableFields() {
+                    const selectedOption = categoryEl.find('option:selected');
+                    if (!selectedOption.length) {
+                        tableFieldsWrap.hide();
+                        return;
+                    }
+
+                    const viewType = selectedOption.data('viewtype') || 'page';
+                    if (viewType === 'table') {
+                        tableFieldsWrap.show();
+                    } else {
+                        tableFieldsWrap.hide();
+                    }
                 }
-            }
 
-            document.getElementById('category_id').addEventListener('change', toggleTableFields);
+                categoryEl.on('change', toggleTableFields);
 
-            // Initial check on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                toggleTableFields();
+                // Run once after Metronic initializes
+                setTimeout(toggleTableFields, 50);
             });
+            // document.addEventListener('DOMContentLoaded', function() {
+            //     const categoryEl = document.getElementById('category_id');
+            //     const tableFieldsWrap = document.getElementById('table_fields_wrap');
+
+            //     if (!categoryEl || !tableFieldsWrap) return;
+
+            //     function toggleTableFields() {
+            //         if (!categoryEl.selectedOptions.length) {
+            //             tableFieldsWrap.style.display = 'none';
+            //             return;
+            //         }
+
+            //         const viewType = categoryEl.selectedOptions[0].dataset.viewType || 'page';
+            //         tableFieldsWrap.style.display = viewType === 'table' ? 'block' : 'none';
+            //     }
+
+            //     categoryEl.addEventListener('change', toggleTableFields);
+
+            //     // Run once after Metronic initializes
+            //     setTimeout(toggleTableFields, 50);
+            // });
         </script>
     @endpush
+
+
 
 
 </x-admin-app-layout>

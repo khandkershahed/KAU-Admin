@@ -39,7 +39,7 @@
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="modal-body text-start">
                                         <div class="mb-5">
                                             <x-metronic.label for="edit_category_name"
                                                 class="col-form-label fw-bold fs-6">
