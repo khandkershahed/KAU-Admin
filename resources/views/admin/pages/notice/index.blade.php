@@ -74,6 +74,16 @@
                         </x-metronic.label>
                         <x-metronic.input id="category_name" type="text" name="name" required />
                     </div>
+                    {{-- 'view_type', ['page', 'table'] --}}
+                    <div class="mb-5">
+                        <x-metronic.label for="category_view_type" class="col-form-label fw-bold fs-6">
+                            View Type
+                        </x-metronic.label>
+                        <x-metronic.select-option id="category_view_type" name="view_type" data-hide-search="true">
+                            <option value="page">Page</option>
+                            <option value="table">Table</option>
+                        </x-metronic.select-option>
+                    </div>
                     <div class="mb-5">
                         <x-metronic.label for="category_status" class="col-form-label fw-bold fs-6">
                             Status
@@ -110,6 +120,16 @@
                             Name
                         </x-metronic.label>
                         <x-metronic.input id="edit_category_name" type="text" name="name" required />
+                    </div>
+                    {{-- 'view_type', ['page', 'table'] --}}
+                    <div class="mb-5">
+                        <x-metronic.label for="edit_category_view_type" class="col-form-label fw-bold fs-6">
+                            View Type
+                        </x-metronic.label>
+                        <x-metronic.select-option id="edit_category_view_type" name="view_type" data-hide-search="true">
+                            <option value="page">Page</option>
+                            <option value="table">Table</option>
+                        </x-metronic.select-option>
                     </div>
                     <div class="mb-5">
                         <x-metronic.label for="edit_category_status" class="col-form-label fw-bold fs-6">
@@ -205,11 +225,13 @@
                         const id = btn.dataset.id;
                         const name = btn.dataset.name;
                         const status = btn.dataset.status;
+                        const viewType = btn.dataset.viewtype || 'page';
 
                         const form = document.getElementById('editCategoryForm');
                         form.action = "{{ route('admin.notice-category.update', ':id') }}".replace(':id', id);
 
                         document.getElementById('edit_category_name').value = name;
+                        document.getElementById('edit_category_view_type').value = viewType;
                         document.getElementById('edit_category_status').value = status;
 
                         const modal = new bootstrap.Modal(document.getElementById('editNoticeCategoryModal'));

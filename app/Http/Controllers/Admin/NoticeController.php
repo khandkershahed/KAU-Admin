@@ -85,7 +85,7 @@ class NoticeController extends Controller
     public function create()
     {
         $data = [
-            'categories' => NoticeCategory::orderBy('name')->get(['id', 'name']),
+            'categories' => NoticeCategory::orderBy('name')->get(['id', 'name', 'view_type']),
         ];
 
         return view('admin.pages.notice.create', $data);
@@ -141,6 +141,9 @@ class NoticeController extends Controller
                 'title'            => $request->title,
                 'body'             => $request->body,
                 'publish_date'     => $request->publish_date,
+                'employee_name'    => $request->employee_name,
+                'designation'      => $request->designation,
+                'department'       => $request->department,
                 'attachments'      => count($storedAttachments) ? $storedAttachments : null,
                 'attachment_type'  => $firstAttachmentType,
                 'meta_title'       => $request->meta_title,
@@ -169,7 +172,7 @@ class NoticeController extends Controller
     {
         $data = [
             'notice'     => Notice::findOrFail($id),
-            'categories' => NoticeCategory::orderBy('name')->get(['id', 'name']),
+            'categories' => NoticeCategory::orderBy('name')->get(['id', 'name', 'view_type']),
         ];
 
         return view('admin.pages.notice.edit', $data);
@@ -239,6 +242,9 @@ class NoticeController extends Controller
                 'title'            => $request->title,
                 'body'             => $request->body,
                 'publish_date'     => $request->publish_date,
+                'employee_name'    => $request->employee_name,
+                'designation'      => $request->designation,
+                'department'       => $request->department,
                 'attachments'      => count($storedAttachments) ? $storedAttachments : null,
                 'attachment_type'  => $firstAttachmentType,
                 'meta_title'       => $request->meta_title,

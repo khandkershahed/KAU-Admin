@@ -38,12 +38,13 @@ class NoticeCategoryController extends Controller
             foreach ($validator->messages()->all() as $message) {
                 Session::flash('error', $message);
             }
-            return redirect()->back()->withInput(); 
+            return redirect()->back()->withInput();
         }
 
         NoticeCategory::create([
-            'name'   => $request->name,
-            'status' => $request->status ?? 'active',
+            'name'      => $request->name,
+            'view_type' => $request->view_type ?? 'page',
+            'status'    => $request->status ?? 'active',
         ]);
 
         return redirect()->back()->with('success', 'Notice category created successfully.');
@@ -66,8 +67,9 @@ class NoticeCategoryController extends Controller
         }
 
         $category->update([
-            'name'   => $request->name,
-            'status' => $request->status ?? 'active',
+            'name'      => $request->name,
+            'view_type' => $request->view_type ?? 'page',
+            'status'    => $request->status ?? 'active',
         ]);
 
         return redirect()->back()->with('success', 'Notice category updated successfully.');

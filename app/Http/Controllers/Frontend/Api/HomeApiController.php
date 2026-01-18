@@ -271,7 +271,7 @@ class HomeApiController extends Controller
             'is_featured',
             'status'
         )
-            ->with(['noticeCategory:id,name'])
+            ->with(['noticeCategory:id,name,view_type'])
             ->where('status', 'published');
 
         if (!empty($category) && strtolower($category) !== 'all') {
@@ -302,8 +302,10 @@ class HomeApiController extends Controller
 
             // flatten category name
             $notice->category = $notice->noticeCategory->name ?? null;
+            $notice->category_view_type = $notice->noticeCategory->view_type ?? 'page';
 
             unset($notice->noticeCategory);
+
 
             return $notice;
         });

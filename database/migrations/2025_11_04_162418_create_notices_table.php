@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('body')->nullable();
             $table->date('publish_date')->nullable();
+            $table->string('employee_name')->nullable();
+            $table->string('designation')->nullable();
+            $table->string('department')->nullable();
             // Attachments (JSON array to store multiple files)
             // Example: ["notice.pdf", "doc_file.docx"]
             $table->json('attachments')->nullable();
