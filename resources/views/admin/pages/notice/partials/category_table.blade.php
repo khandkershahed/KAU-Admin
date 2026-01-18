@@ -20,27 +20,29 @@
                         </span>
                     </td>
                     <td class="text-end">
-                        @can('edit notice category')
-                            <button type="button"
-                                class="btn btn-icon btn-light-success btn-sm editCategoryBtn"
-                                data-id="{{ $category->id }}"
-                                data-name="{{ $category->name }}"
-                                data-status="{{ $category->status ?? 'active' }}">
-                                <i class="fa-solid fa-pen-to-square fs-6"></i>
-                            </button>
-                        @endcan
-
-                        @can('delete notice category')
-                            <form action="{{ route('admin.notice-category.destroy', $category->id) }}"
-                                method="POST" class="d-inline"
-                                onsubmit="return confirm('Delete this category?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-icon btn-light-danger btn-sm">
-                                    <i class="fa-solid fa-trash fs-6"></i>
+                        @unless ($category->slug === 'noc')
+                            @can('edit notice category')
+                                <button type="button"
+                                    class="btn btn-icon btn-light-success btn-sm editCategoryBtn"
+                                    data-id="{{ $category->id }}"
+                                    data-name="{{ $category->name }}"
+                                    data-status="{{ $category->status ?? 'active' }}">
+                                    <i class="fa-solid fa-pen-to-square fs-6"></i>
                                 </button>
-                            </form>
-                        @endcan
+                            @endcan
+
+                            @can('delete notice category')
+                                <form action="{{ route('admin.notice-category.destroy', $category->id) }}"
+                                    method="POST" class="d-inline"
+                                    onsubmit="return confirm('Delete this category?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-icon btn-light-danger btn-sm">
+                                        <i class="fa-solid fa-trash fs-6"></i>
+                                    </button>
+                                </form>
+                            @endcan
+                        @endunless
                     </td>
                 </tr>
             @empty

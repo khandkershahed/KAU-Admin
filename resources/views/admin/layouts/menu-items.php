@@ -61,20 +61,21 @@ return [
             'admin.notice.create',
             'admin.notice.edit',
         ],
-        'subMenu' => [
-            [
-                'title'      => 'Notice Categories',
-                'permission' => 'view notice category',
-                'routes'     => ['admin.notice-category.index'],
-                'route'      => 'admin.notice-category.index',
-            ],
-            [
-                'title'      => 'Notices',
-                'permission' => 'view notice',
-                'routes'     => ['admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
-                'route'      => 'admin.notice.index',
-            ],
-        ],
+        'route'      => 'admin.notice.index',
+        // 'subMenu' => [
+        //     [
+        //         'title'      => 'Notice Categories',
+        //         'permission' => 'view notice category',
+        //         'routes'     => ['admin.notice-category.index'],
+        //         'route'      => 'admin.notice-category.index',
+        //     ],
+        //     [
+        //         'title'      => 'Notices',
+        //         'permission' => 'view notice',
+        //         'routes'     => ['admin.notice.index', 'admin.notice.create', 'admin.notice.edit'],
+        //         'route'      => 'admin.notice.index',
+        //     ],
+        // ],
     ],
 
     [
