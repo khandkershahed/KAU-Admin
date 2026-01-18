@@ -140,7 +140,7 @@
                                                         @endcan
 
                                                         <!-- GO TO OFFICE PAGE -->
-                                                        <a href="{{ route('admin.administration.office.cms.menu.index', $office->slug) }}"
+                                                        <a href="{{ route('admin.administration.office.cms.dashboard', $office->slug) }}"
                                                             class="btn btn-sm btn-secondary ms-2">
                                                             <i class="fas fa-users me-2"></i> More
                                                         </a>
