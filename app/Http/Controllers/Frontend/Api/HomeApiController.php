@@ -287,6 +287,9 @@ class HomeApiController extends Controller
             'publish_date',
             'attachments',
             'attachment_type',
+            'employee_name',
+            'designation',
+            'department',
             'views',
             'is_featured',
             'status'
