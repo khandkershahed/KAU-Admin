@@ -45,21 +45,25 @@
                     <div class="col-lg-10 mb-10">
                         {{-- TABS HEADER --}}
                         <div class="border rounded-3 p-3 mb-4 bg-light">
-                            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x fs-6 fw-semibold flex-nowrap overflow-auto border-0">
+                            <ul
+                                class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x fs-6 fw-semibold flex-nowrap overflow-auto border-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pb-3 text-active-primary active" data-bs-toggle="tab" href="#tab_general">
+                                    <a class="nav-link pb-3 text-active-primary active" data-bs-toggle="tab"
+                                        href="#tab_general">
                                         <i class="fas fa-info-circle me-1 fs-6"></i>
                                         General
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link pb-3 text-active-primary" data-bs-toggle="tab" href="#tab_content">
+                                    <a class="nav-link pb-3 text-active-primary" data-bs-toggle="tab"
+                                        href="#tab_content">
                                         <i class="fas fa-align-left me-1 fs-6"></i>
                                         Content
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link pb-3 text-active-primary" data-bs-toggle="tab" href="#tab_attachments">
+                                    <a class="nav-link pb-3 text-active-primary" data-bs-toggle="tab"
+                                        href="#tab_attachments">
                                         <i class="fas fa-paperclip me-1 fs-6"></i>
                                         Attachments
                                     </a>
@@ -85,23 +89,18 @@
                                     <div class="card-body pt-4">
                                         <div class="row">
                                             <div class="col-lg-6 mb-6">
-                                                <x-metronic.label for="category_id" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                <x-metronic.label for="category_id"
+                                                    class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Category
                                                 </x-metronic.label>
 
-                                                <x-metronic.select-option
-                                                    id="category_id"
-                                                    name="category_id"
-                                                    data-hide-search="false"
-                                                    data-placeholder="Select category"
-                                                >
+                                                <x-metronic.select-option id="category_id" name="category_id"
+                                                    data-hide-search="false" data-placeholder="Select category">
                                                     <option value="">-- None --</option>
                                                     @foreach ($categories as $c)
-                                                        <option
-                                                            value="{{ $c->id }}"
+                                                        <option value="{{ $c->id }}"
                                                             data-view-type="{{ $c->view_type ?? 'page' }}"
-                                                            {{ old('category_id') == $c->id ? 'selected' : '' }}
-                                                        >
+                                                            {{ old('category_id') == $c->id ? 'selected' : '' }}>
                                                             {{ $c->name }}
                                                         </option>
                                                     @endforeach
@@ -109,73 +108,95 @@
                                             </div>
 
                                             <div class="col-lg-6 mb-6">
-                                                <x-metronic.label for="title" class="col-form-label required fw-bold fs-7 text-uppercase text-muted">
+                                                <x-metronic.label for="title"
+                                                    class="col-form-label required fw-bold fs-7 text-uppercase text-muted">
                                                     Title
                                                 </x-metronic.label>
-                                                <x-metronic.input id="title" type="text" name="title" :value="old('title')" required />
+                                                <x-metronic.input id="title" type="text" name="title"
+                                                    :value="old('title')" required />
                                             </div>
 
+                                        </div>
+                                        {{-- TABLE VIEW EXTRA FIELDS (employee/designation/department) --}}
+                                        <div id="table_fields_wrap" class="col-12" style="display:none;">
+                                            <div class="separator my-6"></div>
+                                            <div class="row">
+                                                <div class="col-lg-4 mb-6">
+                                                    <x-metronic.label for="employee_name"
+                                                        class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                        Employee Name
+                                                    </x-metronic.label>
+                                                    <x-metronic.input id="employee_name" type="text"
+                                                        name="employee_name" :value="old('employee_name')" />
+                                                </div>
+
+                                                <div class="col-lg-4 mb-6">
+                                                    <x-metronic.label for="designation"
+                                                        class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                        Designation
+                                                    </x-metronic.label>
+                                                    <x-metronic.input id="designation" type="text" name="designation"
+                                                        :value="old('designation')" />
+                                                </div>
+
+                                                <div class="col-lg-4 mb-6">
+                                                    <x-metronic.label for="department"
+                                                        class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                        Institute/Department/Section
+                                                    </x-metronic.label>
+                                                    <x-metronic.input id="department" type="text" name="department"
+                                                        :value="old('department')" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- /TABLE VIEW EXTRA FIELDS --}}
+                                        <div class="row">
                                             <div class="col-lg-4 mb-6">
-                                                <x-metronic.label for="publish_date" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                <x-metronic.label for="publish_date"
+                                                    class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Publish Date
                                                 </x-metronic.label>
-                                                <x-metronic.input id="publish_date" type="date" name="publish_date" :value="old('publish_date')" />
+                                                <x-metronic.input id="publish_date" type="date" name="publish_date"
+                                                    :value="old('publish_date')" />
                                             </div>
 
                                             <div class="col-lg-4 mb-6">
-                                                <x-metronic.label for="is_featured" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                <x-metronic.label for="is_featured"
+                                                    class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Featured?
                                                 </x-metronic.label>
-                                                <x-metronic.select-option id="is_featured" name="is_featured" data-hide-search="true">
-                                                    <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>No</option>
-                                                    <option value="1" {{ old('is_featured') == '1' ? 'selected' : '' }}>Yes</option>
+                                                <x-metronic.select-option id="is_featured" name="is_featured"
+                                                    data-hide-search="true">
+                                                    <option value="0"
+                                                        {{ old('is_featured') == '0' ? 'selected' : '' }}>No</option>
+                                                    <option value="1"
+                                                        {{ old('is_featured') == '1' ? 'selected' : '' }}>Yes</option>
                                                 </x-metronic.select-option>
                                             </div>
 
                                             <div class="col-lg-4 mb-6">
-                                                <x-metronic.label for="status" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                                <x-metronic.label for="status"
+                                                    class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Status
                                                 </x-metronic.label>
-                                                <x-metronic.select-option id="status" name="status" data-hide-search="true">
-                                                    <option value="draft" {{ old('status', 'published') === 'draft' ? 'selected' : '' }}>
+                                                <x-metronic.select-option id="status" name="status"
+                                                    data-hide-search="true">
+                                                    <option value="draft"
+                                                        {{ old('status', 'published') === 'draft' ? 'selected' : '' }}>
                                                         Draft
                                                     </option>
-                                                    <option value="published" {{ old('status', 'published') === 'published' ? 'selected' : '' }}>
+                                                    <option value="published"
+                                                        {{ old('status', 'published') === 'published' ? 'selected' : '' }}>
                                                         Published
                                                     </option>
-                                                    <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>
+                                                    <option value="archived"
+                                                        {{ old('status') === 'archived' ? 'selected' : '' }}>
                                                         Archived
                                                     </option>
                                                 </x-metronic.select-option>
                                             </div>
 
-                                            {{-- TABLE VIEW EXTRA FIELDS (employee/designation/department) --}}
-                                            <div id="table_fields_wrap" class="col-12" style="display:none;">
-                                                <div class="separator my-6"></div>
-                                                <div class="row">
-                                                    <div class="col-lg-4 mb-6">
-                                                        <x-metronic.label for="employee_name" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
-                                                            Employee Name
-                                                        </x-metronic.label>
-                                                        <x-metronic.input id="employee_name" type="text" name="employee_name" :value="old('employee_name')" />
-                                                    </div>
 
-                                                    <div class="col-lg-4 mb-6">
-                                                        <x-metronic.label for="designation" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
-                                                            Designation
-                                                        </x-metronic.label>
-                                                        <x-metronic.input id="designation" type="text" name="designation" :value="old('designation')" />
-                                                    </div>
-
-                                                    <div class="col-lg-4 mb-6">
-                                                        <x-metronic.label for="department" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
-                                                            Institute/Department/Section
-                                                        </x-metronic.label>
-                                                        <x-metronic.input id="department" type="text" name="department" :value="old('department')" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{-- /TABLE VIEW EXTRA FIELDS --}}
                                         </div>
                                     </div>
                                 </div>
@@ -190,7 +211,8 @@
                                         </div>
                                     </div>
                                     <div class="card-body pt-4">
-                                        <x-metronic.editor name="body" label="Notice Content" :value="old('body')" rows="12" />
+                                        <x-metronic.editor name="body" label="Notice Content" :value="old('body')"
+                                            rows="12" />
                                         <div class="text-muted fs-8 mt-1">
                                             Main notice body content. You can use formatting, links and attachments.
                                         </div>
@@ -208,10 +230,12 @@
                                     </div>
                                     <div class="card-body pt-4">
                                         <div class="mb-5">
-                                            <x-metronic.label for="attachments" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                            <x-metronic.label for="attachments"
+                                                class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Upload Files
                                             </x-metronic.label>
-                                            <input type="file" id="attachments" name="attachments[]" class="form-control" multiple>
+                                            <input type="file" id="attachments" name="attachments[]"
+                                                class="form-control" multiple>
                                             <div class="text-muted fs-8 mt-1">
                                                 You can upload multiple files (PDF, DOCX, JPG, etc.).
                                             </div>
@@ -230,24 +254,30 @@
                                     </div>
                                     <div class="card-body pt-4 row">
                                         <div class="col-lg-5 mb-6">
-                                            <x-metronic.label for="meta_title" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                            <x-metronic.label for="meta_title"
+                                                class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Title
                                             </x-metronic.label>
-                                            <x-metronic.input id="meta_title" type="text" name="meta_title" :value="old('meta_title')" />
+                                            <x-metronic.input id="meta_title" type="text" name="meta_title"
+                                                :value="old('meta_title')" />
                                         </div>
 
                                         <div class="col-lg-7 mb-6">
-                                            <x-metronic.label for="meta_tags" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                            <x-metronic.label for="meta_tags"
+                                                class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Tags
                                             </x-metronic.label>
-                                            <x-metronic.input id="meta_tags" type="text" name="meta_tags" :value="old('meta_tags')" placeholder="notice, admission,..." />
+                                            <x-metronic.input id="meta_tags" type="text" name="meta_tags"
+                                                :value="old('meta_tags')" placeholder="notice, admission,..." />
                                         </div>
 
                                         <div class="col-lg-12 mb-6">
-                                            <x-metronic.label for="meta_description" class="col-form-label fw-bold fs-7 text-uppercase text-muted">
+                                            <x-metronic.label for="meta_description"
+                                                class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                 Meta Description
                                             </x-metronic.label>
-                                            <x-metronic.textarea id="meta_description" name="meta_description" placeholder="Short description">{{ old('meta_description') }}</x-metronic.textarea>
+                                            <x-metronic.textarea id="meta_description" name="meta_description"
+                                                placeholder="Short description">{{ old('meta_description') }}</x-metronic.textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -285,46 +315,28 @@
     </div>
 
     {{-- SCRIPT: show/hide fields when category view_type=table --}}
-    <script>
-        (function () {
-            const categoryEl = document.getElementById('category_id');
-            const wrap = document.getElementById('table_fields_wrap');
+    @push('scripts')
+        <script>
+            function toggleTableFields() {
+                var selectedOption = document.getElementById('category_id').selectedOptions[0];
+                var viewType = selectedOption.getAttribute('data-view-type');
 
-            const employeeName = document.getElementById('employee_name');
-            const designation = document.getElementById('designation');
-            const department = document.getElementById('department');
-
-            const getSelectedViewType = () => {
-                if (!categoryEl) return 'page';
-                const opt = categoryEl.options[categoryEl.selectedIndex];
-                const viewType = opt ? (opt.getAttribute('data-view-type') || 'page') : 'page';
-                return (viewType || 'page').trim().toLowerCase();
-            };
-
-            const setVisible = (isTable) => {
-                if (!wrap) return;
-                wrap.style.display = isTable ? '' : 'none';
-
-                if (!isTable) {
-                    if (employeeName) employeeName.value = '';
-                    if (designation) designation.value = '';
-                    if (department) department.value = '';
+                var tableFieldsWrap = document.getElementById('table_fields_wrap');
+                if (viewType === 'table') {
+                    tableFieldsWrap.style.display = 'block';
+                } else {
+                    tableFieldsWrap.style.display = 'none';
                 }
-            };
-
-            const apply = () => {
-                const viewType = getSelectedViewType();
-                setVisible(viewType === 'table');
-            };
-
-            if (categoryEl) {
-                categoryEl.addEventListener('change', function () {
-                    apply();
-                });
             }
 
-            apply();
-        })();
-    </script>
+            document.getElementById('category_id').addEventListener('change', toggleTableFields);
+
+            // Initial check on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                toggleTableFields();
+            });
+        </script>
+    @endpush
+
 
 </x-admin-app-layout>

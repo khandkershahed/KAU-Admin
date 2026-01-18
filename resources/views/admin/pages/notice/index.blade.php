@@ -103,51 +103,7 @@
     </div>
 
     {{-- EDIT CATEGORY MODAL --}}
-    <div class="modal fade" id="editNoticeCategoryModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <form id="editCategoryForm" method="POST" class="modal-content">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Notice Category</h5>
-                    <button type="button" class="btn btn-sm btn-icon" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-5">
-                        <x-metronic.label for="edit_category_name" class="col-form-label fw-bold fs-6">
-                            Name
-                        </x-metronic.label>
-                        <x-metronic.input id="edit_category_name" type="text" name="name" required />
-                    </div>
-                    {{-- 'view_type', ['page', 'table'] --}}
-                    <div class="mb-5">
-                        <x-metronic.label for="edit_category_view_type" class="col-form-label fw-bold fs-6">
-                            View Type
-                        </x-metronic.label>
-                        <x-metronic.select-option id="edit_category_view_type" name="view_type" data-hide-search="true">
-                            <option value="page">Page</option>
-                            <option value="table">Table</option>
-                        </x-metronic.select-option>
-                    </div>
-                    <div class="mb-5">
-                        <x-metronic.label for="edit_category_status" class="col-form-label fw-bold fs-6">
-                            Status
-                        </x-metronic.label>
-                        <x-metronic.select-option id="edit_category_status" name="status" data-hide-search="true">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </x-metronic.select-option>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update Category</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     @push('scripts')
         <script>
@@ -219,25 +175,25 @@
                 });
 
                 // Fill edit category modal
-                document.addEventListener('click', function(e) {
-                    if (e.target.closest('.editCategoryBtn')) {
-                        const btn = e.target.closest('.editCategoryBtn');
-                        const id = btn.dataset.id;
-                        const name = btn.dataset.name;
-                        const status = btn.dataset.status;
-                        const viewType = btn.dataset.viewtype || 'page';
+                // document.addEventListener('click', function(e) {
+                //     if (e.target.closest('.editCategoryBtn')) {
+                //         const btn = e.target.closest('.editCategoryBtn');
+                //         const id = btn.dataset.id;
+                //         const name = btn.dataset.name;
+                //         const status = btn.dataset.status;
+                //         const viewType = btn.dataset.viewtype || 'page';
 
-                        const form = document.getElementById('editCategoryForm');
-                        form.action = "{{ route('admin.notice-category.update', ':id') }}".replace(':id', id);
+                //         const form = document.getElementById('editCategoryForm');
+                //         form.action = "{{ route('admin.notice-category.update', ':id') }}".replace(':id', id);
 
-                        document.getElementById('edit_category_name').value = name;
-                        document.getElementById('edit_category_view_type').value = viewType;
-                        document.getElementById('edit_category_status').value = status;
+                //         document.getElementById('edit_category_name').value = name;
+                //         document.getElementById('edit_category_view_type').value = viewType;
+                //         document.getElementById('edit_category_status').value = status;
 
-                        const modal = new bootstrap.Modal(document.getElementById('editNoticeCategoryModal'));
-                        modal.show();
-                    }
-                });
+                //         const modal = new bootstrap.Modal(document.getElementById('editNoticeCategoryModal'));
+                //         modal.show();
+                //     }
+                // });
 
                 // DELETE NOTICE via SweetAlert + AJAX
                 document.addEventListener('click', function(e) {
