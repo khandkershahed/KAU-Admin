@@ -130,54 +130,49 @@ class HomeApiController extends Controller
 
 
     public function noticeCategories()
-    {
-        $categories = NoticeCategory::with([
-            'notices' => function ($q) {
-                $q->select(
-                    'id',
-                    'category_id',
-                    'title',
-                    'slug',
-                    'publish_date',
-                    'attachments',
-                    'employee_name',
-                    'designation',
-                    'department'
-                )
-                    ->where('status', 'published');
+{
+    $categories = NoticeCategory::with([
+        'notices' => function ($q) {
+            $q->select(
+                'id',
+                'category_id',
+                'title',
+                'slug',
+                'publish_date',
+                'attachments',
+                'employee_name',
+                'designation',
+                'department'
+            );
+        }
+    ])
+        ->select('id', 'name', 'slug', 'view_type')
+        ->where('status', 'active')
+        ->get();
+
+    $categories->each(function ($category) {
+        $category->notices->each(function ($notice) {
+
+            // attachments is already array or null because of casts
+            $attachments = $notice->attachments ?? [];
+
+            if (!is_array($attachments)) {
+                // failsafe if DB has bad data
+                $attachments = json_decode((string) $attachments, true) ?? [];
             }
-        ])
-            ->select('id', 'name', 'slug', 'view_type')
-            ->where('status', 'active')
-            ->get();
 
-        $categories->each(function ($category) {
-            $category->notices->each(function ($notice) {
-
-                $attachments = $notice->attachments ?? [];
-
-                // failsafe for bad DB data
-                if (!is_array($attachments)) {
-                    $attachments = json_decode((string) $attachments, true) ?? [];
-                }
-
-                // ✅ convert to full URLs
-                $attachments = collect($attachments)
-                    ->filter(fn($p) => is_string($p) && trim($p) !== '')
-                    ->values()
-                    ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
-                    ->toArray();
-
-                $notice->attachments = $attachments;
-                $notice->first_attachment = $attachments[0] ?? null;
-            });
+            // ✅ ONLY change: use asset() for first attachment
+            $notice->first_attachment = isset($attachments[0])
+                ? asset('storage/' . ltrim($attachments[0], '/'))
+                : null;
         });
+    });
 
-        return response()->json([
-            'success' => true,
-            'data'    => $categories,
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'data'    => $categories,
+    ]);
+}
 
 
 
