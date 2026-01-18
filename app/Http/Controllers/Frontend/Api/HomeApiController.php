@@ -251,9 +251,15 @@ class HomeApiController extends Controller
     //     ]);
     // }
 
-    public function allNotices()
+    public function allNotices(Request $request)
     {
-        $notices = Notice::select(
+        $perPage = (int) ($request->get('per_page', 10));
+        if ($perPage <= 0) $perPage = 10;
+        if ($perPage > 100) $perPage = 100;
+
+        $category = $request->get('category'); // e.g. "NOC" or "Notice" or "Office Order"
+
+        $query = Notice::select(
             'id',
             'category_id',
             'title',
@@ -266,101 +272,53 @@ class HomeApiController extends Controller
             'status'
         )
             ->with(['noticeCategory:id,name'])
-            ->where('status', 'published')
-            ->orderBy('publish_date', 'DESC')
-            ->get();
+            ->where('status', 'published');
 
-        $notices->each(function ($notice) {
+        if (!empty($category) && strtolower($category) !== 'all') {
+            $query->whereHas('noticeCategory', function ($q) use ($category) {
+                $q->where('name', $category);
+            });
+        }
+
+        $notices = $query->orderBy('publish_date', 'DESC')->paginate($perPage);
+
+        // Transform items
+        $notices->getCollection()->transform(function ($notice) {
             $attachments = $notice->attachments ?? [];
 
             if (!is_array($attachments)) {
                 $attachments = json_decode((string) $attachments, true) ?? [];
             }
 
-            // Convert every attachment to full URL
-            $notice->attachments = collect($attachments)
+            // attachments -> full url
+            $attachments = collect($attachments)
                 ->filter(fn($p) => is_string($p) && trim($p) !== '')
                 ->values()
                 ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
                 ->toArray();
 
-            // Keep a convenient first attachment URL too
-            $notice->first_attachment = $notice->attachments[0] ?? null;
+            $notice->attachments = $attachments;
+            $notice->first_attachment = $attachments[0] ?? null;
 
-            // Category name
-            $notice->category_name = $notice->noticeCategory->name ?? null;
+            // flatten category name
+            $notice->category = $notice->noticeCategory->name ?? null;
 
-            // Remove relation if not needed
             unset($notice->noticeCategory);
+
+            return $notice;
         });
 
         return response()->json([
             'success' => true,
-            'data' => $notices
+            'data' => $notices->items(),
+            'meta' => [
+                'current_page' => $notices->currentPage(),
+                'last_page' => $notices->lastPage(),
+                'per_page' => $notices->perPage(),
+                'total' => $notices->total(),
+            ],
         ]);
     }
-
-    public function noticeDetails($slug)
-    {
-        $notice = Notice::with('noticeCategory')
-            ->where('slug', $slug)
-            ->where('status', 'published')
-            ->first();
-
-        if (!$notice) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Notice not found'
-            ], 404);
-        }
-
-        $notice->increment('views');
-
-        $attachments = [];
-
-        if (!empty($notice->attachments)) {
-            $attachments = is_string($notice->attachments)
-                ? json_decode($notice->attachments, true)
-                : (is_array($notice->attachments) ? $notice->attachments : []);
-        }
-
-        // Convert every attachment to full URL
-        $attachments = collect($attachments)
-            ->filter(fn($p) => is_string($p) && trim($p) !== '')
-            ->values()
-            ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
-            ->toArray();
-
-        $related = Notice::where('status', 'published')
-            ->where('id', '!=', $notice->id)
-            ->where('category_id', $notice->category_id)
-            ->orderBy('publish_date', 'DESC')
-            ->limit(5)
-            ->get(['id', 'title', 'slug', 'publish_date']);
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'notice' => [
-                    'id'               => $notice->id,
-                    'title'            => $notice->title,
-                    'slug'             => $notice->slug,
-                    'body'             => $notice->body,
-                    'publish_date'     => $notice->publish_date,
-                    'attachments'      => $attachments, // now full URLs
-                    'attachment_type'  => $notice->attachment_type,
-                    'meta_title'       => $notice->meta_title,
-                    'meta_tags'        => $notice->meta_tags,
-                    'meta_description' => $notice->meta_description,
-                    'views'            => $notice->views,
-                    'is_featured'      => $notice->is_featured,
-                    'category'         => $notice->noticeCategory ? $notice->noticeCategory->name : null,
-                ],
-                'related_notices' => $related
-            ]
-        ]);
-    }
-
     // allNews
     public function allNews()
     {
