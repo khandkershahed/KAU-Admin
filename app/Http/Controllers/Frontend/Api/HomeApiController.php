@@ -176,7 +176,7 @@ class HomeApiController extends Controller
             if (!is_array($attachments)) {
                 $attachments = json_decode((string) $attachments, true) ?? [];
             }
-            $notice->first_attachment = $attachments[0] ?? null;
+            $notice->first_attachment = asset('storage/' . ($attachments[0] ?? '')) ?? null;
 
             // Add category_name directly into response
             $notice->category_name = $notice->category->name ?? null;
