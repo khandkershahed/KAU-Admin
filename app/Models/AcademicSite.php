@@ -21,7 +21,7 @@ class AcademicSite extends Model
         'logo_path',
         'position',
         'status',
-        'config', 
+        'config',
     ];
 
     protected $casts = [
@@ -36,7 +36,7 @@ class AcademicSite extends Model
 
     public function navItems()
     {
-        return $this->hasMany(AcademicNavItem::class, 'academic_site_id')
+        return $this->hasMany(AcademicNavItem::class, 'academic_site_id')->where('status', 'published')
                     ->orderBy('position');
     }
 

@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
 class AcademicApiController extends Controller
 {
     /**
-     * GET /api/v1/academics/sites 
+     * GET /api/v1/academics/sites
      * Returns groups and their published sites.
      */
     // public function sites(): JsonResponse
@@ -296,6 +296,7 @@ class AcademicApiController extends Controller
                 // pages for mapping & output
                 'pages' => function ($q) {
                     $q->orderByDesc('is_home')
+                        ->where('status', 'published')
                         ->orderBy('position')
                         ->orderBy('id');
                 },
