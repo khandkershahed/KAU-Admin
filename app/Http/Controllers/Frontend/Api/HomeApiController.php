@@ -211,65 +211,68 @@ class HomeApiController extends Controller
     //     ]);
     // }
 
-    // public function noticeDetails($slug)
-    // {
-    //     // Fetch notice
-    //     $notice = Notice::with('noticeCategory')
-    //         ->where('slug', $slug)
-    //         ->where('status', 'published')
-    //         ->first();
+    public function noticeDetails($slug)
+    {
+        // Fetch notice
+        $notice = Notice::with('noticeCategory')
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->first();
 
-    //     if (!$notice) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Notice not found'
-    //         ], 404);
-    //     }
+        if (!$notice) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notice not found'
+            ], 404);
+        }
 
-    //     // Increase view count
-    //     $notice->increment('views');
+        // Increase view count
+        $notice->increment('views');
 
-    //     // Decode attachments safely
-    //     // use exact path for attachments where it is saved in storage
+        // Decode attachments safely
+        // use exact path for attachments where it is saved in storage
 
-    //     $attachments = [];
+        $attachments = [];
+        // complete urls for attachments
 
-    //     if (!empty($notice->attachments)) {
-    //         $attachments = is_string($notice->attachments)
-    //             ? json_decode($notice->attachments, true)
-    //             : (is_array($notice->attachments) ? $notice->attachments : []);
-    //     }
+        if (!empty($notice->attachments)) {
+            $attachments = collect($attachments)
+                ->filter(fn($p) => is_string($p) && trim($p) !== '')
+                ->values()
+                ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
+                ->toArray();
+        }
 
-    //     // Related notices (same category, excluding itself)
-    //     $related = Notice::where('status', 'published')
-    //         ->where('id', '!=', $notice->id)
-    //         ->where('category_id', $notice->category_id)
-    //         ->orderBy('publish_date', 'DESC')
-    //         ->limit(5)
-    //         ->get(['id', 'title', 'slug', 'publish_date']);
+        // Related notices (same category, excluding itself)
+        $related = Notice::where('status', 'published')
+            ->where('id', '!=', $notice->id)
+            ->where('category_id', $notice->category_id)
+            ->orderBy('publish_date', 'DESC')
+            ->limit(5)
+            ->get(['id', 'title', 'slug', 'publish_date']);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => [
-    //             'notice' => [
-    //                 'id'               => $notice->id,
-    //                 'title'            => $notice->title,
-    //                 'slug'             => $notice->slug,
-    //                 'body'             => $notice->body,
-    //                 'publish_date'     => $notice->publish_date,
-    //                 'attachments'      => $attachments,
-    //                 'attachment_type'  => $notice->attachment_type,
-    //                 'meta_title'       => $notice->meta_title,
-    //                 'meta_tags'        => $notice->meta_tags,
-    //                 'meta_description' => $notice->meta_description,
-    //                 'views'            => $notice->views,
-    //                 'is_featured'      => $notice->is_featured,
-    //                 'category'         => $notice->category ? $notice->category->name : null,
-    //             ],
-    //             'related_notices' => $related
-    //         ]
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'notice' => [
+                    'id'               => $notice->id,
+                    'title'            => $notice->title,
+                    'slug'             => $notice->slug,
+                    'body'             => $notice->body,
+                    'publish_date'     => $notice->publish_date,
+                    'attachments'      => $attachments,
+                    'attachment_type'  => $notice->attachment_type,
+                    'meta_title'       => $notice->meta_title,
+                    'meta_tags'        => $notice->meta_tags,
+                    'meta_description' => $notice->meta_description,
+                    'views'            => $notice->views,
+                    'is_featured'      => $notice->is_featured,
+                    'category'         => $notice->category ? $notice->category->name : null,
+                ],
+                'related_notices' => $related
+            ]
+        ]);
+    }
 
     public function allNotices(Request $request)
     {
