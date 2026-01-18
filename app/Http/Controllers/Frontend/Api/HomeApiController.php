@@ -133,23 +133,42 @@ class HomeApiController extends Controller
     {
         $categories = NoticeCategory::with([
             'notices' => function ($q) {
-                $q->select('id', 'category_id', 'title', 'slug', 'publish_date', 'attachments');
+                $q->select(
+                    'id',
+                    'category_id',
+                    'title',
+                    'slug',
+                    'publish_date',
+                    'attachments',
+                    'employee_name',
+                    'designation',
+                    'department'
+                )
+                    ->where('status', 'published');
             }
         ])
-            ->select('id', 'name', 'slug','view_type')
+            ->select('id', 'name', 'slug', 'view_type')
             ->where('status', 'active')
             ->get();
 
         $categories->each(function ($category) {
             $category->notices->each(function ($notice) {
-                // attachments is already array or null because of casts
+
                 $attachments = $notice->attachments ?? [];
 
+                // failsafe for bad DB data
                 if (!is_array($attachments)) {
-                    // failsafe if DB has bad data
                     $attachments = json_decode((string) $attachments, true) ?? [];
                 }
 
+                // ✅ convert to full URLs
+                $attachments = collect($attachments)
+                    ->filter(fn($p) => is_string($p) && trim($p) !== '')
+                    ->values()
+                    ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
+                    ->toArray();
+
+                $notice->attachments = $attachments;
                 $notice->first_attachment = $attachments[0] ?? null;
             });
         });
@@ -159,6 +178,7 @@ class HomeApiController extends Controller
             'data'    => $categories,
         ]);
     }
+
 
 
 
