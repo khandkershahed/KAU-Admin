@@ -162,27 +162,136 @@ class HomeApiController extends Controller
 
 
 
+    // public function allNotices()
+    // {
+    //     $notices = Notice::select('id', 'category_id', 'title', 'slug', 'publish_date', 'attachments', 'attachment_type', 'views', 'is_featured', 'status')
+    //         ->with(['noticeCategory:id,name']) // Load category name
+    //         ->where('status', 'published')
+    //         ->orderBy('publish_date', 'DESC')
+    //         ->get();
+
+    //     // Extract first attachment + category name
+    //     $notices->each(function ($notice) {
+    //         $attachments = $notice->attachments ?? [];
+    //         if (!is_array($attachments)) {
+    //             $attachments = json_decode((string) $attachments, true) ?? [];
+    //         }
+    //         $notice->first_attachment = asset('storage/' . ($attachments[0] ?? '')) ?? null;
+
+    //         // Add category_name directly into response
+    //         $notice->category_name = $notice->category->name ?? null;
+
+    //         // Remove category relation if not needed
+    //         unset($notice->category);
+    //     });
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $notices
+    //     ]);
+    // }
+
+    // public function noticeDetails($slug)
+    // {
+    //     // Fetch notice
+    //     $notice = Notice::with('noticeCategory')
+    //         ->where('slug', $slug)
+    //         ->where('status', 'published')
+    //         ->first();
+
+    //     if (!$notice) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Notice not found'
+    //         ], 404);
+    //     }
+
+    //     // Increase view count
+    //     $notice->increment('views');
+
+    //     // Decode attachments safely
+    //     // use exact path for attachments where it is saved in storage
+
+    //     $attachments = [];
+
+    //     if (!empty($notice->attachments)) {
+    //         $attachments = is_string($notice->attachments)
+    //             ? json_decode($notice->attachments, true)
+    //             : (is_array($notice->attachments) ? $notice->attachments : []);
+    //     }
+
+    //     // Related notices (same category, excluding itself)
+    //     $related = Notice::where('status', 'published')
+    //         ->where('id', '!=', $notice->id)
+    //         ->where('category_id', $notice->category_id)
+    //         ->orderBy('publish_date', 'DESC')
+    //         ->limit(5)
+    //         ->get(['id', 'title', 'slug', 'publish_date']);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => [
+    //             'notice' => [
+    //                 'id'               => $notice->id,
+    //                 'title'            => $notice->title,
+    //                 'slug'             => $notice->slug,
+    //                 'body'             => $notice->body,
+    //                 'publish_date'     => $notice->publish_date,
+    //                 'attachments'      => $attachments,
+    //                 'attachment_type'  => $notice->attachment_type,
+    //                 'meta_title'       => $notice->meta_title,
+    //                 'meta_tags'        => $notice->meta_tags,
+    //                 'meta_description' => $notice->meta_description,
+    //                 'views'            => $notice->views,
+    //                 'is_featured'      => $notice->is_featured,
+    //                 'category'         => $notice->category ? $notice->category->name : null,
+    //             ],
+    //             'related_notices' => $related
+    //         ]
+    //     ]);
+    // }
+
     public function allNotices()
     {
-        $notices = Notice::select('id', 'category_id', 'title', 'slug', 'publish_date', 'attachments', 'attachment_type', 'views', 'is_featured', 'status')
-            ->with(['noticeCategory:id,name']) // Load category name
+        $notices = Notice::select(
+            'id',
+            'category_id',
+            'title',
+            'slug',
+            'publish_date',
+            'attachments',
+            'attachment_type',
+            'views',
+            'is_featured',
+            'status'
+        )
+            ->with(['noticeCategory:id,name'])
             ->where('status', 'published')
             ->orderBy('publish_date', 'DESC')
             ->get();
 
-        // Extract first attachment + category name
         $notices->each(function ($notice) {
             $attachments = $notice->attachments ?? [];
+
             if (!is_array($attachments)) {
                 $attachments = json_decode((string) $attachments, true) ?? [];
             }
-            $notice->first_attachment = asset('storage/' . ($attachments[0] ?? '')) ?? null;
 
-            // Add category_name directly into response
-            $notice->category_name = $notice->category->name ?? null;
+            // Convert every attachment to full URL
+            $notice->attachments = collect($attachments)
+                ->filter(fn($p) => is_string($p) && trim($p) !== '')
+                ->values()
+                ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
+                ->toArray();
 
-            // Remove category relation if not needed
-            unset($notice->category);
+            // Keep a convenient first attachment URL too
+            $notice->first_attachment = $notice->attachments[0] ?? null;
+
+            // Category name
+            $notice->category_name = $notice->noticeCategory->name ?? null;
+
+            // Remove relation if not needed
+            unset($notice->noticeCategory);
         });
 
         return response()->json([
@@ -193,7 +302,6 @@ class HomeApiController extends Controller
 
     public function noticeDetails($slug)
     {
-        // Fetch notice
         $notice = Notice::with('noticeCategory')
             ->where('slug', $slug)
             ->where('status', 'published')
@@ -206,11 +314,7 @@ class HomeApiController extends Controller
             ], 404);
         }
 
-        // Increase view count
         $notice->increment('views');
-
-        // Decode attachments safely
-        // use exact path for attachments where it is saved in storage
 
         $attachments = [];
 
@@ -220,7 +324,13 @@ class HomeApiController extends Controller
                 : (is_array($notice->attachments) ? $notice->attachments : []);
         }
 
-        // Related notices (same category, excluding itself)
+        // Convert every attachment to full URL
+        $attachments = collect($attachments)
+            ->filter(fn($p) => is_string($p) && trim($p) !== '')
+            ->values()
+            ->map(fn($p) => asset('storage/' . ltrim($p, '/')))
+            ->toArray();
+
         $related = Notice::where('status', 'published')
             ->where('id', '!=', $notice->id)
             ->where('category_id', $notice->category_id)
@@ -237,14 +347,14 @@ class HomeApiController extends Controller
                     'slug'             => $notice->slug,
                     'body'             => $notice->body,
                     'publish_date'     => $notice->publish_date,
-                    'attachments'      => $attachments,
+                    'attachments'      => $attachments, // now full URLs
                     'attachment_type'  => $notice->attachment_type,
                     'meta_title'       => $notice->meta_title,
                     'meta_tags'        => $notice->meta_tags,
                     'meta_description' => $notice->meta_description,
                     'views'            => $notice->views,
                     'is_featured'      => $notice->is_featured,
-                    'category'         => $notice->category ? $notice->category->name : null,
+                    'category'         => $notice->noticeCategory ? $notice->noticeCategory->name : null,
                 ],
                 'related_notices' => $related
             ]
