@@ -136,7 +136,7 @@ class HomeApiController extends Controller
                 $q->select('id', 'category_id', 'title', 'slug', 'publish_date', 'attachments');
             }
         ])
-            ->select('id', 'name', 'slug')
+            ->select('id', 'name', 'slug','view_type')
             ->where('status', 'active')
             ->get();
 
