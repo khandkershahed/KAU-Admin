@@ -25,7 +25,7 @@ class NoticeController extends Controller
     public function index(Request $request)
     {
         // CATEGORY LIST (LEFT TABLE)
-        $categoryQuery = NoticeCategory::orderBy('name');
+        $categoryQuery = NoticeCategory::latest('id');
 
         if ($request->filled('category_search')) {
             $search = $request->get('category_search');
@@ -85,7 +85,7 @@ class NoticeController extends Controller
     public function create()
     {
         $data = [
-            'categories' => NoticeCategory::orderBy('name')->get(['id', 'name', 'view_type']),
+            'categories' => NoticeCategory::latest('id')->get(['id', 'name', 'view_type']),
         ];
 
         return view('admin.pages.notice.create', $data);
