@@ -25,7 +25,7 @@ class NoticeController extends Controller
     public function index(Request $request)
     {
         // CATEGORY LIST (LEFT TABLE)
-        $categoryQuery = NoticeCategory::latest('id');
+        $categoryQuery = NoticeCategory::orderBy('id', 'asc');
 
         if ($request->filled('category_search')) {
             $search = $request->get('category_search');
