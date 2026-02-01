@@ -1372,8 +1372,10 @@
             setTinyContent('edit_member_bio', member.bio || '');
             setTinyContent('edit_member_education', member.education || '');
             setTinyContent('edit_member_experience', member.experience || '');
-            setTinyContent('edit_member_scholarship', member.scholarship || '');
+            setTinyContent('edit_member_employment_history', member.employment_history || '');
+            setTinyContent('edit_member_institutional_member', member.institutional_member || '');
             setTinyContent('edit_member_research', member.research || '');
+            setTinyContent('edit_member_consultancy', member.consultancy || '');
             setTinyContent('edit_member_teaching', member.teaching || '');
         });
 

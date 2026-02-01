@@ -558,23 +558,23 @@
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab"
-                            href="#create_tab_scholarship" role="tab">
-                            | Scholarship |
+                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_edu_exp"
+                            role="tab">
+                            | Education + Experience |
+                        </a>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_employment_institutional"
+                            role="tab">
+                            | Employment History + Institutional Member |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_research"
                             role="tab">
-                            | Research |
-                        </a>
-                    </li>
-
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#create_tab_teaching"
-                            role="tab">
-                           | Teaching |
+                           | Consultancy + Research |
                         </a>
                     </li>
                 </ul>
@@ -695,24 +695,28 @@
                         <div class="row g-4">
                             <div class="col-md-12">
                                 <x-metronic.editor name="education" label="Education" :value="old('education')"
-                                    rows="7" />
+                                    rows="3" />
                             </div>
 
                             <div class="col-md-12">
                                 <x-metronic.editor name="experience" label="Experience" :value="old('experience')"
-                                    rows="7" />
+                                    rows="3" />
                             </div>
                         </div>
                     </div>
 
                     {{-- =======================
-                        TAB: SCHOLARSHIP
+                        TAB: EMPLOYMENT + INSTITUTIONAL
                     ======================== --}}
-                    <div class="tab-pane fade" id="create_tab_scholarship" role="tabpanel">
+                    <div class="tab-pane fade" id="create_tab_employment_institutional" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-12">
-                                <x-metronic.editor name="scholarship" label="Scholarship" :value="old('scholarship')"
-                                    rows="7" />
+                                <x-metronic.editor name="employment_history" label="Employment History" :value="old('employment_history')"
+                                    rows="3" />
+                            </div>
+                            <div class="col-md-12">
+                                <x-metronic.editor name="institutional_member" label="Institutional Member" :value="old('institutional_member')"
+                                    rows="3" />
                             </div>
                         </div>
                     </div>
@@ -723,8 +727,12 @@
                     <div class="tab-pane fade" id="create_tab_research" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-12">
-                                <x-metronic.editor name="research" label="Research" :value="old('research')"
-                                    rows="7" />
+                                <x-metronic.editor name="consultancy" label="Consultancy" :value="old('consultancy')"
+                                    rows="3" />
+                            </div>
+                            <div class="col-md-12">
+                                <x-metronic.editor name="research" label="Founded Research Project" :value="old('research')"
+                                    rows="3" />
                             </div>
                         </div>
                     </div>
@@ -732,14 +740,14 @@
                     {{-- =======================
                         TAB: TEACHING
                     ======================== --}}
-                    <div class="tab-pane fade" id="create_tab_teaching" role="tabpanel">
+                    {{-- <div class="tab-pane fade" id="create_tab_teaching" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-12">
                                 <x-metronic.editor name="teaching" label="Teaching" :value="old('teaching')"
-                                    rows="7" />
+                                    rows="3" />
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
             </div>
@@ -796,25 +804,25 @@
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_scholarship"
+                        <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_employment_institutional"
                             role="tab">
-                            | Scholarship |
+                            | Employment History + Institutional Member |
                         </a>
                     </li>
 
                     <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_research"
                             role="tab">
-                           | Research |
+                           | Consultancy + Research |
                         </a>
                     </li>
 
-                    <li class="nav-item" role="presentation">
+                    {{-- <li class="nav-item" role="presentation">
                         <a class="nav-link fw-semibold text-black" data-bs-toggle="tab" href="#edit_tab_teaching"
                             role="tab">
                             | Teaching |
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
 
                 <div class="tab-content">
@@ -937,12 +945,17 @@
                     {{-- =======================
                         TAB: SCHOLARSHIP
                     ======================== --}}
-                    <div class="tab-pane fade" id="edit_tab_scholarship" role="tabpanel">
+                    <div class="tab-pane fade" id="edit_tab_employment_institutional" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-12">
                                 {{-- UNIQUE ID --}}
-                                <x-metronic.editor id="edit_member_scholarship" name="scholarship"
-                                    label="Scholarship" :value="old('scholarship')" rows="7" />
+                                <x-metronic.editor id="edit_member_employment_history" name="employment_history"
+                                    label="Employment History" :value="old('employment_history')" rows="3" />
+                            </div>
+                            <div class="col-md-12">
+                                {{-- UNIQUE ID --}}
+                                <x-metronic.editor id="edit_member_institutional_member" name="institutional_member"
+                                    label="Institutional Member" :value="old('institutional_member')" rows="3" />
                             </div>
                         </div>
                     </div>
@@ -954,8 +967,13 @@
                         <div class="row g-4">
                             <div class="col-md-12">
                                 {{-- UNIQUE ID --}}
-                                <x-metronic.editor id="edit_member_research" name="research" label="Research"
-                                    :value="old('research')" rows="7" />
+                                <x-metronic.editor id="edit_member_consultancy" name="consultancy" label="Consultancy"
+                                    :value="old('consultancy')" rows="3" />
+                            </div>
+                            <div class="col-md-12">
+                                {{-- UNIQUE ID --}}
+                                <x-metronic.editor id="edit_member_research" name="research" label="Founded Research Project"
+                                    :value="old('research')" rows="3" />
                             </div>
                         </div>
                     </div>
@@ -963,15 +981,14 @@
                     {{-- =======================
                         TAB: TEACHING
                     ======================== --}}
-                    <div class="tab-pane fade" id="edit_tab_teaching" role="tabpanel">
+                    {{-- <div class="tab-pane fade" id="edit_tab_teaching" role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-12">
-                                {{-- UNIQUE ID --}}
                                 <x-metronic.editor id="edit_member_teaching" name="teaching" label="Teaching"
                                     :value="old('teaching')" rows="7" />
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
             </div>
