@@ -10,27 +10,33 @@ class AcademicStaffMember extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'staff_section_id',
-        'name',
-        'designation',
-        'email',
-        'phone',
-        'image_path',
-        'position',
-        'status',
-        'links',
-        'uuid',
-        'mobile',
-        'address',
-        'research_interest',
-        'bio',
-        'education',
-        'experience',
-        'scholarship',
-        'research',
-        'teaching',
-    ];
+    // protected $fillable = [
+    //     'staff_section_id',
+    //     'name',
+    //     'designation',
+    //     'email',
+    //     'phone',
+    //     'image_path',
+    //     'position',
+    //     'status',
+    //     'links',
+    //     'uuid',
+    //     'mobile',
+    //     'address',
+    //     'research_interest',
+    //     'bio',
+    //     'education',
+    //     'experience',
+    //     'scholarship',
+    //     'research',
+    //     'teaching',
+    // ];
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
     protected $casts = [
         // 'status' => AcademicStatus::class,
@@ -48,5 +54,5 @@ class AcademicStaffMember extends Model
             ->orderBy('id');
     }
 
-    
+
 }

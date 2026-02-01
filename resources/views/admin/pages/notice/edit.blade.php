@@ -173,8 +173,12 @@
                                                     class="col-form-label fw-bold fs-7 text-uppercase text-muted">
                                                     Publish Date
                                                 </x-metronic.label>
-                                                <x-metronic.input id="publish_date" type="date" name="publish_date"
-                                                    :value="old('publish_date', $notice->publish_date)" />
+                                                <input type="date" class="form-control form-control-sm"
+                                                    id="publish_date" name="publish_date"
+                                                    value="{{ old('publish_date', $notice->publish_date?->format('Y-m-d')) }}">
+
+                                                {{-- <x-metronic.input id="publish_date" type="date" name="publish_date"
+                                                    :value="old('publish_date', $notice->publish_date)" /> --}}
                                             </div>
 
                                             <div class="col-lg-4 mb-6">

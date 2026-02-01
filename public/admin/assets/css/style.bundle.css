@@ -43478,6 +43478,11 @@ a:hover {
     color: #fff
 }
 
+.btn.btn-outline {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e4e6ef;
+}
 .btn.btn-outline.btn-outline-dashed {
     border-width: 1px;
     border-style: dashed

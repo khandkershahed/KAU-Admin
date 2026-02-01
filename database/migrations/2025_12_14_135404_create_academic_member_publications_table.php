@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignId('academic_staff_member_id')->constrained('academic_staff_members')->onDelete('cascade');
             $table->string('title');
-            $table->enum('type', ['journal', 'conference'])->nullable();
+            $table->enum('type', ['journal', 'conference', 'seminar', 'book_chapter'])->nullable();
             $table->string('journal_or_conference_name')->nullable();
             $table->string('publisher')->nullable();
             $table->year('year')->nullable();

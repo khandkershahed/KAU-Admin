@@ -32,12 +32,24 @@ return new class extends Migration {
                 $table->longText('education')->nullable()->after('bio');
             }
 
+            if (!Schema::hasColumn('academic_staff_members', 'employment_history')) {
+                $table->longText('employment_history')->nullable()->after('education');
+            }
+
             if (!Schema::hasColumn('academic_staff_members', 'experience')) {
-                $table->longText('experience')->nullable()->after('education');
+                $table->longText('experience')->nullable()->after('employment_history');
+            }
+
+            if (!Schema::hasColumn('academic_staff_members', 'institutional_member')) {
+                $table->longText('institutional_member')->nullable()->after('experience');
+            }
+
+            if (!Schema::hasColumn('academic_staff_members', 'consultancy')) {
+                $table->longText('consultancy')->nullable()->after('institutional_member');
             }
 
             if (!Schema::hasColumn('academic_staff_members', 'scholarship')) {
-                $table->longText('scholarship')->nullable()->after('experience');
+                $table->longText('scholarship')->nullable()->after('consultancy');
             }
 
             if (!Schema::hasColumn('academic_staff_members', 'research')) {
@@ -56,7 +68,7 @@ return new class extends Migration {
             $drop = [];
             foreach ([
                 'uuid','mobile','address','research_interest','bio','education',
-                'experience','scholarship','research','teaching'
+                'employment_history','experience','institutional_member','consultancy','scholarship','research','teaching'
             ] as $col) {
                 if (Schema::hasColumn('academic_staff_members', $col)) {
                     $drop[] = $col;
