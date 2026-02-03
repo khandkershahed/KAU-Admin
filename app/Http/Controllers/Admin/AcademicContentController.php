@@ -316,6 +316,21 @@ class AcademicContentController extends Controller
         }
     }
 
+    public function toggleStatus(AcademicPage $page, Request $request)
+    {
+        // Toggle between published and draft (archived -> draft)
+        $next = $page->status === 'published' ? 'draft' : 'published';
+        if ($page->status === 'archived') {
+            $next = 'draft';
+        }
+
+        $page->update(['status' => $next]);
+
+        return response()->json([
+            'ok' => true,
+            'status' => $next,
+        ]);
+    }
     /* ==========================================================================
         DELETE PAGE (AJAX PATTERN) [UNCHANGED LOGIC]
        ========================================================================== */

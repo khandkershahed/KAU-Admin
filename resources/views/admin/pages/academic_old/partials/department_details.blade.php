@@ -2,7 +2,10 @@
     <h4 class="fw-semibold mb-0">{{ $department->title }}</h4>
 
     @can('create academic staff')
-        <a href="{{ route('admin.academic.staff-groups.create', $department->id) }}" class="btn btn-light-primary btn-sm"><i class="fa fa-plus me-2"></i> Add Staff Group</a>
+        <button type="button" class="btn btn-light-primary btn-sm createStaffGroupBtn"
+            data-department-id="{{ $department->id }}">
+            <i class="fa fa-plus me-2"></i> Add Staff Group
+        </button>
     @endcan
 </div>
 
@@ -47,7 +50,12 @@
                 <div class="d-flex align-items-center ms-3">
 
                     @can('edit academic staff')
-                        <a href="{{ route('admin.academic.staff-groups.edit', $section->id) }}" class="btn btn-outline btn-outline-primary text-hover-white btn-sm me-2"><i class="fa-solid fa-pen-to-square fs-6 text-primary"></i></a>
+                        <button type="button"
+                            class="btn btn-outline btn-outline-primary text-hover-white btn-sm me-2 editStaffGroupBtn"
+                            data-id="{{ $section->id }}" data-title="{{ $section->title }}"
+                            data-status="{{ $section->status }}">
+                            <i class="fa-solid fa-pen-to-square fs-6 text-primary"></i>
+                        </button>
                     @endcan
 
                     @can('delete academic staff')
@@ -70,7 +78,11 @@
 
                     {{-- ADD MEMBER BUTTON --}}
                     @can('create academic staff')
-                        <a href="{{ route('admin.academic.staff-members.create', $section->id) }}" class="btn btn-outline btn-outline-info btn-active-info float-end btn-sm mb-3"><i class="fas fa-plus me-2"></i> Add Member</a>
+                        <button type="button"
+                            class="btn btn-outline btn-outline-info btn-active-info float-end btn-sm mb-3 createStaffMemberBtn"
+                            data-group-id="{{ $section->id }}">
+                            <i class="fas fa-plus me-2"></i> Add Member
+                        </button>
                     @endcan
 
                     <div class="clearfix mb-3"></div>
@@ -160,7 +172,11 @@
                                         {{-- ACTIONS --}}
                                         <td>
                                             @can('edit academic staff')
-                                                <a href="{{ route('admin.academic.staff-members.edit', $member->id) }}" class="btn btn-light-success btn-sm me-2"><i class="fa fa-edit"></i></a>
+                                                <button type="button"
+                                                    class="btn btn-light-success btn-sm me-2 editStaffMemberBtn"
+                                                    data-member='@json($memberData)'>
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
                                             @endcan
 
                                             @can('delete academic staff')
@@ -169,7 +185,10 @@
                                                     <i class="fa fa-trash"></i>
                                                 </a>
                                             @endcan
-                                            <a href="{{ route('admin.academic.publications.index', $member->id) }}" class="btn btn-sm btn-light-primary"><i class="fa fa-book me-2"></i>Publications</a>
+                                            <button type="button" class="btn btn-sm btn-light-primary"
+                                                onclick="openPublicationsModal({{ $member->id }})">
+                                                <i class="fa fa-book me-2"></i>Publications
+                                            </button>
 
                                         </td>
                                     </tr>

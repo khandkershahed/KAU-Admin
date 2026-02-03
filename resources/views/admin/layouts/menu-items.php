@@ -189,6 +189,8 @@ return [
             'admin.academic.pages.create',
             'admin.academic.pages.edit',
             'admin.academic.staff.index',
+            'admin.academic.staff.finder',
+            'admin.academic.*'
         ],
         'subMenu' => [
             [
@@ -213,9 +215,21 @@ return [
                 'title' => 'Departments & Staff',
                 'permission' => 'view academic departments',
                 'routes' => [
+                    'admin.academic.staff.*',
+                    'admin.academic.publications.*',
                     'admin.academic.staff.index',
                 ],
                 'route' => 'admin.academic.staff.index',
+            ],
+            [
+                'title' => 'Academic Member Finder',
+                'permission' => 'view academic staff',
+                'routes' => [
+                    // 'admin.academic.staff.*',
+                    // 'admin.academic.publications.*',
+                    'admin.academic.staff.finder',
+                ],
+                'route' => 'admin.academic.staff.finder',
             ],
         ],
     ],

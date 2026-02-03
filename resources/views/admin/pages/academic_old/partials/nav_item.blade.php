@@ -14,7 +14,7 @@
             <span class="fw-semibold">
                 {{ $item->label }}
                 @if ($item->status !== 'published')
-                    <span class="badge badge-warning text-black ms-2">{{ ucfirst($item->status) }}</span>
+                    <span class="badge bg-secondary ms-2">{{ ucfirst($item->status) }}</span>
                 @endif
             </span>
 

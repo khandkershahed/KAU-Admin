@@ -20,13 +20,13 @@
                 </form>
 
                 @can('manage academic sites')
-                    <a href="{{ route('admin.academic.groups.create') }}" class="btn btn-primary btn-sm me-2">
+                    <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#createGroupModal">
                         <i class="fa fa-plus me-2"></i> Add Group
-                    </a>
+                    </button>
 
-                    <a href="{{ route('admin.academic.sites.create') }}" class="btn btn-success btn-sm">
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createSiteModal">
                         <i class="fa fa-plus me-2"></i> Add Site
-                    </a>
+                    </button>
                 @endcan
 
             </div>
@@ -62,7 +62,11 @@
                                     </div>
 
                                     <div class="d-flex align-items-center">
-                                        <a href="{{ route('admin.academic.groups.edit', $group->id) }}" class="btn btn-light-success btn-sm me-2"><i class="fa-solid fa-pen fs-6"></i></a>
+                                        <button class="btn btn-light-success btn-sm me-2 editGroupBtn"
+                                            data-id="{{ $group->id }}" data-title="{{ $group->title }}"
+                                            data-slug="{{ $group->slug }}" data-status="{{ $group->status }}">
+                                            <i class="fa-solid fa-pen fs-6"></i>
+                                        </button>
 
                                         <a href="{{ route('admin.academic.groups.destroy', $group->id) }}"
                                             class="delete">
@@ -76,7 +80,11 @@
                                     class="accordion-collapse collapse @if ($loop->first) show @endif">
                                     <div class="accordion-body">
 
-                                        <a href="{{ route('admin.academic.sites.create', ['group_id' => $group->id]) }}" class="btn btn-sm btn-primary mb-3"><i class="fa fa-plus me-2"></i> Add Site</a>
+                                        <button class="btn btn-sm btn-primary mb-3 createSiteBtn"
+                                            data-group-id="{{ $group->id }}" data-bs-toggle="modal"
+                                            data-bs-target="#createSiteModal">
+                                            <i class="fa fa-plus me-2"></i> Add Site
+                                        </button>
 
                                         <ul class="list-group site-list" data-group-id="{{ $group->id }}">
                                             @foreach ($group->sites as $site)
@@ -104,7 +112,20 @@
                                                         <a href="{{ route('admin.academic.sites.index', ['site_id' => $site->id]) }}"
                                                             class="btn btn-sm btn-outline-primary me-2">Nav</a>
 
-                                                        <a href="{{ route('admin.academic.sites.edit', $site->id) }}" class="btn btn-light-success btn-sm me-2"><i class="fa-solid fa-pen fs-6"></i></a>
+                                                        <button class="btn btn-light-success btn-sm me-2 editSiteBtn"
+                                                            data-id="{{ $site->id }}"
+                                                            data-group-id="{{ $group->id }}"
+                                                            data-name="{{ $site->name }}"
+                                                            data-short_name="{{ $site->short_name }}"
+                                                            data-slug="{{ $site->slug }}"
+                                                            data-description="{{ $site->short_description }}"
+                                                            data-primary="{{ $site->theme_primary_color }}"
+                                                            data-secondary="{{ $site->theme_secondary_color }}"
+                                                            data-status="{{ $site->status }}"
+                                                            data-logo="{{ $site->logo_path ? asset('storage/' . $site->logo_path) : '' }}"
+                                                            data-bs-toggle="modal" data-bs-target="#editSiteModal">
+                                                            <i class="fa-solid fa-pen fs-6"></i>
+                                                        </button>
 
                                                         <a href="{{ route('admin.academic.sites.destroy', $site->id) }}"
                                                             class="delete">
@@ -169,7 +190,9 @@
     </div>
 
     {{-- MODALS --}}
-    {{-- --}}
+    @include('admin.pages.academic.modals.group_modals')
+    @include('admin.pages.academic.modals.site_modals')
+    {{-- @include('admin.pages.academic.modals.nav_modals') --}}
 
     @push('scripts')
         @include('admin.pages.academic.partials.sites_js')

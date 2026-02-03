@@ -33,9 +33,11 @@
                         <h4 class="fw-semibold mb-0">Departments</h4>
 
                         @can('create academic departments')
-                            <a href="{{ route('admin.academic.departments.create', ['site_id' => optional($selectedSite)->id]) }}"
-                                class="btn btn-outline btn-outline-info btn-sm text-hover-white"><i
-                                    class="fa fa-plus me-2"></i>Add</a>
+                            <button class="btn btn-outline btn-outline-info btn-sm text-hover-white" data-bs-toggle="modal"
+                                data-bs-target="#createDepartmentModal" data-site-id="{{ optional($selectedSite)->id }}"
+                                id="openCreateDepartmentModalBtn">
+                                <i class="fa fa-plus me-2"></i>Add
+                            </button>
                         @endcan
                     </div>
 
@@ -74,8 +76,13 @@
 
                                     {{-- EDIT --}}
                                     @can('edit academic departments')
-                                        <a href="{{ route('admin.academic.departments.edit', $dept->id) }}"
-                                            class="me-4"><i class="fa-solid fa-pen-to-square fs-2 text-info"></i></a>
+                                        <a href="javascript:void(0);" class="me-4 editDepartmentBtn"
+                                            data-id="{{ $dept->id }}" data-title="{{ $dept->title }}"
+                                            data-short-code="{{ $dept->short_code }}" data-slug="{{ $dept->slug }}"
+                                            data-description="{{ $dept->description }}" data-status="{{ $dept->status }}"
+                                            data-position="{{ $dept->position }}">
+                                            <i class="fa-solid fa-pen-to-square fs-2 text-info"></i>
+                                        </a>
                                     @endcan
 
                                     {{-- DELETE --}}
@@ -108,8 +115,16 @@
         </div>
     </div>
 
+    {{-- MODALS --}}
+    @include('admin.pages.academic.modals.department_modals')
+    @include('admin.pages.academic.modals.section_modals')
+    @include('admin.pages.academic.modals.member_modals')
+    @include('admin.pages.academic.modals.publication_modals')
+
+
     @push('scripts')
-        @include('admin.pages.academic.partials.departments_js')
+    @include('admin.pages.academic.partials.departments_js')
+        @include('admin.pages.academic.partials.publications_js')
     @endpush
 
 </x-admin-app-layout>

@@ -310,6 +310,123 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/sort/children', 'sortChildren')->name('sort.children');
     });
 
+    // Route::prefix('academic')->name('academic.')->group(function () {
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | MODULE 1: Academic Groups + Sites + Navigation
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     // Main page (Groups + Sites + Navigation Manager)
+    //     Route::get('/sites', [AcademicSiteController::class, 'index'])->name('sites.index');
+
+    //     // -------- Groups --------
+    //     Route::post('/groups', [AcademicSiteController::class, 'storeGroup'])->name('groups.store');
+    //     Route::post('/groups/{group}', [AcademicSiteController::class, 'updateGroup'])->name('groups.update');
+    //     Route::delete('/groups/{group}', [AcademicSiteController::class, 'destroyGroup'])->name('groups.destroy');
+    //     Route::post('/groups/sort', [AcademicSiteController::class, 'sortGroups'])->name('groups.sort');
+
+    //     // -------- Sites --------
+    //     Route::post('/sites', [AcademicSiteController::class, 'storeSite'])->name('sites.store');
+    //     Route::post('/sites/{site}', [AcademicSiteController::class, 'updateSite'])->name('sites.update');
+    //     Route::delete('/sites/{site}', [AcademicSiteController::class, 'destroySite'])->name('sites.destroy');
+    //     Route::post('/sites/sort', [AcademicSiteController::class, 'sortSites'])->name('sites.sort');
+
+    //     // -------- Navigation (Nested Menu Items) --------
+    //     Route::post('/sites/{site}/nav', [AcademicNavController::class, 'store'])->name('nav.store');
+    //     Route::post('/nav/{item}', [AcademicNavController::class, 'update'])->name('nav.update');
+    //     Route::delete('/nav/{item}', [AcademicNavController::class, 'destroy'])->name('nav.destroy');
+    //     Route::post('/sites/{site}/nav/sort', [AcademicNavController::class, 'sort'])->name('nav.sort');
+
+    //     Route::get('/sites/{site}/nav/create', [AcademicNavController::class, 'create'])->name('nav.create');
+    //     Route::get('/nav/{item}/edit', [AcademicNavController::class, 'edit'])->name('nav.edit');
+
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | MODULE 2: Academic Pages
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     // Route::get('/pages', [AcademicContentController::class, 'index'])->name('pages.index');
+    //     // Route::post('/pages', [AcademicContentController::class, 'storePage'])->name('pages.store');
+    //     // Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])->name('pages.update');
+    //     // Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])->name('pages.destroy');
+
+    //     // Academic Pages (Split UI: index + create + edit)
+    //     Route::get('/pages', [AcademicContentController::class, 'index'])
+    //         ->name('pages.index');
+
+    //     Route::get('/pages/create', [AcademicContentController::class, 'create'])
+    //         ->name('pages.create');
+
+    //     Route::post('/pages', [AcademicContentController::class, 'storePage'])
+    //         ->name('pages.store');
+
+    //     Route::get('/pages/{page}/edit', [AcademicContentController::class, 'edit'])
+    //         ->name('pages.edit');
+
+    //     Route::post('/pages/{page}', [AcademicContentController::class, 'updatePage'])
+    //         ->name('pages.update');
+
+    //     Route::delete('/pages/{page}', [AcademicContentController::class, 'destroyPage'])
+    //         ->name('pages.destroy');
+
+
+    //     // Page Blocks (Builder)
+    //     Route::post('/pages/{page}/blocks', [AcademicPageBlockController::class, 'store'])
+    //         ->name('pages.blocks.store');
+
+    //     Route::post('/pages/{page}/blocks/{block}', [AcademicPageBlockController::class, 'update'])
+    //         ->name('pages.blocks.update');
+
+    //     Route::delete('/pages/{page}/blocks/{block}', [AcademicPageBlockController::class, 'destroy'])
+    //         ->name('pages.blocks.destroy');
+
+    //     Route::post('/pages/{page}/blocks-sort', [AcademicPageBlockController::class, 'sort'])
+    //         ->name('pages.blocks.sort');
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | MODULE 3: Academic Departments + Staff
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     // Main page (Department + Groups + Members)
+    //     Route::get('/staff', [AcademicDepartmentStaffController::class, 'index'])->name('staff.index');
+
+    //     // Departments
+    //     Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');
+    //     Route::put('/departments/{department}', [AcademicDepartmentStaffController::class, 'updateDepartment'])->name('departments.update');
+    //     Route::delete('/departments/{department}', [AcademicDepartmentStaffController::class, 'destroyDepartment'])->name('departments.destroy');
+    //     Route::post('/sites/{site}/departments/sort', [AcademicDepartmentStaffController::class, 'sortDepartments'])->name('departments.sort');
+    //     Route::patch('/departments/{department}/toggle-status', [AcademicDepartmentStaffController::class, 'toggleDepartmentStatus'])->name('departments.toggle-status');
+
+    //     // Staff groups
+    //     Route::post('/departments/{department}/groups', [AcademicDepartmentStaffController::class, 'storeGroup'])->name('staff-groups.store');
+    //     Route::put('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'updateGroup'])->name('staff-groups.update');
+    //     Route::delete('/staff-groups/{group}', [AcademicDepartmentStaffController::class, 'destroyGroup'])->name('staff-groups.destroy');
+    //     Route::post('/departments/{department}/groups/sort', [AcademicDepartmentStaffController::class, 'sortGroups'])->name('staff-groups.sort');
+
+    //     // Staff members
+    //     Route::post('/staff-groups/{group}/members', [AcademicDepartmentStaffController::class, 'storeMember'])->name('staff-members.store');
+    //     Route::put('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'updateMember'])->name('staff-members.update');
+    //     Route::delete('/staff-members/{member}', [AcademicDepartmentStaffController::class, 'destroyMember'])->name('staff-members.destroy');
+    //     Route::post('/staff-groups/{group}/members/sort', [AcademicDepartmentStaffController::class, 'sortMembers'])->name('staff-members.sort');
+
+    //     // Publications
+    //     Route::post('/staff-members/{member}/publications', [AcademicDepartmentStaffController::class, 'storePublication'])
+    //         ->name('publications.store');
+    //     Route::put('/publications/{publication}', [AcademicDepartmentStaffController::class, 'updatePublication'])
+    //         ->name('publications.update');
+    //     Route::delete('/publications/{publication}', [AcademicDepartmentStaffController::class, 'destroyPublication'])
+    //         ->name('publications.destroy');
+    //     Route::post('/staff-members/{member}/publications/sort', [AcademicDepartmentStaffController::class, 'sortPublications'])
+    //         ->name('publications.sort');
+    //     Route::get('/staff-members/{member}/publications/list', [AcademicDepartmentStaffController::class, 'publicationsList'])
+    //         ->name('publications.list');
+    // });
+
     Route::prefix('academic')->name('academic.')->group(function () {
 
         /*
@@ -321,11 +438,20 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         // Main page (Groups + Sites + Navigation Manager)
         Route::get('/sites', [AcademicSiteController::class, 'index'])->name('sites.index');
 
+        // -------- Groups (Pages: no modals) --------
+        Route::get('/groups/create', [AcademicSiteController::class, 'groupCreate'])->name('groups.create');
+        Route::get('/groups/{group}/edit', [AcademicSiteController::class, 'groupEdit'])->name('groups.edit');
+
+
         // -------- Groups --------
         Route::post('/groups', [AcademicSiteController::class, 'storeGroup'])->name('groups.store');
         Route::post('/groups/{group}', [AcademicSiteController::class, 'updateGroup'])->name('groups.update');
         Route::delete('/groups/{group}', [AcademicSiteController::class, 'destroyGroup'])->name('groups.destroy');
         Route::post('/groups/sort', [AcademicSiteController::class, 'sortGroups'])->name('groups.sort');
+
+        // -------- Sites (Pages: no modals) --------
+        Route::get('/sites/create', [AcademicSiteController::class, 'siteCreate'])->name('sites.create');
+        Route::get('/sites/{site}/edit', [AcademicSiteController::class, 'siteEdit'])->name('sites.edit');
 
         // -------- Sites --------
         Route::post('/sites', [AcademicSiteController::class, 'storeSite'])->name('sites.store');
@@ -385,6 +511,8 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
         Route::post('/pages/{page}/blocks-sort', [AcademicPageBlockController::class, 'sort'])
             ->name('pages.blocks.sort');
+        // toggleStatus
+        Route::post('/pages/{page}/toggle-status', [AcademicContentController::class, 'toggleStatus'])->name('pages.toggle-status');
 
         /*
         |--------------------------------------------------------------------------
@@ -394,6 +522,25 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
         // Main page (Department + Groups + Members)
         Route::get('/staff', [AcademicDepartmentStaffController::class, 'index'])->name('staff.index');
+
+        // Departments (Pages: no modals)
+        Route::get('/departments/create', [AcademicDepartmentStaffController::class, 'departmentCreate'])->name('departments.create');
+        Route::get('/departments/{department}/edit', [AcademicDepartmentStaffController::class, 'departmentEdit'])->name('departments.edit');
+
+        // Staff groups (Pages: no modals)
+        Route::get('/departments/{department}/groups/create', [AcademicDepartmentStaffController::class, 'staffGroupCreate'])->name('staff-groups.create');
+        Route::get('/staff-groups/{group}/edit', [AcademicDepartmentStaffController::class, 'staffGroupEdit'])->name('staff-groups.edit');
+
+        // Staff members (Pages: no modals)
+        Route::get('/staff-groups/{group}/members/create', [AcademicDepartmentStaffController::class, 'staffMemberCreate'])->name('staff-members.create');
+        Route::get('/staff-members/{member}/edit', [AcademicDepartmentStaffController::class, 'staffMemberEdit'])->name('staff-members.edit');
+
+        // Publications (Pages: bulk add via repeater)
+        Route::get('/staff-members/{member}/publications', [AcademicDepartmentStaffController::class, 'publicationsIndex'])->name('publications.index');
+        Route::get('/staff-members/{member}/publications/create', [AcademicDepartmentStaffController::class, 'publicationsCreate'])->name('publications.create');
+        Route::post('/staff-members/{member}/publications/bulk', [AcademicDepartmentStaffController::class, 'storePublicationsBulk'])->name('publications.bulk-store');
+        Route::get('/publications/{publication}/edit', [AcademicDepartmentStaffController::class, 'publicationEdit'])->name('publications.edit');
+
 
         // Departments
         Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');
@@ -425,6 +572,13 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
             ->name('publications.sort');
         Route::get('/staff-members/{member}/publications/list', [AcademicDepartmentStaffController::class, 'publicationsList'])
             ->name('publications.list');
+
+        // Staff Finder (Search Academic Staff Members)
+        Route::get('/staff-finder', [AcademicDepartmentStaffController::class, 'staffFinder'])
+            ->name('staff.finder');
+
+        Route::get('/staff-finder/table', [AcademicDepartmentStaffController::class, 'staffFinderTable'])
+            ->name('staff.finder.table');
     });
 
 

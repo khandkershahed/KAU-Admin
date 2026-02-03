@@ -10,11 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class AcademicSiteController extends Controller
+class AcademicSiteControllerOld extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:view academic sites')->only(['index', 'groupCreate','groupEdit','siteCreate','siteEdit']);
+        $this->middleware('permission:view academic sites')->only(['index']);
         $this->middleware('permission:create academic sites')->only(['storeSite', 'storeGroup']);
         $this->middleware('permission:edit academic sites')->only(['updateSite', 'updateGroup']);
         $this->middleware('permission:delete academic sites')->only(['destroySite', 'destroyGroup']);
@@ -54,47 +54,6 @@ class AcademicSiteController extends Controller
             'navItemsTree' => $navItemsTree,
         ]);
     }
-
-
-    /* =========================================================================
-        GROUP PAGES (NO MODALS)
-       ========================================================================= */
-
-    public function groupCreate()
-    {
-        return view('admin.pages.academic.groups.create');
-    }
-
-    public function groupEdit(AcademicMenuGroup $group)
-    {
-        return view('admin.pages.academic.groups.edit', compact('group'));
-    }
-
-    /* =========================================================================
-        SITE PAGES (NO MODALS)
-       ========================================================================= */
-
-    public function siteCreate(Request $request)
-    {
-        $groups = AcademicMenuGroup::orderBy('position')->get();
-        $selectedGroupId = $request->get('group_id');
-
-        return view('admin.pages.academic.sites_pages.create', [
-            'groups' => $groups,
-            'selectedGroupId' => $selectedGroupId,
-        ]);
-    }
-
-    public function siteEdit(AcademicSite $site)
-    {
-        $groups = AcademicMenuGroup::orderBy('position')->get();
-
-        return view('admin.pages.academic.sites_pages.edit', [
-            'site'   => $site,
-            'groups' => $groups,
-        ]);
-    }
-
 
     /**
      * Build tree structure from flat nav list
@@ -155,7 +114,7 @@ class AcademicSiteController extends Controller
 
         AcademicMenuGroup::create($data);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Group created successfully.') : back()->with('success', 'Group created successfully.');
+        return back()->with('success', 'Group created successfully.');
     }
 
     public function updateGroup(AcademicMenuGroup $group, Request $request)
@@ -167,7 +126,7 @@ class AcademicSiteController extends Controller
 
         $group->update($data);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Group updated successfully.') : back()->with('success', 'Group updated successfully.');
+        return back()->with('success', 'Group updated successfully.');
     }
 
     public function destroyGroup(AcademicMenuGroup $group)
@@ -213,7 +172,7 @@ class AcademicSiteController extends Controller
 
         AcademicSite::create($data);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Site created successfully.') : back()->with('success', 'Site created successfully.');
+        return back()->with('success', 'Site created successfully.');
     }
 
     public function updateSite(AcademicSite $site, Request $request)
@@ -240,7 +199,7 @@ class AcademicSiteController extends Controller
 
         $site->update($data);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Site updated successfully.') : back()->with('success', 'Site updated successfully.');
+        return back()->with('success', 'Site updated successfully.');
     }
 
     public function destroySite(AcademicSite $site)

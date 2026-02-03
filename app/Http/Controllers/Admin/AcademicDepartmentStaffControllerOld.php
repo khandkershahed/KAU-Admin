@@ -12,41 +12,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class AcademicDepartmentStaffController extends Controller
+class AcademicDepartmentStaffControllerOld extends Controller
 {
     public function __construct()
     {
         // Departments
-        $this->middleware('permission:view academic departments')->only(['index', 'departmentCreate', 'departmentEdit', 'staffGroupCreate', 'staffGroupEdit', 'staffMemberCreate', 'staffMemberEdit', 'publicationsIndex', 'publicationsCreate', 'publicationEdit']);
-        $this->middleware('permission:create academic departments')->only(['storeDepartment', 'departmentCreate']);
+        $this->middleware('permission:view academic departments')->only(['index']);
+        $this->middleware('permission:create academic departments')->only(['storeDepartment']);
         $this->middleware('permission:edit academic departments')->only([
             'updateDepartment',
-            'departmentEdit',
             'sortDepartments',
             'toggleDepartmentStatus',
         ]);
         $this->middleware('permission:delete academic departments')->only(['destroyDepartment']);
 
         // Staff (groups + members)
-        $this->middleware('permission:view academic staff')->only(['index', 'staffFinder', 'staffFinderTable', 'departmentCreate', 'departmentEdit', 'staffGroupCreate', 'staffGroupEdit', 'staffMemberCreate', 'staffMemberEdit', 'publicationsIndex', 'publicationsCreate', 'publicationEdit']);
+        $this->middleware('permission:view academic staff')->only(['index']);
         $this->middleware('permission:create academic staff')->only([
             'storeGroup',
-            'staffGroupCreate',
             'storeMember',
-            'staffMemberCreate',
             'storePublication',
-            'publicationsCreate',
-            'storePublicationsBulk',
         ]);
         $this->middleware('permission:edit academic staff')->only([
             'updateGroup',
-            'staffGroupEdit',
             'updateMember',
-            'staffMemberEdit',
             'sortGroups',
             'sortMembers',
             'updatePublication',
-            'publicationEdit',
             'sortPublications',
         ]);
         $this->middleware('permission:delete academic staff')->only([
@@ -97,99 +89,6 @@ class AcademicDepartmentStaffController extends Controller
             'departments'  => $departments,
         ]);
     }
-
-
-    /* =========================================================================
-        PAGES (NO MODALS)
-       ========================================================================= */
-
-    public function departmentCreate(Request $request)
-    {
-        $sites = AcademicSite::orderBy('position')->get();
-        $siteId = $request->get('site_id', optional($sites->first())->id);
-
-        return view('admin.pages.academic.departments.create', [
-            'sites'  => $sites,
-            'siteId' => $siteId,
-        ]);
-    }
-
-    public function departmentEdit(AcademicDepartment $department)
-    {
-        $sites = AcademicSite::orderBy('position')->get();
-
-        return view('admin.pages.academic.departments.edit', [
-            'department' => $department,
-            'sites'      => $sites,
-        ]);
-    }
-
-    public function staffGroupCreate(AcademicDepartment $department)
-    {
-        return view('admin.pages.academic.staff_groups.create', [
-            'department' => $department,
-        ]);
-    }
-
-    public function staffGroupEdit(AcademicStaffSection $group)
-    {
-        $department = AcademicDepartment::find($group->academic_department_id);
-
-        return view('admin.pages.academic.staff_groups.edit', [
-            'group'      => $group,
-            'department' => $department,
-        ]);
-    }
-
-    public function staffMemberCreate(AcademicStaffSection $group)
-    {
-        $department = AcademicDepartment::find($group->academic_department_id);
-
-        return view('admin.pages.academic.staff_members.create', [
-            'group'      => $group,
-            'department' => $department,
-        ]);
-    }
-
-    public function staffMemberEdit(AcademicStaffMember $member)
-    {
-        $group = AcademicStaffSection::find($member->academic_staff_section_id);
-        $department = $group ? AcademicDepartment::find($group->academic_department_id) : null;
-
-        return view('admin.pages.academic.staff_members.edit', [
-            'member'     => $member,
-            'group'      => $group,
-            'department' => $department,
-        ]);
-    }
-
-    public function publicationsIndex(AcademicStaffMember $member)
-    {
-        $publications = $member->publications()->orderBy('position')->get();
-
-        return view('admin.pages.academic.publications.index', [
-            'member'       => $member,
-            'publications' => $publications,
-        ]);
-    }
-
-    public function publicationsCreate(AcademicStaffMember $member)
-    {
-        return view('admin.pages.academic.publications.create', [
-            'member' => $member,
-        ]);
-    }
-
-    public function publicationEdit(AcademicMemberPublication $publication)
-    {
-        $member = AcademicStaffMember::find($publication->academic_staff_member_id);
-
-        return view('admin.pages.academic.publications.edit', [
-            'publication' => $publication,
-            'member'      => $member,
-        ]);
-    }
-
 
     /* =========================================================================
         DEPARTMENTS
@@ -266,7 +165,7 @@ class AcademicDepartmentStaffController extends Controller
             'position'         => $data['position'] ?? 0,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Department created.') : back()->with('success', 'Department created.');
+        return back()->with('success', 'Department created.');
     }
 
 
@@ -293,7 +192,7 @@ class AcademicDepartmentStaffController extends Controller
             'position'    => $data['position'] ?? $department->position,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Department updated.') : back()->with('success', 'Department updated.');
+        return back()->with('success', 'Department updated.');
     }
 
 
@@ -355,7 +254,7 @@ class AcademicDepartmentStaffController extends Controller
             'position'               => $data['position'] ?? 0,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Staff group created.') : back()->with('success', 'Staff group created.');
+        return back()->with('success', 'Staff group created.');
     }
 
     public function updateGroup(AcademicStaffSection $group, Request $request)
@@ -370,7 +269,7 @@ class AcademicDepartmentStaffController extends Controller
             'status' => $data['status'] ?? $group->status,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Staff group updated.') : back()->with('success', 'Staff group updated.');
+        return back()->with('success', 'Staff group updated.');
     }
 
     public function destroyGroup(AcademicStaffSection $group)
@@ -625,7 +524,7 @@ class AcademicDepartmentStaffController extends Controller
             'scholarship'       => $request->scholarship,
             'research'          => $request->research,
             'consultancy'       => $request->consultancy,
-            'employment_history' => $request->employment_history,
+            'employment_history'=> $request->employment_history,
             'institutional_member' => $request->institutional_member,
             'teaching'          => $request->teaching,
 
@@ -689,7 +588,7 @@ class AcademicDepartmentStaffController extends Controller
     {
         $data = $request->validate([
             'title'  => 'required|string|max:500',
-            'type'   => 'nullable|in:journal,conference,seminar,book_chapter',
+            'type'   => 'nullable|in:journal,conference',
             'journal_or_conference_name' => 'nullable|string|max:255',
             'publisher' => 'nullable|string|max:255',
             'year'   => 'nullable|integer|min:1900|max:2100',
@@ -709,52 +608,14 @@ class AcademicDepartmentStaffController extends Controller
             'position' => $data['position'] ?? 0,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Publication added.') : back()->with('success', 'Publication added.');
+        return back()->with('success', 'Publication added.');
     }
-    public function storePublicationsBulk(AcademicStaffMember $member, Request $request)
-    {
-        $data = $request->validate([
-            'publications' => 'required|array|min:1',
-            'publications.*.title' => 'required|string|max:500',
-            'publications.*.type'  => 'nullable|in:journal,conference,seminar,book_chapter',
-            'publications.*.journal_or_conference_name' => 'nullable|string|max:255',
-            'publications.*.publisher' => 'nullable|string|max:255',
-            'publications.*.year'  => 'nullable|integer|min:1900|max:2100',
-            'publications.*.doi'   => 'nullable|string|max:255',
-            'publications.*.url'   => 'nullable|string|max:1000',
-            'publications.*.position' => 'nullable|integer',
-        ]);
-
-        $maxPos = (int) $member->publications()->max('position');
-        $pos = $maxPos + 1;
-
-        foreach ($data['publications'] as $row) {
-            $member->publications()->create([
-                'title'  => $row['title'],
-                'type'   => $row['type'] ?? null,
-                'journal_or_conference_name' => $row['journal_or_conference_name'] ?? null,
-                'publisher' => $row['publisher'] ?? null,
-                'year'   => $row['year'] ?? null,
-                'doi'    => $row['doi'] ?? null,
-                'url'    => $row['url'] ?? null,
-                'position' => $row['position'] ?? $pos,
-            ]);
-
-            $pos++;
-        }
-
-        return $request->filled('redirect_to')
-            ? redirect($request->input('redirect_to'))->with('success', 'Publications added.')
-            : back()->with('success', 'Publications added.');
-    }
-
-
 
     public function updatePublication(AcademicMemberPublication $publication, Request $request)
     {
         $data = $request->validate([
             'title'  => 'required|string|max:500',
-            'type'   => 'nullable|in:journal,conference,seminar,book_chapter',
+            'type'   => 'nullable|in:journal,conference',
             'journal_or_conference_name' => 'nullable|string|max:255',
             'publisher' => 'nullable|string|max:255',
             'year'   => 'nullable|integer|min:1900|max:2100',
@@ -774,7 +635,7 @@ class AcademicDepartmentStaffController extends Controller
             'position' => $data['position'] ?? $publication->position,
         ]);
 
-        return $request->filled('redirect_to') ? redirect($request->input('redirect_to'))->with('success', 'Publication updated.') : back()->with('success', 'Publication updated.');
+        return back()->with('success', 'Publication updated.');
     }
 
     public function destroyPublication(AcademicMemberPublication $publication)
@@ -801,54 +662,5 @@ class AcademicDepartmentStaffController extends Controller
             'success' => true,
             'message' => 'Publication order updated.',
         ]);
-    }
-
-    public function staffFinder(Request $request)
-    {
-        $sites = AcademicSite::orderBy('name')->get();
-        $departments = AcademicDepartment::orderBy('title')->get();
-
-        return view('admin.pages.academic.staff_finder.index', compact('sites', 'departments'));
-    }
-
-    public function staffFinderTable(Request $request)
-    {
-        $q = trim((string) $request->get('q', ''));
-        $siteId = $request->get('site_id');
-        $departmentId = $request->get('department_id');
-        $status = $request->get('status');
-
-        $members = AcademicStaffMember::query()
-            ->with([
-                'section:id,academic_site_id,academic_department_id,title',
-                'section.site:id,name,short_name',
-                'section.department:id,title,short_code',
-            ])
-            ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('name', 'like', '%' . $q . '%')
-                        ->orWhere('email', 'like', '%' . $q . '%')
-                        ->orWhere('phone', 'like', '%' . $q . '%')
-                        ->orWhere('mobile', 'like', '%' . $q . '%');
-                });
-            })
-            ->when($siteId, function ($query) use ($siteId) {
-                $query->whereHas('section', function ($s) use ($siteId) {
-                    $s->where('academic_site_id', $siteId);
-                });
-            })
-            ->when($departmentId, function ($query) use ($departmentId) {
-                $query->whereHas('section', function ($s) use ($departmentId) {
-                    $s->where('academic_department_id', $departmentId);
-                });
-            })
-            ->when($status !== null && $status !== '', function ($query) use ($status) {
-                $query->where('status', $status);
-            })
-            ->orderBy('name')
-            ->paginate(10)
-            ->appends($request->query());
-
-        return view('admin.pages.academic.staff_finder.partials.table', compact('members'));
     }
 }

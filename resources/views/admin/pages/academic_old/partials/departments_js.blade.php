@@ -32,6 +32,19 @@
     }
 
     /* =====================================================
+       1) AUTO SLUG LOGIC
+    ===================================================== */
+    $(document).on("keyup", ".slug-source", function() {
+        const target = $(this).closest(".modal-body").find(".slug-target");
+        target.val(slugify($(this).val()));
+    });
+
+    $(document).on("keyup", ".slug-source-edit", function() {
+        const target = $(this).closest(".modal-body").find(".slug-target-edit");
+        target.val(slugify($(this).val()));
+    });
+
+    /* =====================================================
        2) LOAD RIGHT PANEL VIA AJAX
     ===================================================== */
     function loadDepartmentPanel(deptId, push = true) {
@@ -51,6 +64,7 @@
             $("#rightPanelContent").removeClass("d-none");
 
             initSortables();
+            initDynamicButtons();
 
             if (push) {
                 const url = new URL(window.location.href);
@@ -128,6 +142,31 @@
     });
 
     /* =====================================================
+       5) EDIT DEPARTMENT MODAL POPULATION
+    ===================================================== */
+    $(document).on("click", ".editDepartmentBtn", function() {
+        const id = $(this).data("id");
+        const title = $(this).data("title");
+        const shortCode = $(this).data("short-code");
+        const slug = $(this).data("slug");
+        const status = $(this).data("status");
+        const position = $(this).data("position") ?? 0;
+        const description = $(this).data("description") || "";
+
+        const form = $("#editDepartmentForm");
+        form.attr("action", "/admin/academic/departments/" + id);
+
+        $("#deptEditTitle").val(title);
+        $("#deptEditShortCode").val(shortCode);
+        $("#deptEditSlug").val(slug);
+        $("#deptEditStatus").val(status);
+        $("#deptEditPosition").val(position);
+        $("#deptEditDescription").val(description);
+
+        $("#editDepartmentModal").modal("show");
+    });
+
+    /* =====================================================
        6) STATUS TOGGLE — DEPARTMENT
     ===================================================== */
     $(document).on("change", ".toggleDepartmentStatus", function() {
@@ -156,6 +195,124 @@
             })
             .catch(() => showToast("error", "Status update failed"));
     });
+
+    /* =====================================================
+       7) STAFF GROUP & MEMBER MODALS (ACTIONS)
+    ===================================================== */
+    function initDynamicButtons() {
+        // CREATE STAFF GROUP
+        $(document).off("click", ".createStaffGroupBtn").on("click", ".createStaffGroupBtn", function() {
+            const deptId = $(this).data("department-id");
+            $("#createStaffGroupDepartmentId").val(deptId);
+            $("#createStaffGroupForm").attr("action", "/admin/academic/departments/" + deptId + "/groups");
+            $("#createStaffGroupModal").modal("show");
+        });
+
+        // CREATE STAFF MEMBER
+        $(document).off("click", ".createStaffMemberBtn").on("click", ".createStaffMemberBtn", function() {
+            const groupId = $(this).data("group-id");
+            $("#createMemberGroupId").val(groupId);
+            $("#createStaffMemberForm").attr("action", "/admin/academic/staff-groups/" + groupId + "/members");
+            $("#createStaffMemberModal").modal("show");
+        });
+
+        // EDIT STAFF GROUP
+        $(document).off("click", ".editStaffGroupBtn").on("click", ".editStaffGroupBtn", function() {
+            const id = $(this).data("id");
+            const title = $(this).data("title");
+            const status = $(this).data("status");
+
+            const form = $("#editStaffGroupForm");
+            form.attr("action", "/admin/academic/staff-groups/" + id);
+
+            $("#editStaffGroupTitle").val(title);
+            $("#editStaffGroupStatus").val(status);
+
+            $("#editStaffGroupModal").modal("show");
+        });
+
+        // EDIT STAFF MEMBER
+        $(document).off("click", ".editStaffMemberBtn").on("click", ".editStaffMemberBtn", function() {
+            const member = $(this).data("member");
+
+            const form = $("#editStaffMemberForm");
+            form.attr("action", "/admin/academic/staff-members/" + member.id);
+
+            $("#editMemberName").val(member.name);
+            $("#editMemberDesignation").val(member.designation);
+            $("#editMemberEmail").val(member.email);
+            $("#editMemberPhone").val(member.phone);
+            $("#editMemberStatus").val(member.status);
+            document.getElementById('editMemberMobile').value = (data.mobile || '');
+            document.getElementById('editMemberAddress').value = (data.address || '');
+            document.getElementById('editMemberResearchInterest').value = (data.research_interest || '');
+            document.getElementById('editMemberBio').value = (data.bio || '');
+            document.getElementById('editMemberEducation').value = (data.education || '');
+            document.getElementById('editMemberExperience').value = (data.experience || '');
+            document.getElementById('editMemberScholarship').value = (data.scholarship || '');
+            document.getElementById('editMemberResearch').value = (data.research || '');
+            document.getElementById('editMemberTeaching').value = (data.teaching || '');
+
+            // Clear existing links
+            $("#editStaffLinksRepeater").html("");
+            editLinkIndex = 0;
+
+            if (member.links && member.links.length) {
+                member.links.forEach(function(link) {
+                    addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, link);
+                });
+            }
+
+            $("#editStaffMemberModal").modal("show");
+        });
+    }
+
+    /* =====================================================
+       8) STAFF LINKS REPEATER (CREATE + EDIT)
+       (uses hidden templates from member_modals)
+    ===================================================== */
+    let linkIndex = 1;
+    let editLinkIndex = 0;
+
+    function addStaffLinkRow(containerSelector, templateSelector, isEdit = false, linkData = null) {
+        const index = isEdit ? editLinkIndex : linkIndex;
+        const html = $(templateSelector).html().replace(/__INDEX__/g, index);
+        const $row = $(html);
+
+        $(containerSelector).append($row);
+
+        if (typeof initIconPicker === "function") {
+            initIconPicker($row[0]);
+        }
+
+        if (linkData) {
+            $row.find("input[name='links[" + index + "][url]']").val(linkData.url || "");
+            $row.find(".icon-picker-input").val(linkData.icon || "");
+            $row.find(".icon-picker-toggle i").attr("class", linkData.icon || "fa fa-icons");
+        }
+
+        if (isEdit) {
+            editLinkIndex++;
+        } else {
+            linkIndex++;
+        }
+    }
+
+    $("#addStaffLinkBtn").on("click", function() {
+        addStaffLinkRow("#staffLinksRepeater", "#staffLinkTemplate", false, null);
+    });
+
+    $("#addStaffLinkBtnEdit").on("click", function() {
+        addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, null);
+    });
+
+    $(document).on("click", ".removeLinkBtn", function() {
+        $(this).closest(".link-row").remove();
+    });
+
+    /* =====================================================
+       9) SORTABLES (USING SortableJS)
+    ===================================================== */
 
     function initSortables() {
         /* ---- DEPARTMENTS (LEFT) ---- */
@@ -326,6 +483,19 @@
     }
 
     /* =====================================================
+       1) AUTO SLUG LOGIC
+    ===================================================== */
+    $(document).on("keyup", ".slug-source", function() {
+        const target = $(this).closest(".modal-body").find(".slug-target");
+        target.val(slugify($(this).val()));
+    });
+
+    $(document).on("keyup", ".slug-source-edit", function() {
+        const target = $(this).closest(".modal-body").find(".slug-target-edit");
+        target.val(slugify($(this).val()));
+    });
+
+    /* =====================================================
        2) LOAD RIGHT PANEL VIA AJAX
     ===================================================== */
     function loadDepartmentPanel(deptId, push = true) {
@@ -345,6 +515,7 @@
             $("#rightPanelContent").removeClass("d-none");
 
             initSortables();
+            initDynamicButtons();
 
             if (push) {
                 const url = new URL(window.location.href);
@@ -429,6 +600,31 @@
     });
 
     /* =====================================================
+       5) EDIT DEPARTMENT MODAL POPULATION
+    ===================================================== */
+    $(document).on("click", ".editDepartmentBtn", function() {
+        const id = $(this).data("id");
+        const title = $(this).data("title");
+        const shortCode = $(this).data("short-code");
+        const slug = $(this).data("slug");
+        const status = $(this).data("status");
+        const position = $(this).data("position") ?? 0;
+        const description = $(this).data("description") || "";
+
+        const form = $("#editDepartmentForm");
+        form.attr("action", "/admin/academic/departments/" + id);
+
+        $("#deptEditTitle").val(title);
+        $("#deptEditShortCode").val(shortCode);
+        $("#deptEditSlug").val(slug);
+        $("#deptEditStatus").val(status);
+        $("#deptEditPosition").val(position);
+        $("#deptEditDescription").val(description);
+
+        $("#editDepartmentModal").modal("show");
+    });
+
+    /* =====================================================
        6) STATUS TOGGLE — DEPARTMENT
     ===================================================== */
     $(document).on("change", ".toggleDepartmentStatus", function() {
@@ -457,6 +653,243 @@
             })
             .catch(() => showToast("error", "Status update failed"));
     });
+
+    /* =====================================================
+       7) STAFF GROUP & MEMBER MODALS (ACTIONS)
+    ===================================================== */
+    function initDynamicButtons() {
+
+        // CREATE STAFF GROUP
+        $(document).off("click", ".createStaffGroupBtn").on("click", ".createStaffGroupBtn", function() {
+            const deptId = $(this).data("department-id");
+            $("#createStaffGroupDepartmentId").val(deptId);
+            $("#createStaffGroupForm").attr("action", "/admin/academic/departments/" + deptId + "/groups");
+            $("#createStaffGroupModal").modal("show");
+        });
+
+        // CREATE STAFF MEMBER
+        $(document).off("click", ".createStaffMemberBtn").on("click", ".createStaffMemberBtn", function() {
+            const groupId = $(this).data("group-id");
+            $("#createMemberGroupId").val(groupId);
+            $("#createStaffMemberForm").attr("action", "/admin/academic/staff-groups/" + groupId + "/members");
+            $("#createStaffMemberModal").modal("show");
+        });
+
+        // EDIT STAFF GROUP
+        $(document).off("click", ".editStaffGroupBtn").on("click", ".editStaffGroupBtn", function() {
+            const id = $(this).data("id");
+            const title = $(this).data("title");
+            const status = $(this).data("status");
+
+            const form = $("#editStaffGroupForm");
+            form.attr("action", "/admin/academic/staff-groups/" + id);
+
+            $("#editStaffGroupTitle").val(title);
+            $("#editStaffGroupStatus").val(status);
+
+            $("#editStaffGroupModal").modal("show");
+        });
+
+        // EDIT STAFF MEMBER
+        $(document).off("click", ".editStaffMemberBtn").on("click", ".editStaffMemberBtn", function() {
+            const member = $(this).data("member");
+
+            const form = $("#editStaffMemberForm");
+            form.attr("action", "/admin/academic/staff-members/" + member.id);
+
+            $("#editMemberName").val(member.name || '');
+            $("#editMemberDesignation").val(member.designation || '');
+            $("#editMemberEmail").val(member.email || '');
+            $("#editMemberPhone").val(member.phone || '');
+            $("#editMemberStatus").val(member.status || 'published');
+
+            // EXTRA FIELDS (FIXED: use member, not data)
+            if (document.getElementById('editMemberMobile')) document.getElementById('editMemberMobile').value =
+                (member.mobile || '');
+            if (document.getElementById('editMemberAddress')) document.getElementById('editMemberAddress')
+                .value = (member.address || '');
+            if (document.getElementById('editMemberResearchInterest')) document.getElementById(
+                'editMemberResearchInterest').value = (member.research_interest || '');
+            if (document.getElementById('editMemberBio')) document.getElementById('editMemberBio').value = (
+                member.bio || '');
+            if (document.getElementById('editMemberEducation')) document.getElementById('editMemberEducation')
+                .value = (member.education || '');
+            if (document.getElementById('editMemberExperience')) document.getElementById('editMemberExperience')
+                .value = (member.experience || '');
+            if (document.getElementById('editMemberScholarship')) document.getElementById(
+                'editMemberScholarship').value = (member.scholarship || '');
+            if (document.getElementById('editMemberResearch')) document.getElementById('editMemberResearch')
+                .value = (member.research || '');
+            if (document.getElementById('editMemberTeaching')) document.getElementById('editMemberTeaching')
+                .value = (member.teaching || '');
+
+            // Clear existing links
+            $("#editStaffLinksRepeater").html("");
+            editLinkIndex = 0;
+
+            if (member.links && member.links.length) {
+                member.links.forEach(function(link) {
+                    addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, link);
+                });
+            }
+
+            $("#editStaffMemberModal").modal("show");
+        });
+    }
+
+    /* =====================================================
+       8) STAFF LINKS REPEATER (CREATE + EDIT)
+       (uses hidden templates from member_modals)
+    ===================================================== */
+    let linkIndex = 1;
+    let editLinkIndex = 0;
+
+    function addStaffLinkRow(containerSelector, templateSelector, isEdit = false, linkData = null) {
+        const index = isEdit ? editLinkIndex : linkIndex;
+        const html = $(templateSelector).html().replace(/__INDEX__/g, index);
+        const $row = $(html);
+
+        $(containerSelector).append($row);
+
+        if (typeof initIconPicker === "function") {
+            initIconPicker($row[0]);
+        }
+
+        if (linkData) {
+            $row.find("input[name='links[" + index + "][url]']").val(linkData.url || "");
+            $row.find(".icon-picker-input").val(linkData.icon || "");
+            $row.find(".icon-picker-toggle i").attr("class", linkData.icon || "fa fa-icons");
+        }
+
+        if (isEdit) {
+            editLinkIndex++;
+        } else {
+            linkIndex++;
+        }
+    }
+
+    $("#addStaffLinkBtn").on("click", function() {
+        addStaffLinkRow("#staffLinksRepeater", "#staffLinkTemplate", false, null);
+    });
+
+    $("#addStaffLinkBtnEdit").on("click", function() {
+        addStaffLinkRow("#editStaffLinksRepeater", "#staffLinkTemplateEdit", true, null);
+    });
+
+    $(document).on("click", ".removeLinkBtn", function() {
+        $(this).closest(".link-row").remove();
+    });
+
+    /* =====================================================
+       9) PUBLICATIONS MODAL (AJAX LOAD + CREATE + EDIT + SORT)
+    ===================================================== */
+
+    window.openPublicationsModal = function(memberId) {
+        if (!memberId) return;
+
+        $("#pubMemberId").val(memberId);
+
+        const loader = document.getElementById('publicationsLoader');
+        const content = document.getElementById('publicationsContent');
+        if (loader) loader.classList.remove('d-none');
+        if (content) content.innerHTML = '';
+
+        // Set create form action
+        const createForm = document.getElementById('createPublicationForm');
+        if (createForm) {
+            createForm.action = "/admin/academic/staff-members/" + memberId + "/publications";
+            createForm.reset();
+        }
+
+        fetch("/admin/academic/staff-members/" + memberId + "/publications/list", {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (content) content.innerHTML = json.html || '';
+                if (loader) loader.classList.add('d-none');
+
+                // Hook edit buttons inside loaded HTML
+                $("#publicationsContent").find(".editPublicationBtn").each(function() {
+                    $(this).off("click").on("click", function() {
+                        const pubId = $(this).data("id");
+
+                        const editForm = document.getElementById('editPublicationForm');
+                        if (editForm) {
+                            editForm.action = "/admin/academic/publications/" + pubId;
+                        }
+
+                        $("#editPublicationId").val(pubId);
+                        $("#editPubTitle").val($(this).data("title") || '');
+                        $("#editPubType").val($(this).data("type") || '');
+                        $("#editPubJournal").val($(this).data("journal") || '');
+                        $("#editPubPublisher").val($(this).data("publisher") || '');
+                        $("#editPubYear").val($(this).data("year") || '');
+                        $("#editPubDoi").val($(this).data("doi") || '');
+                        $("#editPubUrl").val($(this).data("url") || '');
+                    });
+                });
+
+                // Sort publications (SortableJS)
+                const pubList = document.getElementById('publicationsSortable');
+                if (pubList && typeof Sortable !== "undefined") {
+                    if (pubList.__sortableInstance) {
+                        pubList.__sortableInstance.destroy();
+                    }
+
+                    pubList.__sortableInstance = new Sortable(pubList, {
+                        handle: '.pub-sort-handle',
+                        animation: 150,
+                        onEnd: function() {
+                            let order = [];
+                            $("#publicationsSortable .publication-item").each(function() {
+                                order.push($(this).data("id"));
+                            });
+
+                            fetch("/admin/academic/staff-members/" + memberId +
+                                    "/publications/sort", {
+                                        method: "POST",
+                                        headers: {
+                                            "X-CSRF-TOKEN": CSRF,
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            order: order
+                                        })
+                                    })
+                                .then(res => res.json())
+                                .then(json2 => {
+                                    if (json2.success) {
+                                        showToast("success", json2.message ||
+                                            "Publication order updated.");
+                                    } else {
+                                        showToast("error", json2.message ||
+                                            "Failed to update publication order.");
+                                    }
+                                })
+                                .catch(() => showToast("error",
+                                    "Failed to update publication order."));
+                        }
+                    });
+                }
+
+                $("#publicationsModal").modal("show");
+            })
+            .catch(() => {
+                if (loader) loader.classList.add('d-none');
+                if (content) content.innerHTML =
+                    `<div class="alert alert-danger">Failed to load publications.</div>`;
+                $("#publicationsModal").modal("show");
+            });
+    };
+
+    /* =====================================================
+       10) SORTABLES (USING SortableJS)
+    ===================================================== */
 
     function initSortables() {
         /* ---- DEPARTMENTS (LEFT) ---- */
@@ -1106,6 +1539,7 @@
         ===================================================== */
         $(document).ready(function() {
             initSortables();
+            initDynamicButtons();
 
             const urlParams = new URLSearchParams(window.location.search);
             const deptIdFromUrl = urlParams.get("department_id");

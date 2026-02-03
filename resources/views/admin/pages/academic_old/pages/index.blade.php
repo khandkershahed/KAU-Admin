@@ -18,7 +18,7 @@
 
             {{-- SITE SELECTOR --}}
             <form method="GET" action="{{ route('admin.academic.pages.index') }}" class="d-flex">
-                <select name="site_id" data-control="select2" id="site_id" class="form-select form-select-sm w-350px"
+                <select name="site_id" data-control="select2" class="form-select form-select-sm"
                     onchange="this.form.submit()">
                     @foreach ($sites as $site)
                         <option value="{{ $site->id }}"
@@ -73,7 +73,7 @@
                                     </div>
                                     <div class="text-muted small mt-1">
                                         Slug: <span class="fw-semibold">{{ $page->slug }}</span> &nbsp; | &nbsp;
-                                        Status: <span class=\"fw-semibold\" id=\"pageStatusText-{{ $page->id }}\">{{ $page->status }}</span>
+                                        Status: <span class="fw-semibold">{{ $page->status }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -112,69 +112,4 @@
     @push('scripts')
         @include('admin.pages.academic.partials.pages_js')
     @endpush
-
-    @push('scripts')
-        <script>
-            (function () {
-                const token = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
-
-                document.addEventListener('change', function (e) {
-                    const el = e.target.closest('.toggleAcademicPageStatus');
-                    if (!el) return;
-
-                    const id = el.getAttribute('data-id');
-                    if (!id) return;
-
-                    const url = "{{ route('admin.academic.pages.toggle-status', ['page' => '__ID__']) }}".replace('__ID__', id);
-
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (!data || data.ok !== true) {
-                            el.checked = !el.checked;
-                            if (window.Swal) {
-                                Swal.fire('Error', (data && data.message) ? data.message : 'Failed to update status.', 'error');
-                            } else {
-                                alert((data && data.message) ? data.message : 'Failed to update status.');
-                            }
-                            return;
-                        }
-
-                        // Update status text in the card (if exists)
-                        const statusSpan = document.querySelector('#pageStatusText-' + id);
-                        if (statusSpan) statusSpan.textContent = data.status;
-
-                        if (window.Swal) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Updated',
-                                text: 'Status changed to: ' + data.status,
-                                timer: 900,
-                                showConfirmButton: false
-                            });
-                        }
-                        window.location.reload();
-                    })
-                    .catch(() => {
-                        el.checked = !el.checked;
-                        if (window.Swal) {
-                            Swal.fire('Error', 'Failed to update status.', 'error');
-                        } else {
-                            alert('Failed to update status.');
-                        }
-                    });
-                });
-            })();
-        </script>
-    @endpush
-
 </x-admin-app-layout>
