@@ -1,8 +1,8 @@
 
 <script>
     /* =====================================================
-   TOASTR OPTIONS
-===================================================== */
+    TOASTR OPTIONS
+    ===================================================== */
     toastr.options = {
         positionClass: "toast-top-right",
         closeButton: true,

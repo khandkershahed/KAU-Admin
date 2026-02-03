@@ -16,19 +16,19 @@
                     <i class="fa-solid fa-users me-2"></i> Sections & Staff
                 </a>
 
-                <a href="{{ route('admin.administration.office.cms.pages.index', $office->slug) }}" class="btn btn-primary btn-sm">
+                {{-- <a href="{{ route('admin.administration.office.cms.pages.index', $office->slug) }}" class="btn btn-primary btn-sm">
                     <i class="fa-solid fa-file-lines me-2"></i> Pages
                 </a>
 
                 <a href="{{ route('admin.administration.office.cms.menu.index', $office->slug) }}" class="btn btn-dark btn-sm">
                     <i class="fa-solid fa-sitemap me-2"></i> Menu
-                </a>
+                </a> --}}
             </div>
         </div>
 
         <div class="card-body">
             <div class="row g-5">
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <div class="border rounded p-5 h-100">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="fw-bold">Office Pages</div>
@@ -56,7 +56,7 @@
                             Manage Menu
                         </a>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="col-md-4">
                     <div class="border rounded p-5 h-100">

@@ -1,9 +1,9 @@
 <x-admin-app-layout :title="'Office: ' . $office->title">
-<style>
-    .member-sort{
-        cursor: grab;
-    }
-</style>
+    <style>
+        .member-sort {
+            cursor: grab;
+        }
+    </style>
     <div class="card shadow-sm">
         <!-- =========================
              CARD HEADER
@@ -11,7 +11,8 @@
         <div class="card-header d-flex align-items-center justify-content-between">
 
             <h3 class="card-title fw-bold">
-               <a href="{{ route('admin.administration.index') }}" class="me-4"><i class="fa-solid fa-circle-arrow-left text-info fs-2"></i></a> Office: {{ $office->title }}
+                <a href="{{ route('admin.administration.index') }}" class="me-4"><i
+                        class="fa-solid fa-circle-arrow-left text-info fs-2"></i></a> Office: {{ $office->title }}
             </h3>
 
             <div class="d-flex align-items-center">
@@ -29,7 +30,8 @@
 
                 <!-- ADD SECTION -->
                 @can('create admin section')
-                    <a href="{{ route('admin.administration.section.create', $office->slug) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.administration.section.create', $office->slug) }}"
+                        class="btn btn-primary btn-sm">
                         <i class="fas fa-plus me-2"></i> Add Section
                     </a>
                 @endcan
@@ -59,44 +61,68 @@
                                 <span class="section-sort me-3" style="cursor: grab;">
                                     <i class="fa-solid fa-up-down text-muted"></i>
                                 </span>
+                                @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards')
+                                    <button
+                                        class="accordion-button collapsed py-2 px-2 shadow-none bg-transparent flex-grow-1"
+                                        type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#sectionCollapse{{ $section->id }}" aria-expanded="false"
+                                        aria-controls="sectionCollapse{{ $section->id }}">
 
-                                <button
+                                        <span class="fw-semibold d-flex align-items-center">
+                                            {{ $section->title }}
+
+                                            <span class="badge badge-info ms-2">
+                                                Members: {{ $section->members->count() }}
+                                            </span>
+                                        </span>
+                                    </button>
+                                @else
+                                    <div class="py-2 px-2 flex-grow-1">
+                                        <span class="fw-semibold d-flex align-items-center">
+                                            {{ $section->title }}
+
+                                            <span class="badge badge-secondary ms-2">
+                                                Page Type: {{ ucwords(str_replace('_', ' ', $section->section_type)) }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                @endif
+
+                                {{-- <button
                                     class="accordion-button collapsed py-2 px-2 shadow-none bg-transparent flex-grow-1"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#sectionCollapse{{ $section->id }}"
-                                    aria-expanded="false"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#sectionCollapse{{ $section->id }}" aria-expanded="false"
                                     aria-controls="sectionCollapse{{ $section->id }}">
 
                                     <span class="fw-semibold d-flex align-items-center">
                                         {{ $section->title }}
 
-                                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards') 
+                                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards')
                                             <span class="badge badge-info ms-2">
                                                 Members: {{ $section->members->count() }}
                                             </span>
-                                            @else
+                                        @else
                                             <span class="badge badge-secondary ms-2">
                                                 Page Type: {{ ucwords(str_replace('_', ' ', $section->section_type)) }}
                                             </span>
                                         @endif
                                     </span>
-                                </button>
+                                </button> --}}
                             </div>
 
                             <!-- RIGHT SIDE ACTION BUTTONS -->
                             <div class="d-flex align-items-center ms-3">
 
                                 @can('edit admin section')
-                                    <a href="{{ route('admin.administration.section.edit', [$office->slug, $section->id]) }}" class="btn btn-light-success btn-sm me-2">
-                                            <i class="fa-solid fa-pen-to-square fs-6"></i>
-                                        </a>
+                                    <a href="{{ route('admin.administration.section.edit', [$office->slug, $section->id]) }}"
+                                        class="btn btn-light-success btn-sm me-2">
+                                        <i class="fa-solid fa-pen-to-square fs-6"></i>
+                                    </a>
                                 @endcan
 
                                 @can('delete admin section')
                                     <a href="{{ route('admin.administration.section.delete', $section->id) }}"
-                                       class="btn btn-light-danger btn-sm delete"
-                                       data-id="{{ $section->id }}">
+                                        class="btn btn-light-danger btn-sm delete" data-id="{{ $section->id }}">
                                         <i class="fa-solid fa-trash fs-6"></i>
                                     </a>
                                 @endcan
@@ -107,24 +133,25 @@
                         <!-- ======================
                             SECTION BODY
                         ======================= -->
-                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards') 
+                        @if ($section->section_type === 'officer_cards' || $section->section_type === 'alumni_cards')
                             <div id="sectionCollapse{{ $section->id }}" class="accordion-collapse collapse"
                                 data-bs-parent="#officeSectionsAccordion">
-    
+
                                 <div class="accordion-body">
-    
+
                                     <!-- CREATE MEMBER -->
                                     @can('create admin member')
-                                        <a href="{{ route('admin.administration.member.create', [$office->slug, $section->id]) }}" class="btn btn-outline-info btn-active-info float-end btn-sm mb-3">
+                                        <a href="{{ route('admin.administration.member.create', [$office->slug, $section->id]) }}"
+                                            class="btn btn-outline-info btn-active-info float-end btn-sm mb-3">
                                             <i class="fa fa-plus me-2"></i> Add Member
                                         </a>
                                     @endcan
-    
+
                                     <!-- MEMBERS TABLE -->
                                     <div class="table-responsive w-100">
                                         <table class="table border table-row-bordered align-middle gy-3 memberTable"
                                             data-section="{{ $section->id }}">
-    
+
                                             <thead style="background: beige;">
                                                 <tr class="fw-bold">
                                                     <th style="width: 40px;">Sort</th>
@@ -136,48 +163,52 @@
                                                     <th style="width: 160px;">Actions</th>
                                                 </tr>
                                             </thead>
-    
+
                                             <tbody id="memberSortSection{{ $section->id }}">
-    
+
                                                 @forelse ($section->members as $member)
                                                     <tr class="member-row" data-id="{{ $member->id }}">
-    
+
                                                         <!-- SORT -->
                                                         <td class=" member-sort">
-                                                            <i class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
+                                                            <i
+                                                                class="fas fa-up-down-left-right text-gray-600 fs-6 sort-handle member-sort"></i>
                                                         </td>
-    
+
                                                         <!-- PHOTO -->
                                                         <td class=" member-sort">
                                                             @if ($member->image)
                                                                 <img src="{{ asset('storage/' . $member->image) }}"
-                                                                    class="rounded-circle" width="45" height="45">
+                                                                    class="rounded-circle" width="45"
+                                                                    height="45">
                                                             @else
                                                                 <img src="{{ asset('images/default-user.png') }}"
-                                                                    class="rounded-circle" width="45" height="45">
+                                                                    class="rounded-circle" width="45"
+                                                                    height="45">
                                                             @endif
                                                         </td>
-    
+
                                                         <!-- NAME -->
                                                         <td class="member-sort">{{ $member->name }}</td>
-    
+
                                                         <!-- DESIGNATION -->
                                                         <td class="member-sort">{{ $member->designation }}</td>
-    
+
                                                         <!-- EMAIL -->
                                                         <td class="member-sort">{{ $member->email }}</td>
-    
+
                                                         <!-- PHONE -->
                                                         <td>{{ $member->phone }}</td>
-    
+
                                                         <td>
                                                             <!-- EDIT -->
                                                             @can('edit admin member')
-                                                                <a href="{{ route('admin.administration.member.edit', [$office->slug, $member->id]) }}" class="btn btn-light-success btn-sm me-2">
-                                                                        <i class="fa-solid fa-pen fs-6"></i>
-                                                                    </a>
+                                                                <a href="{{ route('admin.administration.member.edit', [$office->slug, $member->id]) }}"
+                                                                    class="btn btn-light-success btn-sm me-2">
+                                                                    <i class="fa-solid fa-pen fs-6"></i>
+                                                                </a>
                                                             @endcan
-    
+
                                                             <!-- DELETE -->
                                                             @can('delete admin member')
                                                                 <a href="{{ route('admin.administration.member.delete', $member->id) }}"
@@ -187,21 +218,21 @@
                                                                 </a>
                                                             @endcan
                                                         </td>
-    
+
                                                     </tr>
                                                 @empty
                                                     <tr>
                                                         <td colspan="8" class="text-center">No data found</td>
                                                     </tr>
                                                 @endforelse
-    
+
                                             </tbody>
-    
+
                                         </table>
                                     </div>
-    
+
                                 </div>
-    
+
                             </div>
                         @endif
 
@@ -217,7 +248,7 @@
     <!-- =====================
          PAGE-2 MODALS
     ====================== -->
-    
+
 
     <!-- =====================
          PAGE-2 JAVASCRIPT
