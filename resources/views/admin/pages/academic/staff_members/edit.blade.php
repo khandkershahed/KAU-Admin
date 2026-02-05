@@ -112,7 +112,7 @@
 
                                     <div class="col-md-3 mb-4">
                                         <label class="form-label fw-semibold text-black">Email</label>
-                                        <input type="email"
+                                        <input type="text"
                                                class="form-control form-control-sm"
                                                name="email"
                                                id="editMemberEmail"

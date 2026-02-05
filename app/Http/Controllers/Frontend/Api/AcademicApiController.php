@@ -54,7 +54,7 @@ class AcademicApiController extends Controller
     //             ];
     //         })->values()
     //     ]);
-    // }
+    // } 
 
     public function sites(): JsonResponse
     {

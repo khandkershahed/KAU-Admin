@@ -52,8 +52,8 @@ Route::prefix('api/v1')->group(function () {
     Route::get('/menus', [MenuApiController::class, 'index']);
 
     // Events
-    Route::get('/events', [EventApiController::class, 'index']);
-    Route::get('/events/{slug}', [EventApiController::class, 'show']);
+    // Route::get('/events', [EventApiController::class, 'index']);
+    // Route::get('/events/{slug}', [EventApiController::class, 'show']);
 
     // Tenders
     Route::get('/tenders', [TenderApiController::class, 'index']);
