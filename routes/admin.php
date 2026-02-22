@@ -296,9 +296,6 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
 
 
     // Admission
-
-
-
     Route::controller(AdmissionController::class)->prefix('admission')->name('admission.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
