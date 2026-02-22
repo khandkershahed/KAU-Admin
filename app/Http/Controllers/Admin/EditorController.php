@@ -38,6 +38,12 @@ class EditorController extends Controller
         $url = asset('storage/' . $path);
 
         // TinyMCE expects a JSON response with { "location": "url" }
-        return response()->json(['location' => $url]);
+        // return response()->json(['location' => $url]);
+        return response()->json([
+    'location'   => $url,
+    'mime'       => $mime,
+    'name'       => $file->getClientOriginalName(),
+    'size_bytes' => $file->getSize(),
+]);
     }
 }
