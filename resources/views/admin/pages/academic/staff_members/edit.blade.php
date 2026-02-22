@@ -115,11 +115,11 @@
 
                                     <div class="col-md-3 mb-4">
                                         <label class="form-label fw-semibold text-black">Staff Group</label>
-                                        <select class="form-select form-select-sm" name="academic_staff_section_id"
+                                        <select class="form-select form-select-sm" name="staff_section_id"
                                             id="editMemberGroup" data-control="select2" data-allow-clear="true">
                                             <option value="">Select a group</option>
                                             @foreach($groups as $group)
-                                                <option value="{{ $group->id }}" @selected(old('academic_staff_section_id', $member->academic_staff_section_id) == $group->id)>{{ $group->name }}</option>
+                                                <option value="{{ $group->id }}" @selected(old('staff_section_id', $member->staff_section_id) == $group->id)>{{ $group->title }}</option>
                                             @endforeach
                                         </select>
                                     </div>

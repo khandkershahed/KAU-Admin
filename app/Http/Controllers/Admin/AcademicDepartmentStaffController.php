@@ -623,7 +623,7 @@ class AcademicDepartmentStaffController extends Controller
             'phone'             => $data['phone'] ?? null,
             'mobile'            => $data['mobile'] ?? null,
             'address'           => $data['address'] ?? null,
-            'academic_staff_section_id' => $request->academic_staff_section_id,
+            'staff_section_id' => $request->staff_section_id,
             'research_interest' => $request->research_interest,
             'bio'               => $request->bio,
             'education'         => $request->education,
