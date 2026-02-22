@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('academic_departments', function (Blueprint $table) {
+        Schema::create('academic_departments', function (Blueprint $table) { 
             $table->id();
 
             $table->foreignId('academic_site_id')->nullable()->constrained('academic_sites')->onDelete('cascade');

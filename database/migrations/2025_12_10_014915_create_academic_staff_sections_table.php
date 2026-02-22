@@ -9,7 +9,6 @@ return new class extends Migration {
     {
         Schema::create('academic_staff_sections', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('academic_site_id')->nullable()->constrained('academic_sites')->onDelete('cascade');
             $table->foreignId('academic_department_id')->nullable()->constrained('academic_departments')->onDelete('cascade');
             $table->string('title'); // 'Vice-Chancellor', 'Officers', etc.
