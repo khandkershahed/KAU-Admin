@@ -41,16 +41,6 @@ class EditorController extends Controller
     //     return response()->json(['location' => $url]);
     // }
 
-    <?php
-
-namespace App\Http\Controllers\Admin;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-
-class EditorController extends Controller
-{
     public function upload(Request $request)
     {
         // TinyMCE will send the file as "file"
@@ -96,6 +86,4 @@ class EditorController extends Controller
             'size_bytes' => $file->getSize(),               // for PDF size label
         ]);
     }
-}
-
 }
