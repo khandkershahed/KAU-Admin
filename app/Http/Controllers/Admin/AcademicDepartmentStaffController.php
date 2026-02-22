@@ -155,7 +155,7 @@ class AcademicDepartmentStaffController extends Controller
     {
         $group = AcademicStaffSection::find($member->academic_staff_section_id);
         $department = $group ? AcademicDepartment::find($group->academic_department_id) : null;
-        $groups = AcademicStaffSection::where('status', 'published')->where('academic_department_id', $group->academic_department_id)->get();
+        $groups = AcademicStaffSection::where('academic_department_id', $department->id)->where('status', 'published')->get();
 
         return view('admin.pages.academic.staff_members.edit', [
             'member'     => $member,
