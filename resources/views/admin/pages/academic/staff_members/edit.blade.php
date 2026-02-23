@@ -113,7 +113,7 @@
                                             id="editMemberPhone" value="{{ old('phone', $member->phone) }}">
                                     </div>
 
-                                    <div class="col-md-3 mb-4">
+                                    <div class="col-md-4 mb-4">
                                         <label class="form-label fw-semibold text-black">Staff Group</label>
                                         <select class="form-select form-select-sm" name="staff_section_id"
                                             id="editMemberGroup" data-control="select2" data-allow-clear="true">

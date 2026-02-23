@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AcademicMemberPublication extends Model
 {
@@ -11,12 +10,18 @@ class AcademicMemberPublication extends Model
         'academic_staff_member_id',
         'title',
         'type',
+        'category',
         'journal_or_conference_name',
         'publisher',
         'year',
         'doi',
         'url',
         'position',
+    ];
+
+    protected $casts = [
+        'year' => 'integer',
+        'position' => 'integer',
     ];
 
     public function member()

@@ -1,118 +1,196 @@
 <x-admin-app-layout :title="'Bulk Add Publications'">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <div>
-                <h3 class="card-title fw-bold mb-0">Bulk Add Publications</h3>
-                <div class="small text-muted">
-                    Member: <b>{{ $member->name }}</b>
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-none">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                    <div>
+                        <h5 class="mb-0">Bulk Add Publications</h5>
+                        <p class="text-sm mb-0">
+                            Member: <b>{{ $member->name }}</b>
+                        </p>
+                    </div>
+
+                    <div>
+                        <a href="{{ route('admin.academic.publications.index', $member->id) }}"
+                            class="btn btn-sm btn-dark">
+                            <i class="fa-solid fa-arrow-left me-2"></i> Back
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-5" id="bulkPreviewContainer"></div>
+                    <form action="{{ route('admin.academic.publications.bulk-store', $member->id) }}" method="POST"
+                        novalidate>
+                        @csrf
+                        <input type="hidden" name="redirect_to"
+                            value="{{ route('admin.academic.publications.index', $member->id) }}">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="text-muted text-sm">
+                                Paste from CV / Excel and Preview before import. (Excel Columns: N, O, P, Q)
+                            </div>
+
+                            <div class="btn-group" role="group" aria-label="Bulk actions">
+                                <button type="button" class="btn btn-sm btn-dark me-2"
+                                    onclick="previewPublications({{ $member->id }})">
+                                    <i class="fa-solid fa-eye me-2"></i> Preview
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-success" id="btnConfirmImport"
+                                    onclick="confirmPublications({{ $member->id }})" disabled>
+                                    <i class="fa-solid fa-check me-2"></i> Confirm Import
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="border rounded-2 p-2 bg-white">
+                                    <x-metronic.editor name="bulk_text[journal]" label="Journal (Excel Column N)"
+                                        :value="old('bulk_text[journal]')" rows="12" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="border rounded-2 p-2 bg-white">
+                                    <x-metronic.editor name="bulk_text[conference]" label="Conference (Excel Column Q)"
+                                        :value="old('bulk_text[conference]')" rows="12" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="border rounded-2 p-2 bg-white">
+                                    <x-metronic.editor name="bulk_text[seminar]"
+                                        label="Seminar / Workshop (Excel Column O)" :value="old('bulk_text[seminar]')" rows="12" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="border rounded-2 p-2 bg-white">
+                                    <x-metronic.editor name="bulk_text[book_chapter]"
+                                        label="Book Chapter (Excel Column P)" :value="old('bulk_text[book_chapter]')" rows="12" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
                 </div>
             </div>
-            <a href="{{ route('admin.academic.publications.index', $member->id) }}" class="btn btn-sm btn-secondary">
-                <i class="fa-solid fa-arrow-left me-2"></i> Back
-            </a>
-        </div>
 
-        <div class="card-body">
-            <form action="{{ route('admin.academic.publications.bulk-store', $member->id) }}" method="POST" novalidate>
-                @csrf
-                <input type="hidden" name="redirect_to" value="{{ route('admin.academic.publications.index', $member->id) }}">
-
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="text-muted small">Add multiple publications at once. Use the “+ Add Row” button.</div>
-                    <button type="button" class="btn btn-sm btn-light-primary" id="addPubRow">
-                        <i class="fa fa-plus me-2"></i> Add Row
-                    </button>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle" id="pubTable">
-                        <thead>
-                            <tr class="fw-bold">
-                                {{-- <th style="width:40px;">#</th> --}}
-                                <th style="width:190px;">Title <span class="text-danger">*</span></th>
-                                <th style="width:150px;">Type</th>
-                                <th style="width:200px;">Journal / Conf. name</th>
-                                <th style="width:200px;">Publisher</th>
-                                <th style="width:90px;">Year</th>
-                                <th style="width:150px;">DOI</th>
-                                <th style="width:150px;">URL</th>
-                                <th style="width:20px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="pubRows">
-                            @php($rows = old('publications', [ [] ]))
-                            @foreach($rows as $i => $row)
-                                <tr class="pub-row">
-                                    {{-- <td class="row-no">{{ $loop->iteration }}</td> --}}
-                                    <td>
-                                        <input type="text" name="publications[{{ $i }}][title]" class="form-control form-control-sm rounded-1" value="{{ $row['title'] ?? '' }}" required>
-                                    </td>
-                                    <td>
-                                        <select name="publications[{{ $i }}][type]" class="form-select form-select-sm">
-                                            <option value="">--</option>
-                                            <option value="journal" @selected(($row['type'] ?? '')==='journal')>Journal</option>
-                                            <option value="conference" @selected(($row['type'] ?? '')==='conference')>Conference</option>
-                                            <option value="seminar" @selected(($row['type'] ?? '')==='seminar')>Seminar</option>
-                                            <option value="book_chapter" @selected(($row['type'] ?? '')==='book_chapter')>Book Chapter</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="text" name="publications[{{ $i }}][journal_or_conference_name]" class="form-control form-control-sm rounded-1" value="{{ $row['journal_or_conference_name'] ?? '' }}"></td>
-                                    <td><input type="text" name="publications[{{ $i }}][publisher]" class="form-control form-control-sm rounded-1" value="{{ $row['publisher'] ?? '' }}"></td>
-                                    <td><input type="number" name="publications[{{ $i }}][year]" class="form-control form-control-sm rounded-1" value="{{ $row['year'] ?? '' }}"></td>
-                                    <td><input type="text" name="publications[{{ $i }}][doi]" class="form-control form-control-sm rounded-1" value="{{ $row['doi'] ?? '' }}"></td>
-                                    <td><input type="text" name="publications[{{ $i }}][url]" class="form-control form-control-sm rounded-1" value="{{ $row['url'] ?? '' }}"></td>
-                                    {{-- <td><input type="number" name="publications[{{ $i }}][position]" class="form-control form-control-sm rounded-1" value="{{ $row['position'] ?? '' }}"></td> --}}
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-light-danger removePubRow"><i class="fa fa-times"></i></button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk me-2"></i> Save</button>
-                    <a href="{{ route('admin.academic.publications.index', $member->id) }}" class="btn btn-light btn-sm ms-2">Cancel</a>
-                </div>
-            </form>
         </div>
     </div>
 
     @push('scripts')
         <script>
-            (function(){
-                const tbody = document.getElementById('pubRows');
-                const addBtn = document.getElementById('addPubRow');
+            async function previewPublications(memberId) {
 
-                function reindex(){
-                    const rows = tbody.querySelectorAll('tr.pub-row');
-                    rows.forEach((row, idx) => {
-                        row.querySelector('.row-no').textContent = (idx + 1);
-                        row.querySelectorAll('input, select').forEach(el => {
-                            const n = el.getAttribute('name') || '';
-                            el.setAttribute('name', n.replace(/publications\[\d+\]/, 'publications[' + idx + ']'));
-                        });
-                    });
+                const url = "{{ route('admin.academic.publications.bulk-preview', ':id') }}"
+                    .replace(':id', memberId);
+
+                function readEditorValueByName(name) {
+                    const el = document.querySelector(`[name="${name}"]`);
+                    if (!el) return '';
+
+                    const id = el.getAttribute('id');
+                    if (window.tinymce && id && tinymce.get(id)) {
+                        return tinymce.get(id).getContent();
+                    }
+
+                    return el.value || '';
                 }
 
-                addBtn.addEventListener('click', function(){
-                    const rows = tbody.querySelectorAll('tr.pub-row');
-                    const clone = rows[rows.length - 1].cloneNode(true);
-                    clone.querySelectorAll('input').forEach(i => i.value = '');
-                    clone.querySelectorAll('select').forEach(s => s.value = '');
-                    tbody.appendChild(clone);
-                    reindex();
+                const payload = {
+                    bulk_text: {
+                        journal: readEditorValueByName('bulk_text[journal]'),
+                        conference: readEditorValueByName('bulk_text[conference]'),
+                        seminar: readEditorValueByName('bulk_text[seminar]'),
+                        book_chapter: readEditorValueByName('bulk_text[book_chapter]'),
+                    }
+                };
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify(payload)
                 });
 
-                tbody.addEventListener('click', function(e){
-                    if(!e.target.closest('.removePubRow')) return;
-                    const rows = tbody.querySelectorAll('tr.pub-row');
-                    if(rows.length <= 1) return;
-                    e.target.closest('tr.pub-row').remove();
-                    reindex();
+                const json = await res.json();
+
+                if (!json.ok) return alert('Preview failed');
+
+                document.getElementById('bulkPreviewContainer').innerHTML = json.html;
+                document.getElementById('btnConfirmImport').disabled = false;
+            }
+
+            async function confirmPublications(memberId) {
+
+                const rows = [];
+
+                document.querySelectorAll('#bulkPreviewContainer tbody tr')
+                    .forEach(tr => {
+
+                        const typeEl = tr.querySelector('.js-type');
+                        const titleEl = tr.querySelector('.js-title');
+                        const yearEl = tr.querySelector('.js-year');
+                        const skipEl = tr.querySelector('.js-skip');
+
+                        if (!typeEl || !titleEl || !yearEl || !skipEl) {
+                            return;
+                        }
+
+                        const yearRaw = (yearEl.value || '').trim();
+                        const yearVal = yearRaw === '' ? null : parseInt(yearRaw, 10);
+
+                        rows.push({
+                            type: typeEl.value,
+                            title: titleEl.value,
+                            year: Number.isNaN(yearVal) ? null : yearVal,
+                            skip: !!skipEl.checked
+                        });
+                    });
+
+                if (rows.length === 0) {
+                    return alert('No valid rows found to import.');
+                }
+
+                const url = "{{ route('admin.academic.publications.bulk-confirm', ':id') }}"
+                    .replace(':id', memberId);
+
+                const btn = document.getElementById('btnConfirmImport');
+                btn.disabled = true;
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        rows
+                    })
                 });
-            })();
+
+                const json = await res.json();
+
+                if (!json.ok) {
+                    btn.disabled = false;
+                    return alert('Import failed');
+                }
+
+                // ✅ Redirect to publications list
+                const redirectUrl = json.redirect_url || "{{ route('admin.academic.publications.index', $member->id) }}";
+                window.location.href = redirectUrl;
+            }
         </script>
     @endpush
+
 </x-admin-app-layout>

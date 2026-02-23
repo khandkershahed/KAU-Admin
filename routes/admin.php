@@ -538,6 +538,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/staff-members/{member}/publications/bulk', [AcademicDepartmentStaffController::class, 'storePublicationsBulk'])->name('publications.bulk-store');
         Route::get('/publications/{publication}/edit', [AcademicDepartmentStaffController::class, 'publicationEdit'])->name('publications.edit');
 
+        Route::post(
+            '/staff-members/{member}/publications/bulk/preview',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkPreview']
+        )->name('publications.bulk-preview');
+
+        Route::post(
+            '/staff-members/{member}/publications/bulk/confirm',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkConfirm']
+        )->name('publications.bulk-confirm');
 
         // Departments
         Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');

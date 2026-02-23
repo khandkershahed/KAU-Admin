@@ -699,7 +699,7 @@ class AcademicDepartmentStaffController extends Controller
     public function storePublication(AcademicStaffMember $member, Request $request)
     {
         $data = $request->validate([
-            'title'  => 'required|string|max:500',
+            'title'  => 'required|string|max:10000',
             'type'   => 'nullable|in:journal,conference,seminar,book_chapter',
             'journal_or_conference_name' => 'nullable|string|max:255',
             'publisher' => 'nullable|string|max:255',
@@ -726,7 +726,7 @@ class AcademicDepartmentStaffController extends Controller
     {
         $data = $request->validate([
             'publications' => 'required|array|min:1',
-            'publications.*.title' => 'required|string|max:500',
+            'publications.*.title' => 'required|string|max:10000',
             'publications.*.type'  => 'nullable|in:journal,conference,seminar,book_chapter',
             'publications.*.journal_or_conference_name' => 'nullable|string|max:255',
             'publications.*.publisher' => 'nullable|string|max:255',
@@ -764,7 +764,7 @@ class AcademicDepartmentStaffController extends Controller
     public function updatePublication(AcademicMemberPublication $publication, Request $request)
     {
         $data = $request->validate([
-            'title'  => 'required|string|max:500',
+            'title'  => 'required|string|max:10000',
             'type'   => 'nullable|in:journal,conference,seminar,book_chapter',
             'journal_or_conference_name' => 'nullable|string|max:255',
             'publisher' => 'nullable|string|max:255',
@@ -861,5 +861,154 @@ class AcademicDepartmentStaffController extends Controller
             ->appends($request->query());
 
         return view('admin.pages.academic.staff_finder.partials.table', compact('members'));
+    }
+
+    public function publicationsBulkPreview(AcademicStaffMember $member, Request $request)
+    {
+        $data = $request->validate([
+            'bulk_text' => 'required|array',
+            'bulk_text.journal' => 'nullable|string',
+            'bulk_text.conference' => 'nullable|string',
+            'bulk_text.seminar' => 'nullable|string',
+            'bulk_text.book_chapter' => 'nullable|string',
+        ]);
+
+        $parseBlock = function ($text, $defaultType) {
+
+            // 1) Normalize (strip html, decode entities)
+            $text = strip_tags((string) $text);
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            // 2) Normalize tabs and weird spaces
+            $text = str_replace(["\t", "\xC2\xA0"], [' ', ' '], $text);
+
+            // 3) Excel often stores everything in one line.
+            // Insert newlines BEFORE list markers like: " 2. " or " 15) "
+            // but avoid years like "2025. " by limiting marker digits to 1-3.
+            $text = preg_replace('/\s+(?=\d{1,3}[\.\)]\s+)/u', "\n", $text);
+
+            // 4) Split to lines
+            $lines = preg_split("/\r\n|\r|\n/u", $text);
+
+            $rows = [];
+
+            foreach ($lines as $line) {
+                $line = trim((string) $line);
+                if ($line === '') {
+                    continue;
+                }
+
+                // Case: "International Journal 1. Roy, T...."
+                // Detect heading + first item in the SAME line, but we DO NOT store category.
+                if (!preg_match('/^\d{1,3}[\.\)]\s+/u', $line) && preg_match('/\d{1,3}[\.\)]\s+/u', $line)) {
+                    if (preg_match('/^(.*?)(\d{1,3}[\.\)]\s+)(.+)$/u', $line, $m)) {
+                        $marker = $m[2];
+                        $rest = trim($m[3]);
+                        $line = $marker . $rest;
+                    }
+                }
+
+                // Ignore pure headings (no numbering)
+                if (!preg_match('/^\d{1,3}[\.\)]\s+/u', $line)) {
+                    continue;
+                }
+
+                // Remove numbering prefix
+                $line = preg_replace('/^\d{1,3}[\.\)]\s*/u', '', $line);
+                $line = trim($line);
+
+                if (mb_strlen($line) < 10) {
+                    continue;
+                }
+
+                // Extract a year if present
+                preg_match('/\b(19|20)\d{2}\b/u', $line, $yearMatch);
+
+                $rows[] = [
+                    'type' => $defaultType,
+                    'title' => $line,
+                    'year' => isset($yearMatch[0]) ? (int) $yearMatch[0] : null,
+                ];
+            }
+
+            return $rows;
+        };
+
+        $allRows = [];
+
+        $allRows = array_merge($allRows, $parseBlock($data['bulk_text']['journal'] ?? '', 'journal'));
+        $allRows = array_merge($allRows, $parseBlock($data['bulk_text']['conference'] ?? '', 'conference'));
+        $allRows = array_merge($allRows, $parseBlock($data['bulk_text']['seminar'] ?? '', 'seminar'));
+        $allRows = array_merge($allRows, $parseBlock($data['bulk_text']['book_chapter'] ?? '', 'book_chapter'));
+
+        $html = view('admin.pages.academic.publications.partials.bulk_preview_table', compact('allRows'))->render();
+
+        return response()->json([
+            'ok' => true,
+            'html' => $html,
+            'count' => count($allRows),
+        ]);
+    }
+
+    // public function publicationsBulkConfirm(AcademicStaffMember $member, Request $request)
+    // {
+    //     $data = $request->validate([
+    //         'rows' => 'required|array|min:1',
+    //         'rows.*.type' => 'required|in:journal,conference,seminar,book_chapter',
+    //         'rows.*.title' => 'required|string|max:10000',
+    //         'rows.*.year' => 'nullable|integer|min:1900|max:2100',
+    //         'rows.*.skip' => 'nullable|boolean',
+    //     ]);
+
+    //     $position = ((int) $member->publications()->max('position')) + 1;
+
+    //     foreach ($data['rows'] as $row) {
+
+    //         if (!empty($row['skip'])) {
+    //             continue;
+    //         }
+
+    //         $member->publications()->create([
+    //             'type' => $row['type'],
+    //             'title' => $row['title'],
+    //             'year' => $row['year'] ?? null,
+    //             'position' => $position++,
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'ok' => true
+    //     ]);
+    // }
+    public function publicationsBulkConfirm(AcademicStaffMember $member, Request $request)
+    {
+        $data = $request->validate([
+            'rows' => 'required|array|min:1',
+            'rows.*.type' => 'required|in:journal,conference,seminar,book_chapter',
+            'rows.*.title' => 'required|string|max:10000',
+            'rows.*.year' => 'nullable|integer|min:1900|max:2100',
+            'rows.*.skip' => 'nullable|boolean',
+        ]);
+
+        $position = ((int) $member->publications()->max('position')) + 1;
+
+        foreach ($data['rows'] as $row) {
+
+            if (!empty($row['skip'])) {
+                continue;
+            }
+
+            $member->publications()->create([
+                'type' => $row['type'],
+                'title' => $row['title'],
+                'year' => $row['year'] ?? null,
+                'position' => $position++,
+            ]);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'redirect_url' => route('admin.academic.publications.index', $member->id),
+        ]);
     }
 }
