@@ -144,7 +144,7 @@ class HomeApiController extends Controller
                     'designation',
                     'department'
                 )
-                    ->where('status', 'published');
+                    ->where('status', 'published')->orderBy('publish_date', 'DESC');
             }
         ])
             ->select('id', 'name', 'slug', 'view_type')
