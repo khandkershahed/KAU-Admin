@@ -535,18 +535,16 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         // Publications (Pages: bulk add via repeater)
         Route::get('/staff-members/{member}/publications', [AcademicDepartmentStaffController::class, 'publicationsIndex'])->name('publications.index');
         Route::get('/staff-members/{member}/publications/create', [AcademicDepartmentStaffController::class, 'publicationsCreate'])->name('publications.create');
+        Route::get('/staff-members/{member}/publications/bulk-row', [AcademicDepartmentStaffController::class, 'bulkRowCreate'])->name('publications.bulk-row');
+        Route::post('/staff-members/{member}/publications/bulk-row-store', [AcademicDepartmentStaffController::class, 'bulkRowStore'])->name('publications.bulk-row-store');
         Route::post('/staff-members/{member}/publications/bulk', [AcademicDepartmentStaffController::class, 'storePublicationsBulk'])->name('publications.bulk-store');
         Route::get('/publications/{publication}/edit', [AcademicDepartmentStaffController::class, 'publicationEdit'])->name('publications.edit');
 
-        Route::post(
-            '/staff-members/{member}/publications/bulk/preview',
-            [AcademicDepartmentStaffController::class, 'publicationsBulkPreview']
-        )->name('publications.bulk-preview');
+        Route::post('/staff-members/{member}/publications/bulk/preview',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkPreview'])->name('publications.bulk-preview');
 
-        Route::post(
-            '/staff-members/{member}/publications/bulk/confirm',
-            [AcademicDepartmentStaffController::class, 'publicationsBulkConfirm']
-        )->name('publications.bulk-confirm');
+        Route::post('/staff-members/{member}/publications/bulk/confirm',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkConfirm'])->name('publications.bulk-confirm');
 
         // Departments
         Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');

@@ -1,6 +1,4 @@
 <x-admin-app-layout :title="'Bulk Add Publications'">
-
-
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-none">

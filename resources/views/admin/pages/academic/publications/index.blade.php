@@ -16,9 +16,13 @@
             </div>
 
             <div class="d-flex align-items-center">
+                <a href="{{ route('admin.academic.publications.bulk-row', $member->id) }}"
+                    class="btn btn-sm btn-primary me-2">
+                    <i class="fa fa-plus me-2"></i>Bulk Row Add
+                </a>
                 <a href="{{ route('admin.academic.publications.create', $member->id) }}"
                     class="btn btn-sm btn-primary me-2">
-                    <i class="fa fa-plus me-2"></i>Bulk Add
+                    <i class="fa fa-plus me-2"></i>Editor Add
                 </a>
                 <a href="{{ route('admin.academic.staff.index', ['site_id' => $site->id, 'department_id' => $dept->id]) }}"
                     class="btn btn-sm btn-dark">

@@ -1011,4 +1011,48 @@ class AcademicDepartmentStaffController extends Controller
             'redirect_url' => route('admin.academic.publications.index', $member->id),
         ]);
     }
+
+    public function bulkRowCreate(AcademicStaffMember $member)
+    {
+        return view('admin.pages.academic.publications.bulk-row', [
+            'member' => $member,
+        ]);
+    }
+
+    public function bulkRowStore(AcademicStaffMember $member, Request $request)
+    {
+        $data = $request->validate([
+            'publications' => 'required|array|min:1',
+            'publications.*.title' => 'required|string|max:500',
+            'publications.*.type'  => 'nullable|in:journal,conference,seminar,book_chapter',
+            'publications.*.journal_or_conference_name' => 'nullable|string|max:255',
+            'publications.*.publisher' => 'nullable|string|max:255',
+            'publications.*.year'  => 'nullable|integer|min:1900|max:2100',
+            'publications.*.doi'   => 'nullable|string|max:255',
+            'publications.*.url'   => 'nullable|string|max:1000',
+            'publications.*.position' => 'nullable|integer',
+        ]);
+
+        $maxPos = (int) $member->publications()->max('position');
+        $pos = $maxPos + 1;
+
+        foreach ($data['publications'] as $row) {
+            $member->publications()->create([
+                'title'  => $row['title'],
+                'type'   => $row['type'] ?? null,
+                'journal_or_conference_name' => $row['journal_or_conference_name'] ?? null,
+                'publisher' => $row['publisher'] ?? null,
+                'year'   => $row['year'] ?? null,
+                'doi'    => $row['doi'] ?? null,
+                'url'    => $row['url'] ?? null,
+                'position' => $row['position'] ?? $pos,
+            ]);
+
+            $pos++;
+        }
+
+        return $request->filled('redirect_to')
+            ? redirect($request->input('redirect_to'))->with('success', 'Publications added.')
+            : back()->with('success', 'Publications added.');
+    }
 }
