@@ -14,13 +14,13 @@
                 <input type="hidden" name="id" value="{{ $section->id }}">
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label fw-semibold">Section Title <span class="text-danger">*</span></label>
                         <input type="text" name="title" class="form-control form-control-sm"
                             value="{{ old('title', $section->title) }}" placeholder="Enter section title..." required>
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label fw-semibold">Section Type</label>
                         <select name="section_type" class="form-select form-select-sm">
                             <option value="content" @if (old('section_type', $section->section_type) == 'content') selected @endif>Content</option>
@@ -32,13 +32,22 @@
                             <option value="faq" @if (old('section_type', $section->section_type) == 'faq') selected @endif>FAQ</option>
                         </select>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="1" @if (old('status', $section->status) == 1) selected @endif>Active</option>
+                            <option value="0" @if (old('status', $section->status) == 0) selected @endif>Inactive</option>
+                        </select>
+
+                    </div>
+                    {{-- status --}}
 
                     <div class="col-md-12 mb-3">
                         <x-metronic.label for="content" class="col-form-label fw-bold fs-6">
                             {{ __('Page Content') }}
                         </x-metronic.label>
                         <x-metronic.editor name="content" label="Page Content" :value="old('content', $section->content)" rows="12" />
-                    
+
                     </div>
 
                     @php

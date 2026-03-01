@@ -150,7 +150,7 @@ class OfficeStaffController extends Controller
         ], [
 
             'title.required' => 'Section title is required.',
-        
+
         ]);
 
         if ($validator->fails()) {
@@ -167,6 +167,7 @@ class OfficeStaffController extends Controller
                 'title'        => $request->title,
                 'section_type' => $request->section_type ?? 'content',
                 'content'      => $request->content,
+                'status'       => $request->status ?? 1,
                 'extra'        => $this->buildSectionExtra($request),
             ]);
 
@@ -223,7 +224,7 @@ class OfficeStaffController extends Controller
             'image.image'   => 'Image must be a valid file.',
             'name.max'      => 'Name may not be greater than 255 characters.',
             'label.max'     => 'Label may not be greater than 250 characters.'
-        
+
         ]);
 
         if ($validator->fails()) {
@@ -282,7 +283,7 @@ class OfficeStaffController extends Controller
 
             'name.required' => 'Member name is required.',
             'image.image'   => 'Uploaded file must be an image.'
-        
+
         ]);
 
         if ($validator->fails()) {

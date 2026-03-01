@@ -45,7 +45,7 @@
                             @php
                                 $frontend = rtrim(config('app.frontend_url', config('app.url')), '/');
                                 $filename = $f->filename();
-                                $frontendUrl = $frontend . '/files/' . rawurlencode($filename);
+                                $frontendUrl = $frontend . '/documents/' . rawurlencode($filename);
                                 $sizeKb = $f->size ? number_format($f->size / 1024, 2) . ' KB' : '0 KB';
                             @endphp
                             <tr>
