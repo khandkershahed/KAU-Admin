@@ -32,8 +32,7 @@ class AdminOffice extends Model
 
     public function sections()
     {
-        return $this->hasMany(AdminOfficeSection::class, 'office_id')
-            ->orderBy('position', 'asc');
+        return $this->hasMany(AdminOfficeSection::class, 'office_id')->where('status', 1)->orderBy('position', 'asc');
     }
 
     public function members()

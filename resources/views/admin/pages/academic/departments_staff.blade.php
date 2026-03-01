@@ -64,13 +64,13 @@
                                 <div class="d-flex align-items-center">
 
                                     {{-- STATUS TOGGLE --}}
-                                    @can('edit academic departments')
+                                    {{-- @can('edit academic departments')
                                         <label class="form-check form-switch form-switch-sm me-3">
                                             <input type="checkbox" class="form-check-input toggleDepartmentStatus"
                                                 data-id="{{ $dept->id }}"
                                                 {{ $dept->status === 'published' ? 'checked' : '' }}>
                                         </label>
-                                    @endcan
+                                    @endcan --}}
 
                                     {{-- EDIT --}}
                                     @can('edit academic departments')
