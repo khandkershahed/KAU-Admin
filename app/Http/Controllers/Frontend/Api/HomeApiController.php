@@ -1384,41 +1384,60 @@ class HomeApiController extends Controller
         ]);
     }
 
-    public function formFiles(Request $request, string $token): StreamedResponse
+    // public function formFiles(Request $request, string $token): StreamedResponse
+    // {
+    //     $file = SiteFile::where('token', $token)->firstOrFail();
+
+    //     // Signed query validation (safer)
+    //     $exp = $request->query('exp');
+    //     $sig = $request->query('sig');
+    //     if (!SiteFile::validateSignature($token, $exp ? (int) $exp : null, $sig ? (string) $sig : null)) {
+    //         abort(403, 'Invalid or expired link.');
+    //     }
+
+    //     if (!$file->storageExists()) {
+    //         abort(404, 'File missing.');
+    //     }
+
+    //     $disk = Storage::disk($file->disk);
+    //     $stream = $disk->readStream($file->path);
+    //     if (!$stream) {
+    //         abort(404, 'File not readable.');
+    //     }
+
+    //     $disposition = $file->isInlineFriendly() ? 'inline' : 'attachment';
+
+    //     $headers = [
+    //         'Content-Type' => $file->mime ?: 'application/octet-stream',
+    //         'Content-Disposition' => $disposition . '; filename="' . addslashes($file->original_name) . '"',
+    //         'X-Content-Type-Options' => 'nosniff',
+    //         'Cache-Control' => 'private, max-age=86400',
+    //     ];
+
+    //     return response()->stream(function () use ($stream) {
+    //         fpassthru($stream);
+    //         if (is_resource($stream)) {
+    //             fclose($stream);
+    //         }
+    //     }, 200, $headers);
+    // }
+
+    public function formFiles($filename)
     {
-        $file = SiteFile::where('token', $token)->firstOrFail();
+        $path = 'site-files/' . $filename;
 
-        // Signed query validation (safer)
-        $exp = $request->query('exp');
-        $sig = $request->query('sig');
-        if (!SiteFile::validateSignature($token, $exp ? (int) $exp : null, $sig ? (string) $sig : null)) {
-            abort(403, 'Invalid or expired link.');
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404);
         }
 
-        if (!$file->storageExists()) {
-            abort(404, 'File missing.');
-        }
-
-        $disk = Storage::disk($file->disk);
-        $stream = $disk->readStream($file->path);
-        if (!$stream) {
-            abort(404, 'File not readable.');
-        }
-
-        $disposition = $file->isInlineFriendly() ? 'inline' : 'attachment';
-
-        $headers = [
-            'Content-Type' => $file->mime ?: 'application/octet-stream',
-            'Content-Disposition' => $disposition . '; filename="' . addslashes($file->original_name) . '"',
-            'X-Content-Type-Options' => 'nosniff',
-            'Cache-Control' => 'private, max-age=86400',
-        ];
-
-        return response()->stream(function () use ($stream) {
-            fpassthru($stream);
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-        }, 200, $headers);
+        return Storage::disk('local')->response(
+            $path,
+            $filename,
+            [
+                'Content-Type' => Storage::disk('local')->mimeType($path),
+                'Cache-Control' => 'public, max-age=86400',
+                'X-Content-Type-Options' => 'nosniff',
+            ]
+        );
     }
 }
