@@ -284,7 +284,7 @@ return [
             [
                 'title' => 'Forms and Files',
                 'icon'  => 'fa-solid fa-images fs-3',
-                'route' => 'admin.galleries.index',
+                'route' => 'admin.site-files.index',
                 'permission' => 'view academic sites',
             ],
         ],
