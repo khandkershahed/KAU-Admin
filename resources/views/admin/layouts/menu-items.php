@@ -281,6 +281,12 @@ return [
                 'route' => 'admin.galleries.index',
                 'permission' => 'view galleries',
             ],
+            [
+                'title' => 'Forms and Files',
+                'icon'  => 'fa-solid fa-images fs-3',
+                'route' => 'admin.galleries.index',
+                'permission' => 'view academic sites',
+            ],
         ],
     ],
 

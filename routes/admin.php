@@ -1,45 +1,46 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\NewsController;
-use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\AboutPageController;
+use App\Http\Controllers\Admin\AcademicContentController;
+use App\Http\Controllers\Admin\AcademicDepartmentStaffController;
+use App\Http\Controllers\Admin\AcademicNavController;
+use App\Http\Controllers\Admin\AcademicPageBlockController;
+use App\Http\Controllers\Admin\AcademicSiteController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\Admin\TermsController;
-use App\Http\Controllers\Admin\EditorController;
-use App\Http\Controllers\Admin\NoticeController;
-use App\Http\Controllers\Admin\ContactController;
-use App\Http\Controllers\Admin\PrivacyController;
-use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\AdministrationController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdmissionController;
+use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Admin\Auth\NewPasswordController;
+use App\Http\Controllers\Admin\Auth\PasswordController;
+use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\EditorController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\HomepageController;
+use App\Http\Controllers\Admin\HomePopupController;
 use App\Http\Controllers\Admin\MainMenuController;
 use App\Http\Controllers\Admin\MainPageController;
-use App\Http\Controllers\Admin\AboutPageController;
-use App\Http\Controllers\Admin\AdmissionController;
-use App\Http\Controllers\Admin\HomePopupController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\NoticeCategoryController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\OfficeCmsController;
 use App\Http\Controllers\Admin\OfficeMenuController;
+use App\Http\Controllers\Admin\OfficeStaffController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\AcademicNavController;
-use App\Http\Controllers\Admin\OfficeStaffController;
-use App\Http\Controllers\Admin\AcademicSiteController;
-use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\Admin\BlogCategoryController;
+use App\Http\Controllers\Admin\PrivacyController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SiteFileController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SubscriptionController;
-use App\Http\Controllers\Admin\Auth\PasswordController;
-use App\Http\Controllers\Admin\AdministrationController;
-use App\Http\Controllers\Admin\NoticeCategoryController;
+use App\Http\Controllers\Admin\TermsController;
 use App\Http\Controllers\Admin\UserManagementController;
-use App\Http\Controllers\Admin\AcademicContentController;
-use App\Http\Controllers\Admin\Auth\NewPasswordController;
-use App\Http\Controllers\Admin\AcademicPageBlockController;
-use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Admin\AcademicDepartmentStaffController;
-use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'guest:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
@@ -540,11 +541,15 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/staff-members/{member}/publications/bulk', [AcademicDepartmentStaffController::class, 'storePublicationsBulk'])->name('publications.bulk-store');
         Route::get('/publications/{publication}/edit', [AcademicDepartmentStaffController::class, 'publicationEdit'])->name('publications.edit');
 
-        Route::post('/staff-members/{member}/publications/bulk/preview',
-            [AcademicDepartmentStaffController::class, 'publicationsBulkPreview'])->name('publications.bulk-preview');
+        Route::post(
+            '/staff-members/{member}/publications/bulk/preview',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkPreview']
+        )->name('publications.bulk-preview');
 
-        Route::post('/staff-members/{member}/publications/bulk/confirm',
-            [AcademicDepartmentStaffController::class, 'publicationsBulkConfirm'])->name('publications.bulk-confirm');
+        Route::post(
+            '/staff-members/{member}/publications/bulk/confirm',
+            [AcademicDepartmentStaffController::class, 'publicationsBulkConfirm']
+        )->name('publications.bulk-confirm');
 
         // Departments
         Route::post('/departments', [AcademicDepartmentStaffController::class, 'storeDepartment'])->name('departments.store');
@@ -596,7 +601,11 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         // status toggle (active/inactive) without reload
         Route::post('/{popup}/toggle-status', [HomePopupController::class, 'toggleStatus'])->name('toggle_status');
     });
-
+    /* Site Files (private storage + frontend URL) */
+    Route::get('/site-files', [SiteFileController::class, 'index'])->name('site-files.index');
+    Route::post('/site-files', [SiteFileController::class, 'store'])->name('site-files.store');
+    Route::delete('/site-files/{siteFile}', [SiteFileController::class, 'destroy'])->name('site-files.destroy');
+    
     Route::prefix('terms')->name('terms.')->group(function () {
         Route::get('/', [TermsController::class, 'index'])->name('index');
         Route::post('/store', [TermsController::class, 'store'])->name('store');

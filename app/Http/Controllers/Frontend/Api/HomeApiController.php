@@ -3,43 +3,46 @@
 namespace App\Http\Controllers\Frontend\Api;
 
 
-use App\Models\Faq;
-use App\Models\News;
-use App\Models\Event;
-use App\Models\Terms;
-use App\Models\Notice;
-use App\Models\Contact;
-use App\Models\Privacy;
-use App\Models\Setting;
-use App\Models\Category;
-use App\Models\Homepage;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\EventResource;
+use App\Http\Resources\EventTypeResource;
+use App\Http\Resources\NewsResource;
 use App\Models\AboutPage;
-use App\Models\Admission;
-use App\Models\EventType;
-use App\Models\HomePopup;
+use App\Models\AcademicMenuGroup;
 use App\Models\AdminGroup;
 use App\Models\AdminOffice;
-use Illuminate\Http\Request;
+use App\Models\Admission;
+use App\Models\Category;
+use App\Models\Contact;
+use App\Models\Event;
+use App\Models\EventType;
+use App\Models\Faq;
+use App\Models\Homepage;
 use App\Models\HomepageAbout;
 use App\Models\HomepageBanner;
-use App\Models\HomepageGlance;
-use App\Models\NoticeCategory;
 use App\Models\HomepageExplore;
 use App\Models\HomepageFaculty;
+use App\Models\HomepageGlance;
 use App\Models\HomepageSection;
-use App\Models\AcademicMenuGroup;
 use App\Models\HomepageVcMessage;
+use App\Models\HomePopup;
+use App\Models\News;
+use App\Models\Notice;
+use App\Models\NoticeCategory;
+use App\Models\Privacy;
+use App\Models\Setting;
+use App\Models\SiteFile;
+use App\Models\Terms;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\NewsResource;
-use App\Http\Resources\EventResource;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
-use App\Http\Resources\EventTypeResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class HomeApiController extends Controller
 {
@@ -1379,5 +1382,43 @@ class HomeApiController extends Controller
             'effective_date' => $terms->effective_date,
             'expiration_date' => $terms->expiration_date,
         ]);
+    }
+
+    public function formFiles(Request $request, string $token): StreamedResponse
+    {
+        $file = SiteFile::where('token', $token)->firstOrFail();
+
+        // Signed query validation (safer)
+        $exp = $request->query('exp');
+        $sig = $request->query('sig');
+        if (!SiteFile::validateSignature($token, $exp ? (int) $exp : null, $sig ? (string) $sig : null)) {
+            abort(403, 'Invalid or expired link.');
+        }
+
+        if (!$file->storageExists()) {
+            abort(404, 'File missing.');
+        }
+
+        $disk = Storage::disk($file->disk);
+        $stream = $disk->readStream($file->path);
+        if (!$stream) {
+            abort(404, 'File not readable.');
+        }
+
+        $disposition = $file->isInlineFriendly() ? 'inline' : 'attachment';
+
+        $headers = [
+            'Content-Type' => $file->mime ?: 'application/octet-stream',
+            'Content-Disposition' => $disposition . '; filename="' . addslashes($file->original_name) . '"',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, max-age=86400',
+        ];
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, $headers);
     }
 }
