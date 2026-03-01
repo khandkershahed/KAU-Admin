@@ -1424,19 +1424,25 @@ class HomeApiController extends Controller
 
     public function formFiles($filename)
     {
-        $path = 'site-files/' . $filename;
+        $filename = basename($filename);
 
-        if (!Storage::disk('local')->exists($path)) {
-            abort(404);
+        // Find by stored path ending with "/{filename}"
+        $file = SiteFile::where('path', 'like', '%/' . $filename)->firstOrFail();
+
+        if (!$file->storageExists()) {
+            abort(404, 'File missing.');
         }
 
-        return Storage::disk('local')->response(
-            $path,
-            $filename,
+        $disposition = $file->isInlineFriendly() ? 'inline' : 'attachment';
+
+        return Storage::disk($file->disk)->response(
+            $file->path,
+            $file->original_name,
             [
-                'Content-Type' => Storage::disk('local')->mimeType($path),
-                'Cache-Control' => 'public, max-age=86400',
+                'Content-Type' => $file->mime ?: 'application/octet-stream',
+                'Content-Disposition' => $disposition . '; filename="' . addslashes($file->original_name) . '"',
                 'X-Content-Type-Options' => 'nosniff',
+                'Cache-Control' => 'public, max-age=86400',
             ]
         );
     }

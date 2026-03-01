@@ -44,7 +44,17 @@ class SiteFile extends Model
     }
 
     /**
-     * Signed URL helpers (safer)
+     * ✅ NEW: Get stored filename from path
+     * Example: site-files/2026/03/ethical-approval-20260301-153522-ab12cd34.pdf
+     * returns: ethical-approval-20260301-153522-ab12cd34.pdf
+     */
+    public function filename(): string
+    {
+        return basename((string) $this->path);
+    }
+
+    /**
+     * Signed URL helpers (still here, but you won't use it anymore)
      * Format:
      *   /files/{token}?exp=UNIX_TS&sig=HMAC
      */

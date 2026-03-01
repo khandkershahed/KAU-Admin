@@ -44,8 +44,8 @@
                         @forelse ($files as $i => $f)
                             @php
                                 $frontend = rtrim(config('app.frontend_url', config('app.url')), '/');
-                                $q = $f->signedQuery();
-                                $frontendUrl = $frontend . '/files/' . $f->token . '?exp=' . $q['exp'] . '&sig=' . $q['sig'];
+                                $filename = $f->filename();
+                                $frontendUrl = $frontend . '/files/' . rawurlencode($filename);
                                 $sizeKb = $f->size ? number_format($f->size / 1024, 2) . ' KB' : '0 KB';
                             @endphp
                             <tr>
@@ -53,7 +53,7 @@
                                 <td class="text-start">
                                     <div class="d-flex flex-column">
                                         <span class="text-gray-900">{{ $f->original_name }}</span>
-                                        <small class="text-muted">Token: {{ $f->token }}</small>
+                                        <small class="text-muted">Stored: {{ $filename }}</small>
                                     </div>
                                 </td>
                                 <td class="text-start">{{ $f->mime ?? '-' }}</td>
