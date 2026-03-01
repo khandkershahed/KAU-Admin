@@ -275,12 +275,12 @@ return [
                 'route' => 'admin.cms.main.pages.index',
                 'permission' => 'view academic pages',
             ],
-            [
-                'title' => 'Galleries',
-                'icon'  => 'fa-solid fa-images fs-3',
-                'route' => 'admin.galleries.index',
-                'permission' => 'view galleries',
-            ],
+            // [
+            //     'title' => 'Galleries',
+            //     'icon'  => 'fa-solid fa-images fs-3',
+            //     'route' => 'admin.galleries.index',
+            //     'permission' => 'view galleries',
+            // ],
             [
                 'title' => 'Forms and Files',
                 'icon'  => 'fa-solid fa-images fs-3',
