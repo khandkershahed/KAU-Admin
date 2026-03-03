@@ -164,7 +164,7 @@
                                                             <label
                                                                 class="form-label fw-semibold text-black">Icon</label>
                                                             <x-metronic.icon-picker
-                                                                name="links[{{ $i }}][icon]" />
+                                                                name="links[{{ $i }}][icon]" :value="$l['icon'] ?? ''"/>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label

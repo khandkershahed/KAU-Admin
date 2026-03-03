@@ -600,7 +600,7 @@ class HomeApiController extends Controller
         };
 
         // Build sections with their own members
-        $sections = $office->sections->map(function ($section) use ($office, $normalizeExtra) {
+        $sections = $office->sections->where('status',1)->map(function ($section) use ($office, $normalizeExtra) {
 
             $members = $office->members
                 ->where('section_id', $section->id)
