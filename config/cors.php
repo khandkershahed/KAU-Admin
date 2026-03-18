@@ -9,6 +9,8 @@ return [
     'allowed_origins' => [
         'https://kau.ac.bd',
         'https://www.kau.ac.bd',
+        'http://localhost:3000',
+        'localhost:3000',
     ],
 
     'allowed_origins_patterns' => [],
