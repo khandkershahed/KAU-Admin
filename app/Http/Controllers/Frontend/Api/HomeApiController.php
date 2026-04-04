@@ -356,8 +356,14 @@ class HomeApiController extends Controller
         ]);
     }
     // allNews
-    public function allNews()
+    public function allNews(Request $request)
     {
+        $perPage = (int) $request->get('per_page', 9);
+
+        if ($perPage <= 0) {
+            $perPage = 9;
+        }
+
         $news = News::select(
             'id',
             'title',
@@ -372,9 +378,8 @@ class HomeApiController extends Controller
         )
             ->where('status', 'published')
             ->orderBy('published_at', 'DESC')
-            ->paginate(10);
+            ->paginate($perPage);
 
-        // Add exact image URLs
         $news->getCollection()->transform(function ($item) {
             if ($item->thumb_image) {
                 $item->thumb_image = asset('storage/' . $item->thumb_image);
@@ -396,7 +401,6 @@ class HomeApiController extends Controller
             'data' => $news
         ]);
     }
-
 
     public function newsDetails($slug)
     {
@@ -600,7 +604,7 @@ class HomeApiController extends Controller
         };
 
         // Build sections with their own members
-        $sections = $office->sections->where('status',1)->map(function ($section) use ($office, $normalizeExtra) {
+        $sections = $office->sections->where('status', 1)->map(function ($section) use ($office, $normalizeExtra) {
 
             $members = $office->members
                 ->where('section_id', $section->id)
